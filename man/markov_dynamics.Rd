@@ -19,3 +19,19 @@ A \code{grd_markov} object.
 Estimates transition counts and probabilities between adjacent periods for a
 classified long panel.
 }
+\examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+panel <- data.frame(
+  id = rep(letters[1:4], each = 3),
+  year = rep(2020:2022, times = 4),
+  value = c(8, 9, 11, 10, 12, 13, 15, 14, 16, 20, 22, 25)
+)
+
+classes <- classify_dynamics(panel, id, year, value, k = 3)
+markov <- markov_dynamics(classes, id, year, class)
+
+markov
+transition_matrix(markov)
+steady_state(markov)
+\dontshow{\}) # examplesIf}
+}

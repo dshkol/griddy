@@ -1,15 +1,14 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://dshkol.github.io/griddy/404.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/LICENSE-text.html</loc></url>
+<url><loc>https://dshkol.github.io/griddy/LICENSE.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/articles/cancensus-workflows.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/articles/griddy.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/articles/index.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/articles/performance.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/articles/prior-art-comparison.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/articles/tidycensus-workflows.html</loc></url>
-<url><loc>https://dshkol.github.io/griddy/audit.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/authors.html</loc></url>
-<url><loc>https://dshkol.github.io/griddy/gap_audit.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/index.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/reference/class_intervals.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/reference/classify_dynamics.html</loc></url>
@@ -24,6 +23,5 @@
 <url><loc>https://dshkol.github.io/griddy/reference/spatial_markov.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/reference/steady_state.html</loc></url>
 <url><loc>https://dshkol.github.io/griddy/reference/transition_matrix.html</loc></url>
-<url><loc>https://dshkol.github.io/griddy/scope_brief.html</loc></url>
 </urlset>
 

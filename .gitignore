@@ -3,6 +3,9 @@
 .Ruserdata
 .DS_Store
 .claude/
+/audit.md
+/gap_audit.md
+/scope_brief.md
 /.Rproj.user/
 /*.Rproj
 /griddy.Rcheck/

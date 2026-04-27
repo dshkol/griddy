@@ -97,6 +97,39 @@ as an already classified state.</p></dd>
 <code>grd_classes</code>.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2020</span><span class="op">:</span><span class="fl">2022</span>, times <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">9</span>, <span class="fl">11</span>, <span class="fl">10</span>, <span class="fl">12</span>, <span class="fl">13</span>, <span class="fl">15</span>, <span class="fl">14</span>, <span class="fl">16</span>, <span class="fl">20</span>, <span class="fl">22</span>, <span class="fl">25</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">classes</span> <span class="op">&lt;-</span> <span class="fu">classify_dynamics</span><span class="op">(</span><span class="va">panel</span>, <span class="va">id</span>, <span class="va">year</span>, <span class="va">value</span>, k <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">classes</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;grd_classes&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    id year value class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   a 2020     8    Q1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   a 2021     9    Q1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   a 2022    11    Q1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   b 2020    10    Q1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   b 2021    12    Q2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   b 2022    13    Q2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   c 2020    15    Q2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   c 2021    14    Q2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9   c 2022    16    Q3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  d 2020    20    Q3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11  d 2021    22    Q3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12  d 2022    25    Q3</span>
+<span class="r-in"><span><span class="fu"><a href="class_intervals.html">class_intervals</a></span><span class="op">(</span><span class="va">classes</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   class lower upper type </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Q1      8    11.7 value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Q2     11.7  15.3 value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Q3     15.3  25   value</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

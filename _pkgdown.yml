@@ -7,7 +7,7 @@ home:
   title: griddy
   description: Geospatial distribution dynamics for sf and tidy data.
   links:
-    - text: Scope Brief
+    - text: Get Started
       href: articles/griddy.html
     - text: GitHub
       href: https://github.com/dshkol/griddy

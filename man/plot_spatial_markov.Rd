@@ -15,3 +15,14 @@ A \code{ggplot} object.
 \description{
 Plot Spatial Markov Matrices
 }
+\examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+panel <- data.frame(
+  id = rep(1:4, each = 2),
+  year = rep(2020:2021, times = 4),
+  value = c(1, 2, 2, 3, 4, 3, 5, 6)
+)
+spatial <- spatial_markov(panel, id, year, value, nb = spdep::cell2nb(2, 2), k = 2)
+plot_spatial_markov(spatial)
+\dontshow{\}) # examplesIf}
+}

@@ -9,6 +9,15 @@
 #' @param descending If `TRUE`, larger values receive better ranks.
 #'
 #' @return A `grd_rank_mobility` data frame or `sf` object.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(
+#'   id = rep(letters[1:4], each = 3),
+#'   year = rep(2020:2022, times = 4),
+#'   value = c(8, 9, 11, 10, 12, 13, 15, 14, 16, 20, 22, 25)
+#' )
+#'
+#' rank_mobility(panel, id, year, value)
 #' @export
 rank_mobility <- function(data, id, time, value,
                           compare = c("endpoint", "adjacent"),

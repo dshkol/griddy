@@ -15,3 +15,15 @@ A tibble of spatial-lag class intervals.
 \description{
 Spatial Lag Intervals Used By A Spatial Markov Object
 }
+\examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+panel <- data.frame(
+  id = rep(1:4, each = 2),
+  year = rep(2020:2021, times = 4),
+  value = c(1, 2, 2, 3, 4, 3, 5, 6)
+)
+nb <- spdep::cell2nb(2, 2)
+spatial <- spatial_markov(panel, id, year, value, nb = nb, k = 2)
+lag_intervals(spatial)
+\dontshow{\}) # examplesIf}
+}

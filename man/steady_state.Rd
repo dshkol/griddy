@@ -15,3 +15,9 @@ A numeric vector.
 \description{
 Estimate Stationary Distribution
 }
+\examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+prob <- matrix(c(0.8, 0.2, 0.3, 0.7), nrow = 2, byrow = TRUE)
+steady_state(prob)
+\dontshow{\}) # examplesIf}
+}

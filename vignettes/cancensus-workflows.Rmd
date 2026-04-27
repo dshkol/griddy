@@ -7,15 +7,21 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
+knitr::opts_chunk$set(eval = grd_eval_docs)
+```
+
 ```{r, message=FALSE, warning=FALSE}
 library(griddy)
 library(dplyr)
 ```
 
-This vignette is a template for Canadian Census workflows. It is not evaluated
-during package checks because it requires live CensusMapper access.
+This vignette is a template for Canadian Census workflows. It is evaluated for
+pkgdown and skipped during package checks because it requires live CensusMapper
+access.
 
-```{r, eval=FALSE}
+```{r, fig.alt=c("Heatmap of Canadian Census tract transition probabilities between income quintiles.", "Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile.")}
 library(cancensus)
 library(sf)
 library(spdep)
@@ -33,7 +39,7 @@ panel_2016 <- get_census(
   level = "CT",
   geo_format = "sf"
 ) |>
-  transmute(GEO_UID, year = 2016L, median_income = income_2016, geometry)
+  transmute(GeoUID, year = 2016L, median_income = income_2016, geometry)
 
 panel_2021 <- get_census(
   dataset = "CA21",
@@ -42,15 +48,17 @@ panel_2021 <- get_census(
   level = "CT",
   geo_format = "sf"
 ) |>
-  transmute(GEO_UID, year = 2021L, median_income = income_2021, geometry)
+  transmute(GeoUID, year = 2021L, median_income = income_2021, geometry)
 
-panel <- bind_rows(panel_2016, panel_2021)
-geography <- panel |> filter(year == 2021L) |> arrange(GEO_UID)
+common_ids <- intersect(panel_2016$GeoUID, panel_2021$GeoUID)
+panel <- bind_rows(panel_2016, panel_2021) |>
+  filter(GeoUID %in% common_ids)
+geography <- panel |> filter(year == 2021L) |> arrange(GeoUID)
 nb <- poly2nb(geography, queen = TRUE)
 
-classes <- classify_dynamics(panel, GEO_UID, year, median_income, k = 5)
-classic <- markov_dynamics(classes, GEO_UID, year, class)
-spatial <- spatial_markov(panel, GEO_UID, year, median_income, nb = nb, k = 5)
+classes <- classify_dynamics(panel, GeoUID, year, median_income, k = 5)
+classic <- markov_dynamics(classes, GeoUID, year, class)
+spatial <- spatial_markov(panel, GeoUID, year, median_income, nb = nb, k = 5)
 
 plot_transition_matrix(classic)
 plot_spatial_markov(spatial)

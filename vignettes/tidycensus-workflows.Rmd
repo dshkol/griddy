@@ -7,16 +7,22 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
+knitr::opts_chunk$set(eval = grd_eval_docs)
+```
+
 ```{r, message=FALSE, warning=FALSE}
 library(griddy)
 library(dplyr)
 library(tidyr)
 ```
 
-This vignette is a template for ACS workflows. It is not evaluated during
-package checks because it requires a Census API key and live data.
+This vignette is a template for ACS workflows. It is evaluated for pkgdown and
+skipped during package checks because it requires a Census API key and live
+data.
 
-```{r, eval=FALSE}
+```{r, fig.alt=c("Heatmap of ACS tract transition probabilities between income quintiles.", "Faceted heatmaps of ACS tract spatial Markov transition probabilities by spatial-lag quintile.", "Map of ACS tract endpoint rank mobility.")}
 library(tidycensus)
 library(sf)
 library(spdep)
@@ -38,17 +44,31 @@ acs <- purrr::map_dfr(years, function(y) {
       year = y,
       median_income = estimate,
       geometry
-    )
+    ) |>
+    filter(is.finite(median_income))
 })
 
 geography <- acs |>
   filter(year == max(year)) |>
+  filter(!st_is_empty(geometry)) |>
   arrange(GEOID)
 
+common_ids <- acs |>
+  st_drop_geometry() |>
+  count(GEOID) |>
+  filter(n == length(years)) |>
+  pull(GEOID) |>
+  intersect(geography$GEOID)
+
 panel <- acs |>
+  filter(GEOID %in% common_ids) |>
   st_drop_geometry() |>
   left_join(select(geography, GEOID, geometry), by = "GEOID") |>
   st_as_sf()
+
+geography <- geography |>
+  filter(GEOID %in% common_ids) |>
+  arrange(GEOID)
 
 nb <- poly2nb(geography, queen = TRUE)
 

@@ -69,15 +69,27 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dshkol/griddy" class="external-link">griddy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
-<p>This vignette is a template for Canadian Census workflows. It is not
-evaluated during package checks because it requires live CensusMapper
-access.</p>
+<p>This vignette is a template for Canadian Census workflows. It is
+evaluated for pkgdown and skipped during package checks because it
+requires live CensusMapper access.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/cancensus" class="external-link">cancensus</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/" class="external-link">spdep</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">regions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD <span class="op">=</span> <span class="st">"5915022"</span><span class="op">)</span> <span class="co"># Vancouver CSD</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/cancensus" class="external-link">cancensus</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Census data is currently stored temporarily.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  In order to speed up performance, reduce API quota usage, and reduce unnecessary network calls, please set up a persistent cache directory via `set_cancensus_cache_path('&lt;local cache path&gt;', install = TRUE)`.</span></span>
+<span><span class="co">##  This will add your cache directory as environment varianble to your .Renviron to be used across sessions and projects.</span></span></code></pre>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: package 'sf' was built under R version 4.5.2</span></span></code></pre>
+<pre><code><span><span class="co">## Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE</span></span></code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/" class="external-link">spdep</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Loading required package: spData</span></span></code></pre>
+<pre><code><span><span class="co">## To access larger datasets in this package, install the spDataLarge</span></span>
+<span><span class="co">## package with: `install.packages('spDataLarge',</span></span>
+<span><span class="co">## repos='https://nowosad.github.io/drat/', type='source')`</span></span></code></pre>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">regions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CSD <span class="op">=</span> <span class="st">"5915022"</span><span class="op">)</span> <span class="co"># Vancouver CSD</span></span>
 <span><span class="va">vectors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  income_2016 <span class="op">=</span> <span class="st">"v_CA16_2397"</span>,</span>
 <span>  income_2021 <span class="op">=</span> <span class="st">"v_CA21_906"</span></span>
@@ -90,27 +102,70 @@ access.</p>
 <span>  level <span class="op">=</span> <span class="st">"CT"</span>,</span>
 <span>  geo_format <span class="op">=</span> <span class="st">"sf"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">GEO_UID</span>, year <span class="op">=</span> <span class="fl">2016L</span>, median_income <span class="op">=</span> <span class="va">income_2016</span>, <span class="va">geometry</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">panel_2021</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mountainmath.github.io/cancensus/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">GeoUID</span>, year <span class="op">=</span> <span class="fl">2016L</span>, median_income <span class="op">=</span> <span class="va">income_2016</span>, <span class="va">geometry</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Census data is currently stored temporarily.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  In order to speed up performance, reduce API quota usage, and reduce unnecessary network calls, please set up a persistent cache directory via `set_cancensus_cache_path('&lt;local cache path&gt;', install = TRUE)`.</span></span>
+<span><span class="co">##  This will add your cache directory as environment varianble to your .Renviron to be used across sessions and projects.</span></span></code></pre>
+<pre><code><span><span class="co">## Census data is currently stored temporarily.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  In order to speed up performance, reduce API quota usage, and reduce unnecessary network calls, please set up a persistent cache directory via `set_cancensus_cache_path('&lt;local cache path&gt;', install = TRUE)`.</span></span>
+<span><span class="co">##  This will add your cache directory as environment varianble to your .Renviron to be used across sessions and projects.</span></span></code></pre>
+<pre><code><span><span class="co">## Querying CensusMapper API...</span></span></code></pre>
+<pre><code><span><span class="co">## Downloading: 2.4 kB     Downloading: 2.4 kB     Downloading: 2.4 kB     Downloading: 2.4 kB</span></span></code></pre>
+<pre><code><span><span class="co">## Census data is currently stored temporarily.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  In order to speed up performance, reduce API quota usage, and reduce unnecessary network calls, please set up a persistent cache directory via `set_cancensus_cache_path('&lt;local cache path&gt;', install = TRUE)`.</span></span>
+<span><span class="co">##  This will add your cache directory as environment varianble to your .Renviron to be used across sessions and projects.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Querying CensusMapper API...</span></span></code></pre>
+<pre><code><span><span class="co">## Downloading: 3.6 kB     Downloading: 3.6 kB     Downloading: 23 kB     Downloading: 23 kB     Downloading: 23 kB     Downloading: 23 kB</span></span></code></pre>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">panel_2021</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mountainmath.github.io/cancensus/reference/get_census.html" class="external-link">get_census</a></span><span class="op">(</span></span>
 <span>  dataset <span class="op">=</span> <span class="st">"CA21"</span>,</span>
 <span>  regions <span class="op">=</span> <span class="va">regions</span>,</span>
 <span>  vectors <span class="op">=</span> <span class="va">vectors</span><span class="op">[</span><span class="st">"income_2021"</span><span class="op">]</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"CT"</span>,</span>
 <span>  geo_format <span class="op">=</span> <span class="st">"sf"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">GEO_UID</span>, year <span class="op">=</span> <span class="fl">2021L</span>, median_income <span class="op">=</span> <span class="va">income_2021</span>, <span class="va">geometry</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">GeoUID</span>, year <span class="op">=</span> <span class="fl">2021L</span>, median_income <span class="op">=</span> <span class="va">income_2021</span>, <span class="va">geometry</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Census data is currently stored temporarily.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  In order to speed up performance, reduce API quota usage, and reduce unnecessary network calls, please set up a persistent cache directory via `set_cancensus_cache_path('&lt;local cache path&gt;', install = TRUE)`.</span></span>
+<span><span class="co">##  This will add your cache directory as environment varianble to your .Renviron to be used across sessions and projects.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Querying CensusMapper API...</span></span></code></pre>
+<pre><code><span><span class="co">## Downloading: 2.5 kB     Downloading: 2.5 kB     Downloading: 2.5 kB     Downloading: 2.5 kB     Downloading: 2.5 kB     Downloading: 2.5 kB</span></span></code></pre>
+<pre><code><span><span class="co">## Census data is currently stored temporarily.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  In order to speed up performance, reduce API quota usage, and reduce unnecessary network calls, please set up a persistent cache directory via `set_cancensus_cache_path('&lt;local cache path&gt;', install = TRUE)`.</span></span>
+<span><span class="co">##  This will add your cache directory as environment varianble to your .Renviron to be used across sessions and projects.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Querying CensusMapper API...</span></span></code></pre>
+<pre><code><span><span class="co">## Downloading: 12 kB     Downloading: 12 kB     Downloading: 34 kB     Downloading: 34 kB     Downloading: 34 kB     Downloading: 34 kB</span></span></code></pre>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">common_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">intersect</a></span><span class="op">(</span><span class="va">panel_2016</span><span class="op">$</span><span class="va">GeoUID</span>, <span class="va">panel_2021</span><span class="op">$</span><span class="va">GeoUID</span><span class="op">)</span></span>
+<span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">panel_2016</span>, <span class="va">panel_2021</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">GeoUID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">common_ids</span><span class="op">)</span></span>
+<span><span class="va">geography</span> <span class="op">&lt;-</span> <span class="va">panel</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2021L</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">GeoUID</span><span class="op">)</span></span>
+<span><span class="va">nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/poly2nb.html" class="external-link">poly2nb</a></span><span class="op">(</span><span class="va">geography</span>, queen <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in poly2nb(geography, queen = TRUE): some observations have no neighbours;</span></span>
+<span><span class="co">## if this seems unexpected, try increasing the snap argument.</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in poly2nb(geography, queen = TRUE): neighbour object has 3 sub-graphs;</span></span>
+<span><span class="co">## if this sub-graph count seems unexpected, try increasing the snap argument.</span></span></code></pre>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">classes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_dynamics.html">classify_dynamics</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">GeoUID</span>, <span class="va">year</span>, <span class="va">median_income</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">classic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/markov_dynamics.html">markov_dynamics</a></span><span class="op">(</span><span class="va">classes</span>, <span class="va">GeoUID</span>, <span class="va">year</span>, <span class="va">class</span><span class="op">)</span></span>
+<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">GeoUID</span>, <span class="va">year</span>, <span class="va">median_income</span>, nb <span class="op">=</span> <span class="va">nb</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">panel_2016</span>, <span class="va">panel_2021</span><span class="op">)</span></span>
-<span><span class="va">geography</span> <span class="op">&lt;-</span> <span class="va">panel</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2021L</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">GEO_UID</span><span class="op">)</span></span>
-<span><span class="va">nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/poly2nb.html" class="external-link">poly2nb</a></span><span class="op">(</span><span class="va">geography</span>, queen <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">classes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_dynamics.html">classify_dynamics</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">GEO_UID</span>, <span class="va">year</span>, <span class="va">median_income</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="va">classic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/markov_dynamics.html">markov_dynamics</a></span><span class="op">(</span><span class="va">classes</span>, <span class="va">GEO_UID</span>, <span class="va">year</span>, <span class="va">class</span><span class="op">)</span></span>
-<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">GEO_UID</span>, <span class="va">year</span>, <span class="va">median_income</span>, nb <span class="op">=</span> <span class="va">nb</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/plot_transition_matrix.html">plot_transition_matrix</a></span><span class="op">(</span><span class="va">classic</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot_spatial_markov.html">plot_spatial_markov</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plot_transition_matrix.html">plot_transition_matrix</a></span><span class="op">(</span><span class="va">classic</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cancensus-workflows_files/figure-html/unnamed-chunk-2-1.png" alt="Heatmap of Canadian Census tract transition probabilities between income quintiles." width="700"></p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_spatial_markov.html">plot_spatial_markov</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cancensus-workflows_files/figure-html/unnamed-chunk-2-2.png" alt="Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile." width="700"></p>
 <p>Canadian census geographies can change between cycles. A production
 workflow should harmonize geography before treating units as a
 longitudinal panel.</p>

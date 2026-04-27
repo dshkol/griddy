@@ -16,6 +16,11 @@ The main difference is not that `griddy` computes an unrelated statistic. It is
 that the unit identity, time index, class labels, transition labels, and spatial
 lag intervals stay attached to the result.
 
+```{r setup, include=FALSE}
+grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
+knitr::opts_chunk$set(eval = grd_eval_docs)
+```
+
 ```{r, message=FALSE, warning=FALSE}
 library(griddy)
 library(dplyr)
@@ -52,7 +57,7 @@ transition_matrix(spatial, "count", lag_class = "Q1")
 The code below is intentionally optional because neither package is a hard
 dependency.
 
-```{r, eval=FALSE}
+```{r, eval=grd_eval_docs && requireNamespace("estdaR", quietly = TRUE) && requireNamespace("spdyn", quietly = TRUE)}
 library(griddy)
 library(estdaR)
 library(spdyn)

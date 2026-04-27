@@ -3,6 +3,14 @@
 #' @param x A `grd_markov` object.
 #'
 #' @return A `ggplot` object.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(id = rep(1:4, each = 2), year = rep(2020:2021, 4), value = 1:8)
+#' markov <- panel |>
+#'   classify_dynamics(id, year, value, k = 2) |>
+#'   markov_dynamics(id, year, class)
+#'
+#' plot_transition_matrix(markov)
 #' @export
 plot_transition_matrix <- function(x) {
   stopifnot(inherits(x, "grd_markov"))
@@ -19,6 +27,15 @@ plot_transition_matrix <- function(x) {
 #' @param x A `grd_spatial_markov` object.
 #'
 #' @return A `ggplot` object.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(
+#'   id = rep(1:4, each = 2),
+#'   year = rep(2020:2021, times = 4),
+#'   value = c(1, 2, 2, 3, 4, 3, 5, 6)
+#' )
+#' spatial <- spatial_markov(panel, id, year, value, nb = spdep::cell2nb(2, 2), k = 2)
+#' plot_spatial_markov(spatial)
 #' @export
 plot_spatial_markov <- function(x) {
   stopifnot(inherits(x, "grd_spatial_markov"))

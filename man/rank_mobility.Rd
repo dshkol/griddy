@@ -29,3 +29,14 @@ A \code{grd_rank_mobility} data frame or \code{sf} object.
 \description{
 Computes simple rank changes for map-ready exploratory analysis.
 }
+\examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+panel <- data.frame(
+  id = rep(letters[1:4], each = 3),
+  year = rep(2020:2022, times = 4),
+  value = c(8, 9, 11, 10, 12, 13, 15, 14, 16, 20, 22, 25)
+)
+
+rank_mobility(panel, id, year, value)
+\dontshow{\}) # examplesIf}
+}

@@ -42,3 +42,19 @@ A \code{grd_spatial_markov} object.
 Estimates transition matrices conditioned on the class of each unit's spatial
 lag at the start of the transition period.
 }
+\examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+panel <- data.frame(
+  id = rep(1:4, each = 3),
+  year = rep(2020:2022, times = 4),
+  value = c(1, 2, 3, 2, 3, 4, 4, 3, 5, 5, 6, 7)
+)
+
+nb <- spdep::cell2nb(2, 2)
+spatial <- spatial_markov(panel, id, year, value, nb = nb, k = 2)
+
+spatial
+lag_intervals(spatial)
+transition_matrix(spatial, "count", lag_class = "Q1")
+\dontshow{\}) # examplesIf}
+}

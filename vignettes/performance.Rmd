@@ -9,9 +9,14 @@ vignette: >
 
 Performance matters because spatial Markov workflows can touch tract panels
 with thousands of units and many periods. This vignette records the benchmark
-shape without running expensive benchmarks during package checks.
+shape. It is evaluated for pkgdown and skipped during package checks.
 
-```{r, eval=FALSE}
+```{r setup, include=FALSE}
+grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
+knitr::opts_chunk$set(eval = grd_eval_docs)
+```
+
+```{r, message=FALSE, warning=FALSE}
 library(griddy)
 library(microbenchmark)
 library(sf)
@@ -20,9 +25,8 @@ library(dplyr)
 library(tidyr)
 
 make_panel <- function(nx = 60, ny = 60, years = 2010:2019) {
-  grid <- st_make_grid(st_bbox(c(xmin = 0, ymin = 0, xmax = nx, ymax = ny)), n = c(nx, ny)) |>
-    st_as_sf() |>
-    mutate(id = row_number())
+  cells <- st_make_grid(st_bbox(c(xmin = 0, ymin = 0, xmax = nx, ymax = ny)), n = c(nx, ny))
+  grid <- st_sf(id = seq_along(cells), geometry = cells)
 
   panel <- tidyr::crossing(id = grid$id, year = years) |>
     left_join(st_drop_geometry(grid), by = "id") |>

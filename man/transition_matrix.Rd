@@ -19,3 +19,17 @@ A matrix.
 \description{
 Extract A Transition Matrix
 }
+\examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+panel <- data.frame(
+  id = rep(letters[1:4], each = 3),
+  year = rep(2020:2022, times = 4),
+  value = c(8, 9, 11, 10, 12, 13, 15, 14, 16, 20, 22, 25)
+)
+markov <- panel |>
+  classify_dynamics(id, year, value, k = 3) |>
+  markov_dynamics(id, year, class)
+
+transition_matrix(markov, "count")
+\dontshow{\}) # examplesIf}
+}

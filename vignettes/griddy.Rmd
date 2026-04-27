@@ -7,6 +7,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
+knitr::opts_chunk$set(eval = grd_eval_docs)
+```
+
 ```{r, message=FALSE, warning=FALSE}
 library(griddy)
 library(dplyr)

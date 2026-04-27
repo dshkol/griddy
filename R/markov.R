@@ -8,6 +8,20 @@
 #' @param id,time,state Columns identifying spatial unit, time, and state.
 #'
 #' @return A `grd_markov` object.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(
+#'   id = rep(letters[1:4], each = 3),
+#'   year = rep(2020:2022, times = 4),
+#'   value = c(8, 9, 11, 10, 12, 13, 15, 14, 16, 20, 22, 25)
+#' )
+#'
+#' classes <- classify_dynamics(panel, id, year, value, k = 3)
+#' markov <- markov_dynamics(classes, id, year, class)
+#'
+#' markov
+#' transition_matrix(markov)
+#' steady_state(markov)
 #' @export
 markov_dynamics <- function(classes, id, time, state = class) {
   id <- rlang::ensym(id)
@@ -66,6 +80,18 @@ markov_dynamics <- function(classes, id, time, state = class) {
 #' @param lag_class Optional lag class for `grd_spatial_markov`.
 #'
 #' @return A matrix.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(
+#'   id = rep(letters[1:4], each = 3),
+#'   year = rep(2020:2022, times = 4),
+#'   value = c(8, 9, 11, 10, 12, 13, 15, 14, 16, 20, 22, 25)
+#' )
+#' markov <- panel |>
+#'   classify_dynamics(id, year, value, k = 3) |>
+#'   markov_dynamics(id, year, class)
+#'
+#' transition_matrix(markov, "count")
 #' @export
 transition_matrix <- function(x, type = c("probability", "count"), lag_class = NULL) {
   type <- match.arg(type)
@@ -105,6 +131,10 @@ transition_matrix.grd_spatial_markov <- function(x, type = c("probability", "cou
 #' @param x A `grd_markov` object or transition probability matrix.
 #'
 #' @return A numeric vector.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' prob <- matrix(c(0.8, 0.2, 0.3, 0.7), nrow = 2, byrow = TRUE)
+#' steady_state(prob)
 #' @export
 steady_state <- function(x) {
   UseMethod("steady_state")
@@ -143,6 +173,11 @@ as.data.frame.grd_markov <- function(x, ...) {
 #' @param ... Reserved for future methods.
 #'
 #' @return A tibble of class intervals when available.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(id = rep(1:3, each = 2), year = rep(2020:2021, 3), value = 1:6)
+#' classes <- classify_dynamics(panel, id, year, value, k = 3)
+#' class_intervals(classes)
 #' @export
 class_intervals <- function(x, ...) {
   UseMethod("class_intervals")
@@ -168,6 +203,16 @@ class_intervals.grd_spatial_markov <- function(x, ...) {
 #' @param x A `grd_spatial_markov` object.
 #'
 #' @return A tibble of spatial-lag class intervals.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(
+#'   id = rep(1:4, each = 2),
+#'   year = rep(2020:2021, times = 4),
+#'   value = c(1, 2, 2, 3, 4, 3, 5, 6)
+#' )
+#' nb <- spdep::cell2nb(2, 2)
+#' spatial <- spatial_markov(panel, id, year, value, nb = nb, k = 2)
+#' lag_intervals(spatial)
 #' @export
 lag_intervals <- function(x) {
   UseMethod("lag_intervals")

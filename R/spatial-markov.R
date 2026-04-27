@@ -14,6 +14,20 @@
 #' @param zero.policy Passed to `spdep` lag/weight helpers.
 #'
 #' @return A `grd_spatial_markov` object.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(
+#'   id = rep(1:4, each = 3),
+#'   year = rep(2020:2022, times = 4),
+#'   value = c(1, 2, 3, 2, 3, 4, 4, 3, 5, 5, 6, 7)
+#' )
+#'
+#' nb <- spdep::cell2nb(2, 2)
+#' spatial <- spatial_markov(panel, id, year, value, nb = nb, k = 2)
+#'
+#' spatial
+#' lag_intervals(spatial)
+#' transition_matrix(spatial, "count", lag_class = "Q1")
 #' @export
 spatial_markov <- function(data, id, time, value,
                            nb = NULL,

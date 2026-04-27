@@ -15,6 +15,17 @@
 #'
 #' @return A data frame or `sf` object with a `class` column and class
 #'   `grd_classes`.
+#'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' panel <- data.frame(
+#'   id = rep(letters[1:4], each = 3),
+#'   year = rep(2020:2022, times = 4),
+#'   value = c(8, 9, 11, 10, 12, 13, 15, 14, 16, 20, 22, 25)
+#' )
+#'
+#' classes <- classify_dynamics(panel, id, year, value, k = 3)
+#' classes
+#' class_intervals(classes)
 #' @export
 classify_dynamics <- function(data, id, time, value,
                               method = c("pooled_quantile", "time_quantile", "fixed", "existing"),
