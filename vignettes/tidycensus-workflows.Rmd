@@ -70,11 +70,11 @@ geography <- geography |>
   filter(GEOID %in% common_ids) |>
   arrange(GEOID)
 
-nb <- poly2nb(geography, queen = TRUE)
+listw <- nb2listw(poly2nb(geography, queen = TRUE), style = "W")
 
 classes <- classify_dynamics(panel, GEOID, year, median_income, k = 5)
 classic <- markov_dynamics(classes, GEOID, year, class)
-spatial <- spatial_markov(panel, GEOID, year, median_income, nb = nb, k = 5)
+spatial <- spatial_markov(panel, GEOID, year, median_income, listw = listw, k = 5)
 mobility <- rank_mobility(panel, GEOID, year, median_income)
 
 plot_transition_matrix(classic)

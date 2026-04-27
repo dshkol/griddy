@@ -22,10 +22,11 @@ spatial_markov(
 
 \item{id, time, value}{Columns identifying spatial unit, time, and value.}
 
-\item{nb}{Optional \code{spdep} neighbor list.}
+\item{nb}{A \code{spdep} neighbor list, used only when \code{listw} is \code{NULL}. It is
+converted with \code{spdep::nb2listw(style = "W")}.}
 
-\item{listw}{Optional \code{spdep} weights object. If omitted, \code{nb} is converted
-with \code{spdep::nb2listw(style = "W")}.}
+\item{listw}{A row-standardized \code{spdep} weights (\code{listw}) object. Preferred
+when the standardization choice matters.}
 
 \item{k}{Number of value classes.}
 
@@ -50,8 +51,8 @@ panel <- data.frame(
   value = c(1, 2, 3, 2, 3, 4, 4, 3, 5, 5, 6, 7)
 )
 
-nb <- spdep::cell2nb(2, 2)
-spatial <- spatial_markov(panel, id, year, value, nb = nb, k = 2)
+listw <- spdep::nb2listw(spdep::cell2nb(2, 2), style = "W")
+spatial <- spatial_markov(panel, id, year, value, listw = listw, k = 2)
 
 spatial
 lag_intervals(spatial)

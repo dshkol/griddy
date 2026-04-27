@@ -5,9 +5,10 @@
 #'
 #' @param data A long data frame or `sf` object.
 #' @param id,time,value Columns identifying spatial unit, time, and value.
-#' @param nb Optional `spdep` neighbor list.
-#' @param listw Optional `spdep` weights object. If omitted, `nb` is converted
-#'   with `spdep::nb2listw(style = "W")`.
+#' @param listw A row-standardized `spdep` weights (`listw`) object. Preferred
+#'   when the standardization choice matters.
+#' @param nb A `spdep` neighbor list, used only when `listw` is `NULL`. It is
+#'   converted with `spdep::nb2listw(style = "W")`.
 #' @param k Number of value classes.
 #' @param lag_k Number of spatial-lag classes.
 #' @param class_method Value classification method passed to [classify_dynamics()].
@@ -22,8 +23,8 @@
 #'   value = c(1, 2, 3, 2, 3, 4, 4, 3, 5, 5, 6, 7)
 #' )
 #'
-#' nb <- spdep::cell2nb(2, 2)
-#' spatial <- spatial_markov(panel, id, year, value, nb = nb, k = 2)
+#' listw <- spdep::nb2listw(spdep::cell2nb(2, 2), style = "W")
+#' spatial <- spatial_markov(panel, id, year, value, listw = listw, k = 2)
 #'
 #' spatial
 #' lag_intervals(spatial)

@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Dmitry Shkolnik \email{dmitry@example.com}
+\strong{Maintainer}: Dmitry Shkolnik \email{shkolnikd@gmail.com}
 
 }
 \keyword{internal}

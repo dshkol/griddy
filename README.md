@@ -25,6 +25,12 @@ The API and scope are still provisional.
 pak::pak("dshkol/griddy")
 ```
 
+The minimal example below also uses `spData` for state geometry:
+
+```r
+install.packages("spData")
+```
+
 ## What it does
 
 `griddy` keeps the workflow keyed by explicit `id`, `time`, and `value`
@@ -34,35 +40,40 @@ inspected, joined, and plotted without reverse-engineering array dimensions.
 
 ## Minimal example
 
+The bundled `usjoin` panel is the canonical PySAL `giddy` reference dataset:
+48 contiguous US states, per-capita personal income, 1929 to 2009.
+
 ```r
 library(griddy)
 library(dplyr)
+library(sf)
 library(spData)
 library(spdep)
-library(tidyr)
 
-data(us_states, package = "spData")
-data(us_states_df, package = "spData")
+data(usjoin)
 
-states <- us_states |>
-  left_join(us_states_df, by = c("NAME" = "state")) |>
-  filter(!NAME %in% c("Alaska", "Hawaii", "Puerto Rico")) |>
+geom <- us_states |>
+  filter(NAME %in% usjoin$name) |>
   arrange(NAME)
 
-panel <- states |>
-  select(NAME, median_income_10, median_income_15, geometry) |>
-  pivot_longer(starts_with("median_income_"), names_to = "year", values_to = "income") |>
-  mutate(year = if_else(year == "median_income_10", 2010L, 2015L))
+panel <- usjoin |>
+  filter(name %in% geom$NAME) |>
+  arrange(name, year)
 
-nb <- poly2nb(states, queen = TRUE)
+listw <- nb2listw(poly2nb(geom, queen = TRUE), style = "W")
 
-classes <- classify_dynamics(panel, NAME, year, income, k = 5)
-classic <- markov_dynamics(classes, NAME, year, class)
-spatial <- spatial_markov(panel, NAME, year, income, nb = nb, k = 5)
+classes <- classify_dynamics(panel, name, year, income, k = 5)
+classic <- markov_dynamics(classes, name, year, class)
+spatial <- spatial_markov(panel, name, year, income, listw = listw, k = 5)
 
 classic$transitions |> select(id, from_time, to_time, transition) |> head()
 lag_intervals(spatial)
 ```
+
+`spatial_markov()` accepts either `listw` (a prebuilt `spdep` weights object)
+or `nb` (a neighbor list, converted internally via
+`spdep::nb2listw(style = "W")`). `listw` is preferred when the
+row-standardization choice matters.
 
 ## Documentation
 

@@ -23,7 +23,14 @@ library(sf)
 library(spdep)
 library(dplyr)
 library(tidyr)
+```
 
+## Synthetic grid panel
+
+A 60 by 60 queen-contiguity grid over ten time periods exercises the same
+classification and spatial-lag code paths a tract-scale panel would.
+
+```{r}
 make_panel <- function(nx = 60, ny = 60, years = 2010:2019) {
   cells <- st_make_grid(st_bbox(c(xmin = 0, ymin = 0, xmax = nx, ymax = ny)), n = c(nx, ny))
   grid <- st_sf(id = seq_along(cells), geometry = cells)
@@ -38,7 +45,7 @@ make_panel <- function(nx = 60, ny = 60, years = 2010:2019) {
 }
 
 fx <- make_panel()
-nb <- cell2nb(60, 60, type = "queen")
+listw <- nb2listw(cell2nb(60, 60, type = "queen"), style = "W")
 
 microbenchmark(
   classify = classify_dynamics(fx$panel, id, year, value, k = 5),
@@ -46,11 +53,37 @@ microbenchmark(
     cls <- classify_dynamics(fx$panel, id, year, value, k = 5)
     markov_dynamics(cls, id, year, class)
   },
-  spatial = spatial_markov(fx$panel, id, year, value, nb = nb, k = 5),
+  spatial = spatial_markov(fx$panel, id, year, value, listw = listw, k = 5),
   times = 5
 )
 ```
 
-Benchmark comparisons against `estdaR` and `spdyn` should use matched wide data,
-matched class breaks, and identical weights. Otherwise the benchmark measures
-classification defaults more than implementation performance.
+## Comparison against estdaR
+
+The next chunk runs only when `estdaR` is installed. It calls
+`griddy::spatial_markov()` and `estdaR::sp.mkv()` on the same wide panel,
+matched class breaks, and identical weights. Any difference at this point
+reflects implementation overhead, not differing inputs.
+
+```{r, eval=grd_eval_docs && requireNamespace("estdaR", quietly = TRUE)}
+library(estdaR)
+
+wide_panel <- fx$panel |>
+  st_drop_geometry() |>
+  pivot_wider(id_cols = id, names_from = year, values_from = value) |>
+  arrange(id)
+
+wide_mat <- as.matrix(wide_panel |> select(-id))
+
+microbenchmark(
+  griddy = spatial_markov(fx$panel, id, year, value, listw = listw, k = 5),
+  estdaR = estdaR::sp.mkv(wide_mat, listw, classes = 5, fixed = TRUE),
+  times = 5
+)
+```
+
+`griddy` carries the long-format reshape, classification, and label
+preservation overhead that `estdaR::sp.mkv()` skips by working directly on a
+unit-by-period matrix. The expected pattern is that `griddy` is slower at this
+panel size; how much slower is the relevant question. If the gap exceeds an
+order of magnitude on tract-scale panels it should be revisited.

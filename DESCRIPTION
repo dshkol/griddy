@@ -2,9 +2,9 @@ Package: griddy
 Title: Geospatial Distribution Dynamics for Simple Features
 Version: 0.0.0.9000
 Authors@R:
-    person("Dmitry", "Shkolnik", email = "dmitry@example.com", role = c("aut", "cre"))
+    person("Dmitry", "Shkolnik", email = "shkolnikd@gmail.com", role = c("aut", "cre"))
 Author: Dmitry Shkolnik [aut, cre]
-Maintainer: Dmitry Shkolnik <dmitry@example.com>
+Maintainer: Dmitry Shkolnik <shkolnikd@gmail.com>
 Description: Tidy and simple-features-oriented helpers for exploratory
     geospatial distribution dynamics. The package classifies longitudinal
     spatial observations, estimates classic and spatial Markov transition
@@ -30,7 +30,6 @@ Imports:
     tidyr
 Suggests:
     cancensus,
-    classInt,
     knitr,
     microbenchmark,
     pkgdown,
@@ -40,3 +39,4 @@ Suggests:
     tidycensus
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+LazyData: true

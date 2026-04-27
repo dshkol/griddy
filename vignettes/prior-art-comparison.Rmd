@@ -7,14 +7,16 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-`estdaR` and `spdyn` are prior R implementations of spatial distribution
-dynamics methods. They are useful as methodological comparators and oracle
-checks. `griddy` targets a different interface: long `sf` panels, tidy outputs,
-and map-ready objects.
+`estdaR` (Vallone et al.) and `spdyn` (Loaiza) are prior R implementations of
+spatial distribution dynamics methods. Both predate `griddy` and remain useful
+as methodological comparators. `griddy` does not compete on methodology —
+it targets a different interface: long `sf` panels, tidy outputs, and
+map-ready objects, with the unit identity, time index, class labels, transition
+labels, and spatial-lag intervals attached to the result.
 
-The main difference is not that `griddy` computes an unrelated statistic. It is
-that the unit identity, time index, class labels, transition labels, and spatial
-lag intervals stay attached to the result.
+This vignette shows that `griddy::spatial_markov()` produces the same
+transition counts as `estdaR::sp.mkv()` and `spdyn::spMarkov()` on a shared
+panel, and walks through where the conventions intentionally differ.
 
 ```{r setup, include=FALSE}
 grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
@@ -28,23 +30,27 @@ library(sf)
 library(spData)
 library(spdep)
 library(tidyr)
+```
 
-data(us_states, package = "spData")
-data(us_states_df, package = "spData")
+## Shared panel
 
-states <- us_states |>
-  left_join(us_states_df, by = c("NAME" = "state")) |>
-  filter(!NAME %in% c("Alaska", "Hawaii", "Puerto Rico")) |>
+The bundled `usjoin` panel mirrors PySAL's reference dataset, so prior R
+implementations and `griddy` are working from the same series.
+
+```{r}
+data(usjoin)
+
+geom <- us_states |>
+  filter(NAME %in% usjoin$name) |>
   arrange(NAME)
 
-panel <- states |>
-  select(NAME, median_income_10, median_income_15, geometry) |>
-  pivot_longer(starts_with("median_income_"), names_to = "year", values_to = "income") |>
-  mutate(year = if_else(year == "median_income_10", 2010L, 2015L))
+panel <- usjoin |>
+  filter(name %in% geom$NAME) |>
+  arrange(name, year)
 
-listw <- nb2listw(poly2nb(states, queen = TRUE), style = "W")
+listw <- nb2listw(poly2nb(geom, queen = TRUE), style = "W")
 
-spatial <- spatial_markov(panel, NAME, year, income, listw = listw, k = 5)
+spatial <- spatial_markov(panel, name, year, income, listw = listw, k = 5)
 
 spatial$transitions |>
   select(id, from_time, to_time, lag_class, transition, spatial_lag) |>
@@ -54,52 +60,67 @@ lag_intervals(spatial)
 transition_matrix(spatial, "count", lag_class = "Q1")
 ```
 
-The code below is intentionally optional because neither package is a hard
-dependency.
+## Cross-package agreement
+
+The next chunk runs only when `estdaR` and `spdyn` are both installed. The
+package test suite carries static fixtures from both so ordinary CI can
+validate the spatial Markov counts without depending on either package.
 
 ```{r, eval=grd_eval_docs && requireNamespace("estdaR", quietly = TRUE) && requireNamespace("spdyn", quietly = TRUE)}
-library(griddy)
 library(estdaR)
 library(spdyn)
-library(spData)
-library(spdep)
-library(dplyr)
-library(tidyr)
 
-data(us_states, package = "spData")
-data(us_states_df, package = "spData")
+wide <- panel |>
+  pivot_wider(id_cols = name, names_from = year, values_from = income) |>
+  arrange(name)
 
-states <- us_states |>
-  left_join(us_states_df, by = c("NAME" = "state")) |>
-  filter(!NAME %in% c("Alaska", "Hawaii", "Puerto Rico")) |>
-  arrange(NAME)
+wide_mat <- as.matrix(wide |> select(-name))
+year_cols <- as.character(unique(panel$year))
 
-wide <- states |>
-  st_drop_geometry() |>
-  select(NAME, median_income_10, median_income_15)
+estdar_sp <- estdaR::sp.mkv(wide_mat, listw, classes = 5, fixed = TRUE)
+spdyn_sp <- spdyn::spMarkov(
+  wide,
+  listw,
+  stateVars = year_cols,
+  n.states = 5,
+  pool = TRUE,
+  std = FALSE
+)
 
-panel <- states |>
-  select(NAME, median_income_10, median_income_15, geometry) |>
-  pivot_longer(starts_with("median_income_"), names_to = "year", values_to = "income") |>
-  mutate(year = if_else(year == "median_income_10", 2010L, 2015L))
+griddy_counts <- aperm(
+  array(
+    spatial$matrix$n,
+    dim = c(5, 5, 5),
+    dimnames = list(spatial$states, spatial$states, spatial$lag_states)
+  ),
+  c(2, 1, 3)
+)
 
-nb <- poly2nb(states, queen = TRUE)
-listw <- nb2listw(nb, style = "W")
-
-grd <- panel |>
-  classify_dynamics(NAME, year, income, k = 5) |>
-  markov_dynamics(NAME, year, class)
-
-estdar <- estdaR::mkv(as.matrix(wide[, c("median_income_10", "median_income_15")]), classes = 5, fixed = TRUE)
-spdyn <- spdyn::markov(wide, stateVars = c("median_income_10", "median_income_15"), n.states = 5, pool = TRUE, std = FALSE)
-
-transition_matrix(grd, "count")
-estdar$Transitions
-spdyn$t
+all.equal(unname(griddy_counts), unname(estdar_sp$Transitions))
+all.equal(unname(griddy_counts), unname(spdyn_sp$t))
 ```
 
-Expected differences should be documented. Classification conventions and
-standardization defaults differ across packages, so exact equality requires
-matching those choices first. The package test suite uses static fixtures from
-`estdaR::sp.mkv()` and `spdyn::spMarkov()` so ordinary CI can validate the
-spatial Markov counts without installing either package.
+When the two prior implementations and `griddy` agree to within numerical
+tolerance, all three calls return `TRUE`. Disagreements with both at once are
+treated as bugs in `griddy`. Disagreements with one but not the other are
+documented under "Conventions worth knowing" below.
+
+## Conventions worth knowing
+
+Three places where a naive cross-comparison can produce false disagreement:
+
+- **Classification breaks.** `griddy` uses pooled quantiles by default;
+  `estdaR` accepts `fixed = TRUE`/`FALSE` to choose; `spdyn` exposes `pool`.
+  Match those before comparing matrices.
+- **Standardization.** `spdyn::spMarkov(..., std = TRUE)` standardizes the
+  panel by year mean before classifying. `griddy` does not standardize by
+  default. Set `std = FALSE` for direct comparison.
+- **Output shape.** `estdaR` returns a 3D array indexed `[from, to, lag]`.
+  `spdyn` returns an object with a `$t` field of the same shape. `griddy`
+  returns a long `matrix` tibble keyed by `(lag_class, from_state, to_state)`,
+  which is what makes downstream `dplyr` work natural.
+
+The package test suite uses static fixtures from `estdaR::sp.mkv()` and
+`spdyn::spMarkov()` so ordinary CI can validate the spatial Markov counts
+without installing either package. Live cross-checks run conditionally via
+`skip_if_not_installed()`.

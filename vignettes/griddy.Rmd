@@ -22,68 +22,120 @@ library(spdep)
 library(tidyr)
 ```
 
-`griddy` starts from a long spatial panel: one row per place and period. The
-first question is not model fitting. It is whether places moved through a
-distribution and whether that movement differs by spatial context.
+`griddy` works on long spatial panels: one row per place per period, keyed by
+explicit `id`, `time`, and `value` columns. The bundled `usjoin` panel — 48
+contiguous US states, per-capita personal income, 1929 to 2009 — mirrors the
+canonical PySAL `giddy` example used in Rey (2001).
 
 ```{r}
-data(us_states, package = "spData")
-data(us_states_df, package = "spData")
+data(usjoin)
 
-states <- us_states |>
-  left_join(us_states_df, by = c("NAME" = "state")) |>
-  filter(!NAME %in% c("Alaska", "Hawaii", "Puerto Rico")) |>
-  arrange(NAME)
-
-panel <- states |>
-  select(NAME, REGION, median_income_10, median_income_15, geometry) |>
-  pivot_longer(
-    starts_with("median_income_"),
-    names_to = "year",
-    values_to = "median_income"
-  ) |>
-  mutate(year = if_else(year == "median_income_10", 2010L, 2015L))
+usjoin
 ```
 
-Classify values using pooled quantiles so class meanings are stable across
-periods.
+## Classification
 
-```{r, fig.alt="Heatmap of classic Markov transition probabilities between income quintiles."}
-classes <- classify_dynamics(panel, NAME, year, median_income, k = 5)
-classic <- markov_dynamics(classes, NAME, year, class)
+Pooled quantile classification cuts the entire panel into five bins and reuses
+the same breakpoints for every year. That keeps class meanings comparable
+across periods, which matters because year-specific quantiles can hide absolute
+movement.
+
+```{r}
+classes <- classify_dynamics(usjoin, name, year, income, k = 5)
+
+class_intervals(classes)
+```
+
+## Classic Markov
+
+```{r, fig.alt="Heatmap of classic Markov transition probabilities for US state per-capita income, 1929 to 2009."}
+classic <- markov_dynamics(classes, name, year, class)
 
 classic
 plot_transition_matrix(classic)
 ```
 
-Spatial Markov conditions transitions on the starting class of the spatial lag.
+The diagonal dominance of the matrix — most states stay in their starting
+quintile from one year to the next — is the headline finding from this panel
+and recovers the result Rey (2001) reports.
 
-```{r, fig.alt="Faceted heatmaps of spatial Markov transition probabilities by spatial-lag quintile."}
-nb <- spdep::poly2nb(states, queen = TRUE)
-spatial <- spatial_markov(panel, NAME, year, median_income, nb = nb, k = 5)
+## Spatial Markov
 
-spatial$transitions |>
-  select(id, from_time, to_time, lag_class, transition, spatial_lag) |>
-  head()
+Spatial Markov conditions transition probabilities on the starting class of
+each unit's spatial lag. The expectation is that being surrounded by rich (or
+poor) neighbors shifts the transition odds beyond what the unit's own class
+would predict.
+
+```{r}
+states <- us_states |>
+  st_drop_geometry() |>
+  filter(NAME %in% usjoin$name) |>
+  pull(NAME)
+
+geom <- us_states |>
+  filter(NAME %in% usjoin$name) |>
+  arrange(NAME)
+
+panel <- usjoin |>
+  filter(name %in% states) |>
+  arrange(name, year)
+
+listw <- nb2listw(poly2nb(geom, queen = TRUE), style = "W")
+```
+
+The `listw` argument is the canonical way to pass spatial weights — using a
+prebuilt row-standardized object makes the row-standardization choice explicit.
+`spatial_markov()` also accepts `nb` for convenience and converts it internally
+with `spdep::nb2listw(style = "W")`.
+
+```{r, fig.alt="Faceted heatmaps of spatial Markov transition probabilities for US state per-capita income, by spatial-lag quintile."}
+spatial <- spatial_markov(panel, name, year, income, listw = listw, k = 5)
 
 lag_intervals(spatial)
-
-transition_matrix(spatial, "count", lag_class = "Q1")
+transition_matrix(spatial, "probability", lag_class = "Q1")
 
 plot_spatial_markov(spatial)
 ```
 
-Rank mobility is intentionally simple in v0.1: it is map-ready descriptive
-movement, not the full PySAL rank-method suite.
+Reading the facets left to right: states whose neighbors sit in the lowest
+income lag class (Q1) are much stickier at the bottom of the distribution than
+the pooled transition matrix would suggest. The spatial context conditioning is
+what spatial Markov is built to surface.
 
-```{r, fig.alt="Map of endpoint rank mobility across states, with higher values indicating upward rank movement."}
-mobility <- rank_mobility(panel, NAME, year, median_income)
+## Rank Mobility
+
+Rank mobility is intentionally simple in v0.1: an endpoint comparison of unit
+ranks between the first and last observed periods. It is descriptive and
+map-ready, not the full PySAL rank-method suite.
+
+```{r, fig.alt="Map of endpoint rank mobility for US states, 1929 to 2009, with positive values indicating upward rank movement."}
+mobility_panel <- usjoin |>
+  filter(name %in% states) |>
+  left_join(geom |> select(NAME), by = c("name" = "NAME")) |>
+  st_as_sf()
+
+mobility <- rank_mobility(mobility_panel, name, year, income)
 
 mobility |>
   st_drop_geometry() |>
   arrange(desc(abs_rank_change)) |>
-  select(NAME, start_rank, end_rank, rank_change) |>
+  select(name, start_rank, end_rank, rank_change) |>
   head()
 
 plot_rank_mobility(mobility)
 ```
+
+## Output schemas
+
+Each result object exposes a tidy `transitions` table and a long `matrix` table
+keyed by class labels. Inspecting them directly is the simplest way to learn
+the schema.
+
+```{r}
+classic$transitions |> head()
+spatial$transitions |> select(id, from_time, to_time, lag_class, transition, spatial_lag) |> head()
+```
+
+For programmatic access, every griddy object also has `as.data.frame()` and the
+S3 generics `transition_matrix()`, `class_intervals()`, and (for spatial
+objects) `lag_intervals()`.

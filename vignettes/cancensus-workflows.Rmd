@@ -54,11 +54,11 @@ common_ids <- intersect(panel_2016$GeoUID, panel_2021$GeoUID)
 panel <- bind_rows(panel_2016, panel_2021) |>
   filter(GeoUID %in% common_ids)
 geography <- panel |> filter(year == 2021L) |> arrange(GeoUID)
-nb <- poly2nb(geography, queen = TRUE)
+listw <- nb2listw(poly2nb(geography, queen = TRUE), style = "W")
 
 classes <- classify_dynamics(panel, GeoUID, year, median_income, k = 5)
 classic <- markov_dynamics(classes, GeoUID, year, class)
-spatial <- spatial_markov(panel, GeoUID, year, median_income, nb = nb, k = 5)
+spatial <- spatial_markov(panel, GeoUID, year, median_income, listw = listw, k = 5)
 
 plot_transition_matrix(classic)
 plot_spatial_markov(spatial)

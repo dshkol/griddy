@@ -22,8 +22,8 @@ panel <- data.frame(
   year = rep(2020:2021, times = 4),
   value = c(1, 2, 2, 3, 4, 3, 5, 6)
 )
-nb <- spdep::cell2nb(2, 2)
-spatial <- spatial_markov(panel, id, year, value, nb = nb, k = 2)
+listw <- spdep::nb2listw(spdep::cell2nb(2, 2), style = "W")
+spatial <- spatial_markov(panel, id, year, value, listw = listw, k = 2)
 lag_intervals(spatial)
 \dontshow{\}) # examplesIf}
 }
