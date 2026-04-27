@@ -1,0 +1,311 @@
+---
+title: "Did This State Move, Or Did Its Spatial Context Change?"
+output: html_document
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(sf)
+library(spData)
+library(spdep)
+library(tibble)
+library(tidyr)
+
+theme_set(theme_minimal(base_size = 12))
+```
+
+This prototype is intentionally not package code. It is a single-file workflow test using existing R infrastructure plus a small set of helpers. The question is whether the applied path feels clearer than wiring together `spdep`, generic Markov tables, and map joins by hand.
+
+The example uses bundled `spData` state geometries and 2010/2015 median income. Two years is too short for substantive convergence claims, but it is enough to test the workflow surface: classification, classic transitions, spatially conditioned transitions, and map-ready mobility output.
+
+```{r data}
+data(us_states, package = "spData")
+data(us_states_df, package = "spData")
+
+states <- us_states |>
+  left_join(us_states_df, by = c("NAME" = "state")) |>
+  filter(!NAME %in% c("Alaska", "Hawaii", "Puerto Rico")) |>
+  arrange(NAME)
+
+state_panel <- states |>
+  select(NAME, REGION, median_income_10, median_income_15, geometry) |>
+  pivot_longer(
+    cols = starts_with("median_income_"),
+    names_to = "year",
+    values_to = "median_income"
+  ) |>
+  mutate(year = if_else(year == "median_income_10", 2010L, 2015L)) |>
+  arrange(NAME, year)
+
+nb <- poly2nb(states, queen = TRUE)
+lw <- nb2listw(nb, style = "W", zero.policy = TRUE)
+```
+
+```{r helpers}
+pooled_breaks <- function(x, k = 5) {
+  stats::quantile(x, probs = seq(0, 1, length.out = k + 1), na.rm = TRUE, type = 7)
+}
+
+classify_values <- function(x, breaks, labels = NULL) {
+  if (is.null(labels)) labels <- paste0("Q", seq_len(length(breaks) - 1))
+  cut(
+    x,
+    breaks = unique(breaks),
+    labels = labels,
+    include.lowest = TRUE,
+    ordered_result = TRUE
+  )
+}
+
+classify_dynamics <- function(data, id, time, value, k = 5, labels = NULL) {
+  id <- rlang::ensym(id)
+  time <- rlang::ensym(time)
+  value <- rlang::ensym(value)
+
+  breaks <- pooled_breaks(dplyr::pull(data, !!value), k = k)
+
+  data |>
+    mutate(
+      class = classify_values(!!value, breaks = breaks, labels = labels),
+      .before = !!value
+    ) |>
+    arrange(!!id, !!time) |>
+    structure(
+      class = c("grd_classes", class(data)),
+      breaks = breaks,
+      id = rlang::as_string(id),
+      time = rlang::as_string(time),
+      value = rlang::as_string(value)
+    )
+}
+
+markov_dynamics <- function(classes, id, time, state = class) {
+  id <- rlang::ensym(id)
+  time <- rlang::ensym(time)
+  state <- rlang::ensym(state)
+
+  transitions <- classes |>
+    st_drop_geometry() |>
+    arrange(!!id, !!time) |>
+    group_by(!!id) |>
+    mutate(to_state = lead(!!state), to_time = lead(!!time)) |>
+    ungroup() |>
+    filter(!is.na(to_state)) |>
+    transmute(
+      from_time = !!time,
+      to_time,
+      from_state = !!state,
+      to_state
+    )
+
+  states <- levels(droplevels(classes |> st_drop_geometry() |> pull(!!state)))
+  counts <- table(
+    factor(transitions$from_state, levels = states),
+    factor(transitions$to_state, levels = states)
+  )
+
+  probabilities <- prop.table(counts, margin = 1)
+  probabilities[is.nan(probabilities)] <- NA_real_
+
+  list(
+    transitions = transitions,
+    counts = counts,
+    probabilities = probabilities
+  ) |>
+    structure(class = "grd_markov")
+}
+
+spatial_markov <- function(panel, geography, listw, id, time, value, k = 5) {
+  id <- rlang::ensym(id)
+  time <- rlang::ensym(time)
+  value <- rlang::ensym(value)
+
+  ids <- geography |> st_drop_geometry() |> pull(!!id)
+  value_breaks <- pooled_breaks(panel |> st_drop_geometry() |> pull(!!value), k = k)
+
+  lag_panel <- panel |>
+    st_drop_geometry() |>
+    select(!!id, !!time, !!value) |>
+    arrange(!!time, match(!!id, ids)) |>
+    group_by(!!time) |>
+    mutate(
+      spatial_lag = lag.listw(listw, !!value, zero.policy = TRUE),
+      value_class = classify_values(!!value, breaks = value_breaks)
+    ) |>
+    ungroup()
+
+  lag_breaks <- pooled_breaks(lag_panel$spatial_lag, k = k)
+
+  transitions <- lag_panel |>
+    mutate(lag_class = classify_values(spatial_lag, breaks = lag_breaks)) |>
+    arrange(!!id, !!time) |>
+    group_by(!!id) |>
+    mutate(
+      to_value_class = lead(value_class),
+      to_time = lead(!!time)
+    ) |>
+    ungroup() |>
+    filter(!is.na(to_value_class)) |>
+    transmute(
+      !!id,
+      from_time = !!time,
+      to_time,
+      lag_class,
+      from_state = value_class,
+      to_state = to_value_class
+    )
+
+  state_levels <- paste0("Q", seq_len(k))
+  lag_levels <- paste0("Q", seq_len(k))
+
+  matrices <- transitions |>
+    count(lag_class, from_state, to_state, name = "n") |>
+    complete(
+      lag_class = factor(lag_levels, levels = lag_levels, ordered = TRUE),
+      from_state = factor(state_levels, levels = state_levels, ordered = TRUE),
+      to_state = factor(state_levels, levels = state_levels, ordered = TRUE),
+      fill = list(n = 0)
+    ) |>
+    group_by(lag_class, from_state) |>
+    mutate(probability = if (sum(n) > 0) n / sum(n) else NA_real_) |>
+    ungroup()
+
+  list(
+    transitions = transitions,
+    matrices = matrices,
+    value_breaks = value_breaks,
+    lag_breaks = lag_breaks
+  ) |>
+    structure(class = "grd_spatial_markov")
+}
+
+rank_mobility <- function(panel, id, time, value, compare = c("endpoint", "adjacent")) {
+  compare <- match.arg(compare)
+  id <- rlang::ensym(id)
+  time <- rlang::ensym(time)
+  value <- rlang::ensym(value)
+
+  ranked <- panel |>
+    group_by(!!time) |>
+    mutate(rank = min_rank(desc(!!value))) |>
+    ungroup() |>
+    arrange(!!id, !!time)
+
+  if (compare == "endpoint") {
+    endpoints <- ranked |>
+      group_by(!!id) |>
+      filter(!!time %in% range(!!time)) |>
+      mutate(
+        start_rank = first(rank),
+        end_rank = last(rank),
+        rank_change = start_rank - end_rank
+      ) |>
+      slice_tail(n = 1) |>
+      ungroup()
+
+    return(endpoints)
+  }
+
+  ranked |>
+    group_by(!!id) |>
+    mutate(rank_change = rank - lead(rank)) |>
+    ungroup()
+}
+
+plot_transition_matrix <- function(markov) {
+  as.data.frame(markov$probabilities) |>
+    as_tibble(.name_repair = "minimal") |>
+    rename(from_state = Var1, to_state = Var2, probability = Freq) |>
+    ggplot(aes(to_state, from_state, fill = probability)) +
+    geom_tile(color = "white", linewidth = 0.4) +
+    geom_text(aes(label = scales::percent(probability, accuracy = 1)), na.rm = TRUE, size = 3) +
+    scale_fill_viridis_c(labels = scales::percent, na.value = "grey90") +
+    labs(x = "2015 class", y = "2010 class", fill = "Probability")
+}
+
+plot_spatial_markov <- function(spatial_markov) {
+  spatial_markov$matrices |>
+    ggplot(aes(to_state, from_state, fill = probability)) +
+    geom_tile(color = "white", linewidth = 0.3) +
+    facet_wrap(vars(lag_class), nrow = 1) +
+    scale_fill_viridis_c(labels = scales::percent, na.value = "grey90") +
+    labs(x = "2015 income class", y = "2010 income class", fill = "Probability")
+}
+```
+
+## Classic Movement
+
+```{r classify-and-markov}
+classes <- classify_dynamics(
+  state_panel,
+  id = NAME,
+  time = year,
+  value = median_income,
+  k = 5
+)
+
+classic <- markov_dynamics(classes, id = NAME, time = year)
+
+classic$counts
+classic$probabilities
+```
+
+```{r transition-heatmap, fig.width=6.5, fig.height=5}
+plot_transition_matrix(classic)
+```
+
+## Spatial Context
+
+```{r spatial-markov}
+spatial <- spatial_markov(
+  panel = state_panel,
+  geography = states,
+  listw = lw,
+  id = NAME,
+  time = year,
+  value = median_income,
+  k = 5
+)
+
+spatial$matrices |>
+  filter(!is.na(probability), n > 0) |>
+  arrange(lag_class, from_state, to_state)
+```
+
+```{r spatial-heatmap, fig.width=10, fig.height=3.8}
+plot_spatial_markov(spatial)
+```
+
+The spatial Markov table conditions income-class movement on the starting class of neighboring states' income. In a longer panel, this is the workflow object that should carry the interpretation: not just "which states moved," but "whether movement differs when the surrounding context starts poorer or richer."
+
+## Map-Ready Rank Mobility
+
+```{r rank-mobility}
+mobility <- rank_mobility(state_panel, id = NAME, time = year, value = median_income) |>
+  select(NAME, year, median_income, rank, start_rank, end_rank, rank_change, geometry)
+
+mobility |>
+  st_drop_geometry() |>
+  arrange(desc(abs(rank_change))) |>
+  head(10)
+```
+
+```{r mobility-map, fig.width=8, fig.height=5}
+ggplot(mobility) +
+  geom_sf(aes(fill = rank_change), color = "white", linewidth = 0.2) +
+  scale_fill_gradient2(
+    low = "#b2182b",
+    mid = "grey95",
+    high = "#2166ac",
+    midpoint = 0
+  ) +
+  labs(fill = "Rank gain")
+```
+
+## Prototype Notes
+
+- The helper API is already more natural for long `sf` panel data than `estdaR`/`spdyn`-style wide matrices.
+- `spdep` cleanly provides the spatial lag substrate. The package value has to come from the workflow object, validation, interpretation, and plots.
+- A real article needs a longer panel. The next iteration should use county or tract ACS data cached as a fixture, not live API calls.
+- The two-year state example is only a smoke test for the API shape.

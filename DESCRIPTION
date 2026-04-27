@@ -1,0 +1,42 @@
+Package: griddy
+Title: Geospatial Distribution Dynamics for Simple Features
+Version: 0.0.0.9000
+Authors@R:
+    person("Dmitry", "Shkolnik", email = "dmitry@example.com", role = c("aut", "cre"))
+Author: Dmitry Shkolnik [aut, cre]
+Maintainer: Dmitry Shkolnik <dmitry@example.com>
+Description: Tidy and simple-features-oriented helpers for exploratory
+    geospatial distribution dynamics. The package classifies longitudinal
+    spatial observations, estimates classic and spatial Markov transition
+    matrices, computes rank mobility, and returns map-ready outputs. Methods
+    are established in the spatial distribution dynamics literature and are
+    inspired by PySAL giddy.
+URL: https://github.com/dshkol/griddy, https://dshkol.github.io/griddy/
+BugReports: https://github.com/dshkol/griddy/issues
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends:
+    R (>= 4.2)
+Imports:
+    dplyr,
+    ggplot2,
+    rlang,
+    scales,
+    sf,
+    spdep,
+    tibble,
+    tidyr
+Suggests:
+    cancensus,
+    classInt,
+    knitr,
+    microbenchmark,
+    pkgdown,
+    rmarkdown,
+    spData,
+    testthat (>= 3.0.0),
+    tidycensus
+VignetteBuilder: knitr
+Config/testthat/edition: 3

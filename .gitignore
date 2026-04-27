@@ -1,0 +1,17 @@
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+.claude/
+/.Rproj.user/
+/*.Rproj
+/griddy.Rcheck/
+/griddy_*.tar.gz
+/prototypes/*.html
+/pkgdown/
+.pkgdown/
+/site-library/
+/revdep/
+/src/*.o
+/src/*.so
+/src/*.dll

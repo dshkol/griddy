@@ -1,0 +1,52 @@
+---
+title: "Performance Benchmarks"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Performance Benchmarks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Performance matters because spatial Markov workflows can touch tract panels
+with thousands of units and many periods. This vignette records the benchmark
+shape without running expensive benchmarks during package checks.
+
+```{r, eval=FALSE}
+library(griddy)
+library(microbenchmark)
+library(sf)
+library(spdep)
+library(dplyr)
+library(tidyr)
+
+make_panel <- function(nx = 60, ny = 60, years = 2010:2019) {
+  grid <- st_make_grid(st_bbox(c(xmin = 0, ymin = 0, xmax = nx, ymax = ny)), n = c(nx, ny)) |>
+    st_as_sf() |>
+    mutate(id = row_number())
+
+  panel <- tidyr::crossing(id = grid$id, year = years) |>
+    left_join(st_drop_geometry(grid), by = "id") |>
+    mutate(value = id + as.integer(factor(year)) + rnorm(n())) |>
+    left_join(select(grid, id, geometry), by = "id") |>
+    st_as_sf()
+
+  list(grid = grid, panel = panel)
+}
+
+fx <- make_panel()
+nb <- cell2nb(60, 60, type = "queen")
+
+microbenchmark(
+  classify = classify_dynamics(fx$panel, id, year, value, k = 5),
+  markov = {
+    cls <- classify_dynamics(fx$panel, id, year, value, k = 5)
+    markov_dynamics(cls, id, year, class)
+  },
+  spatial = spatial_markov(fx$panel, id, year, value, nb = nb, k = 5),
+  times = 5
+)
+```
+
+Benchmark comparisons against `estdaR` and `spdyn` should use matched wide data,
+matched class breaks, and identical weights. Otherwise the benchmark measures
+classification defaults more than implementation performance.

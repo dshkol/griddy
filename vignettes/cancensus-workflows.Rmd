@@ -1,0 +1,60 @@
+---
+title: "Working With cancensus"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working With cancensus}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(griddy)
+library(dplyr)
+```
+
+This vignette is a template for Canadian Census workflows. It is not evaluated
+during package checks because it requires live CensusMapper access.
+
+```{r, eval=FALSE}
+library(cancensus)
+library(sf)
+library(spdep)
+
+regions <- list(CSD = "5915022") # Vancouver CSD
+vectors <- c(
+  income_2016 = "v_CA16_2397",
+  income_2021 = "v_CA21_906"
+)
+
+panel_2016 <- get_census(
+  dataset = "CA16",
+  regions = regions,
+  vectors = vectors["income_2016"],
+  level = "CT",
+  geo_format = "sf"
+) |>
+  transmute(GEO_UID, year = 2016L, median_income = income_2016, geometry)
+
+panel_2021 <- get_census(
+  dataset = "CA21",
+  regions = regions,
+  vectors = vectors["income_2021"],
+  level = "CT",
+  geo_format = "sf"
+) |>
+  transmute(GEO_UID, year = 2021L, median_income = income_2021, geometry)
+
+panel <- bind_rows(panel_2016, panel_2021)
+geography <- panel |> filter(year == 2021L) |> arrange(GEO_UID)
+nb <- poly2nb(geography, queen = TRUE)
+
+classes <- classify_dynamics(panel, GEO_UID, year, median_income, k = 5)
+classic <- markov_dynamics(classes, GEO_UID, year, class)
+spatial <- spatial_markov(panel, GEO_UID, year, median_income, nb = nb, k = 5)
+
+plot_transition_matrix(classic)
+plot_spatial_markov(spatial)
+```
+
+Canadian census geographies can change between cycles. A production workflow
+should harmonize geography before treating units as a longitudinal panel.

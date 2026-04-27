@@ -1,0 +1,70 @@
+url: https://dshkol.github.io/griddy/
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+home:
+  title: griddy
+  description: Geospatial distribution dynamics for sf and tidy data.
+  links:
+    - text: Scope Brief
+      href: articles/griddy.html
+    - text: GitHub
+      href: https://github.com/dshkol/griddy
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [github]
+  components:
+    intro:
+      text: Get Started
+      href: articles/griddy.html
+    articles:
+      text: Articles
+      menu:
+        - text: Core Workflow
+          href: articles/griddy.html
+        - text: Prior Art Comparison
+          href: articles/prior-art-comparison.html
+        - text: tidycensus Workflow
+          href: articles/tidycensus-workflows.html
+        - text: cancensus Workflow
+          href: articles/cancensus-workflows.html
+        - text: Performance
+          href: articles/performance.html
+    github:
+      icon: fab fa-github
+      aria-label: GitHub repository
+      href: https://github.com/dshkol/griddy
+
+reference:
+  - title: Core Workflow
+    contents:
+      - classify_dynamics
+      - class_intervals
+      - markov_dynamics
+      - transition_matrix
+      - steady_state
+      - spatial_markov
+      - lag_intervals
+      - rank_mobility
+  - title: Plotting
+    contents:
+      - plot_transition_matrix
+      - plot_spatial_markov
+      - plot_rank_mobility
+
+articles:
+  - title: Get Started
+    navbar: ~
+    contents:
+      - griddy
+  - title: Data Workflows
+    contents:
+      - tidycensus-workflows
+      - cancensus-workflows
+  - title: Validation And Benchmarks
+    contents:
+      - prior-art-comparison
+      - performance

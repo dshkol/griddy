@@ -1,0 +1,12 @@
+^\.claude$
+^\.\.Rcheck$
+^\.git$
+^\.gitignore$
+^audit\.md$
+^gap_audit\.md$
+^scope_brief\.md$
+^prototypes$
+^tools/oracle$
+^tools/benchman$
+^.*\.Rproj$
+^\.Rproj\.user$

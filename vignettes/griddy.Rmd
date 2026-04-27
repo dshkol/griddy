@@ -1,0 +1,84 @@
+---
+title: "Geospatial Distribution Dynamics With griddy"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Geospatial Distribution Dynamics With griddy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(griddy)
+library(dplyr)
+library(ggplot2)
+library(sf)
+library(spData)
+library(spdep)
+library(tidyr)
+```
+
+`griddy` starts from a long spatial panel: one row per place and period. The
+first question is not model fitting. It is whether places moved through a
+distribution and whether that movement differs by spatial context.
+
+```{r}
+data(us_states, package = "spData")
+data(us_states_df, package = "spData")
+
+states <- us_states |>
+  left_join(us_states_df, by = c("NAME" = "state")) |>
+  filter(!NAME %in% c("Alaska", "Hawaii", "Puerto Rico")) |>
+  arrange(NAME)
+
+panel <- states |>
+  select(NAME, REGION, median_income_10, median_income_15, geometry) |>
+  pivot_longer(
+    starts_with("median_income_"),
+    names_to = "year",
+    values_to = "median_income"
+  ) |>
+  mutate(year = if_else(year == "median_income_10", 2010L, 2015L))
+```
+
+Classify values using pooled quantiles so class meanings are stable across
+periods.
+
+```{r, fig.alt="Heatmap of classic Markov transition probabilities between income quintiles."}
+classes <- classify_dynamics(panel, NAME, year, median_income, k = 5)
+classic <- markov_dynamics(classes, NAME, year, class)
+
+classic
+plot_transition_matrix(classic)
+```
+
+Spatial Markov conditions transitions on the starting class of the spatial lag.
+
+```{r, fig.alt="Faceted heatmaps of spatial Markov transition probabilities by spatial-lag quintile."}
+nb <- spdep::poly2nb(states, queen = TRUE)
+spatial <- spatial_markov(panel, NAME, year, median_income, nb = nb, k = 5)
+
+spatial$transitions |>
+  select(id, from_time, to_time, lag_class, transition, spatial_lag) |>
+  head()
+
+lag_intervals(spatial)
+
+transition_matrix(spatial, "count", lag_class = "Q1")
+
+plot_spatial_markov(spatial)
+```
+
+Rank mobility is intentionally simple in v0.1: it is map-ready descriptive
+movement, not the full PySAL rank-method suite.
+
+```{r, fig.alt="Map of endpoint rank mobility across states, with higher values indicating upward rank movement."}
+mobility <- rank_mobility(panel, NAME, year, median_income)
+
+mobility |>
+  st_drop_geometry() |>
+  arrange(desc(abs_rank_change)) |>
+  select(NAME, start_rank, end_rank, rank_change) |>
+  head()
+
+plot_rank_mobility(mobility)
+```

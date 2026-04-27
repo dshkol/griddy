@@ -1,0 +1,66 @@
+---
+title: "Working With tidycensus"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working With tidycensus}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(griddy)
+library(dplyr)
+library(tidyr)
+```
+
+This vignette is a template for ACS workflows. It is not evaluated during
+package checks because it requires a Census API key and live data.
+
+```{r, eval=FALSE}
+library(tidycensus)
+library(sf)
+library(spdep)
+
+years <- c(2012, 2017, 2022)
+
+acs <- purrr::map_dfr(years, function(y) {
+  get_acs(
+    geography = "tract",
+    variables = "B19013_001",
+    state = "CA",
+    county = "San Francisco",
+    year = y,
+    survey = "acs5",
+    geometry = TRUE
+  ) |>
+    transmute(
+      GEOID,
+      year = y,
+      median_income = estimate,
+      geometry
+    )
+})
+
+geography <- acs |>
+  filter(year == max(year)) |>
+  arrange(GEOID)
+
+panel <- acs |>
+  st_drop_geometry() |>
+  left_join(select(geography, GEOID, geometry), by = "GEOID") |>
+  st_as_sf()
+
+nb <- poly2nb(geography, queen = TRUE)
+
+classes <- classify_dynamics(panel, GEOID, year, median_income, k = 5)
+classic <- markov_dynamics(classes, GEOID, year, class)
+spatial <- spatial_markov(panel, GEOID, year, median_income, nb = nb, k = 5)
+mobility <- rank_mobility(panel, GEOID, year, median_income)
+
+plot_transition_matrix(classic)
+plot_spatial_markov(spatial)
+plot_rank_mobility(mobility)
+```
+
+For package-ready examples, cache a small static panel instead of calling the
+API at build time.
