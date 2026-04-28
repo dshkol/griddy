@@ -27,6 +27,7 @@ knitr::opts_chunk$set(eval = grd_eval_docs)
 library(griddy)
 library(dplyr)
 library(sf)
+library(sfdep)
 library(spData)
 library(spdep)
 library(tidyr)
@@ -35,22 +36,29 @@ library(tidyr)
 ## Shared panel
 
 The bundled `usjoin` panel mirrors PySAL's reference dataset, so prior R
-implementations and `griddy` are working from the same series.
+implementations and `griddy` are working from the same series. `griddy`
+consumes weights via the `sfdep` idiom; `estdaR` and `spdyn` consume `listw`
+objects from `spdep`. We construct both from the same neighbor list to keep
+the comparison fair.
 
 ```{r}
 data(usjoin)
 
 geom <- us_states |>
   filter(NAME %in% usjoin$name) |>
-  arrange(NAME)
+  arrange(NAME) |>
+  mutate(
+    nb = st_contiguity(geometry),
+    wt = st_weights(nb)
+  )
 
 panel <- usjoin |>
   filter(name %in% geom$NAME) |>
   arrange(name, year)
 
-listw <- nb2listw(poly2nb(geom, queen = TRUE), style = "W")
+listw <- nb2listw(geom$nb, glist = geom$wt, style = "W")
 
-spatial <- spatial_markov(panel, name, year, income, listw = listw, k = 5)
+spatial <- spatial_markov(panel, name, year, income, geometry = geom, k = 5)
 
 spatial$transitions |>
   select(id, from_time, to_time, lag_class, transition, spatial_lag) |>

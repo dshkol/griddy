@@ -83,6 +83,7 @@ where the conventions intentionally differ.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dshkol/griddy" class="external-link">griddy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sfdep.josiahparry.com" class="external-link">sfdep</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jakubnowosad.com/spData/" class="external-link">spData</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/" class="external-link">spdep</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
@@ -91,21 +92,28 @@ where the conventions intentionally differ.</p>
 </h2>
 <p>The bundled <code>usjoin</code> panel mirrors PySAL’s reference
 dataset, so prior R implementations and <code>griddy</code> are working
-from the same series.</p>
+from the same series. <code>griddy</code> consumes weights via the
+<code>sfdep</code> idiom; <code>estdaR</code> and <code>spdyn</code>
+consume <code>listw</code> objects from <code>spdep</code>. We construct
+both from the same neighbor list to keep the comparison fair.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">usjoin</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">geom</span> <span class="op">&lt;-</span> <span class="va">us_states</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">usjoin</span><span class="op">$</span><span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    nb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_contiguity.html" class="external-link">st_contiguity</a></span><span class="op">(</span><span class="va">geometry</span><span class="op">)</span>,</span>
+<span>    wt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_weights.html" class="external-link">st_weights</a></span><span class="op">(</span><span class="va">nb</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">panel</span> <span class="op">&lt;-</span> <span class="va">usjoin</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">geom</span><span class="op">$</span><span class="va">NAME</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">year</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/nb2listw.html" class="external-link">nb2listw</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/poly2nb.html" class="external-link">poly2nb</a></span><span class="op">(</span><span class="va">geom</span>, queen <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, style <span class="op">=</span> <span class="st">"W"</span><span class="op">)</span></span>
+<span><span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/nb2listw.html" class="external-link">nb2listw</a></span><span class="op">(</span><span class="va">geom</span><span class="op">$</span><span class="va">nb</span>, glist <span class="op">=</span> <span class="va">geom</span><span class="op">$</span><span class="va">wt</span>, style <span class="op">=</span> <span class="st">"W"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">income</span>, listw <span class="op">=</span> <span class="va">listw</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">income</span>, geometry <span class="op">=</span> <span class="va">geom</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">spatial</span><span class="op">$</span><span class="va">transitions</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">from_time</span>, <span class="va">to_time</span>, <span class="va">lag_class</span>, <span class="va">transition</span>, <span class="va">spatial_lag</span><span class="op">)</span> <span class="op">|&gt;</span></span>

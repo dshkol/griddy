@@ -20,6 +20,7 @@ knitr::opts_chunk$set(eval = grd_eval_docs)
 library(griddy)
 library(microbenchmark)
 library(sf)
+library(sfdep)
 library(spdep)
 library(dplyr)
 library(tidyr)
@@ -45,7 +46,14 @@ make_panel <- function(nx = 60, ny = 60, years = 2010:2019) {
 }
 
 fx <- make_panel()
-listw <- nb2listw(cell2nb(60, 60, type = "queen"), style = "W")
+
+geom <- fx$grid |>
+  mutate(
+    nb = st_contiguity(geometry),
+    wt = st_weights(nb)
+  )
+
+listw <- nb2listw(geom$nb, glist = geom$wt, style = "W")
 
 microbenchmark(
   classify = classify_dynamics(fx$panel, id, year, value, k = 5),
@@ -53,7 +61,7 @@ microbenchmark(
     cls <- classify_dynamics(fx$panel, id, year, value, k = 5)
     markov_dynamics(cls, id, year, class)
   },
-  spatial = spatial_markov(fx$panel, id, year, value, listw = listw, k = 5),
+  spatial = spatial_markov(fx$panel, id, year, value, geometry = geom, k = 5),
   times = 5
 )
 ```
@@ -76,7 +84,7 @@ wide_panel <- fx$panel |>
 wide_mat <- as.matrix(wide_panel |> select(-id))
 
 microbenchmark(
-  griddy = spatial_markov(fx$panel, id, year, value, listw = listw, k = 5),
+  griddy = spatial_markov(fx$panel, id, year, value, geometry = geom, k = 5),
   estdaR = estdaR::sp.mkv(wide_mat, listw, classes = 5, fixed = TRUE),
   times = 5
 )

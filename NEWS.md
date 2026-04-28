@@ -12,6 +12,13 @@ Initial development release.
 - `plot_transition_matrix()`, `plot_spatial_markov()`, and
   `plot_rank_mobility()` return `ggplot2` objects.
 
+## Spatial weights
+
+- `spatial_markov()` accepts a `geometry` argument: an `sf` tibble with one
+  row per spatial unit and `nb` / `wt` list-columns produced by `sfdep`. This
+  is the preferred input. `listw` and `nb` arguments remain accepted for
+  compatibility with prior workflows and oracle comparisons.
+
 ## Data
 
 - Bundled `usjoin`: 48 contiguous US state per-capita personal income,

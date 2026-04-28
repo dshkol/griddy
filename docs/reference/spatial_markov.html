@@ -54,8 +54,9 @@ lag at the start of the transition period.</p>
 <span>  <span class="va">id</span>,</span>
 <span>  <span class="va">time</span>,</span>
 <span>  <span class="va">value</span>,</span>
-<span>  nb <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  geometry <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  listw <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nb <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  lag_k <span class="op">=</span> <span class="va">k</span>,</span>
 <span>  class_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pooled_quantile"</span>, <span class="st">"time_quantile"</span>, <span class="st">"fixed"</span><span class="op">)</span>,</span>
@@ -75,14 +76,20 @@ lag at the start of the transition period.</p>
 <dd><p>Columns identifying spatial unit, time, and value.</p></dd>
 
 
-<dt id="arg-nb">nb<a class="anchor" aria-label="anchor" href="#arg-nb"></a></dt>
-<dd><p>A <code>spdep</code> neighbor list, used only when <code>listw</code> is <code>NULL</code>. It is
-converted with <code>spdep::nb2listw(style = "W")</code>.</p></dd>
+<dt id="arg-geometry">geometry<a class="anchor" aria-label="anchor" href="#arg-geometry"></a></dt>
+<dd><p>An <code>sf</code> tibble with one row per spatial unit (a single time
+slice's geography), carrying <code>nb</code> and <code>wt</code> list-columns produced by
+<code><a href="https://rdrr.io/pkg/sfdep/man/st_contiguity.html" class="external-link">sfdep::st_contiguity()</a></code> and <code><a href="https://rdrr.io/pkg/sfdep/man/st_weights.html" class="external-link">sfdep::st_weights()</a></code>. The preferred input.</p></dd>
 
 
 <dt id="arg-listw">listw<a class="anchor" aria-label="anchor" href="#arg-listw"></a></dt>
-<dd><p>A row-standardized <code>spdep</code> weights (<code>listw</code>) object. Preferred
-when the standardization choice matters.</p></dd>
+<dd><p>A row-standardized <code>spdep</code> <code>listw</code> object. Accepted for
+compatibility with prior workflows; use <code>geometry</code> for new code.</p></dd>
+
+
+<dt id="arg-nb">nb<a class="anchor" aria-label="anchor" href="#arg-nb"></a></dt>
+<dd><p>A <code>spdep</code> neighbor list, used only when both <code>geometry</code> and
+<code>listw</code> are <code>NULL</code>. Converted with <code>spdep::nb2listw(style = "W")</code>.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -114,8 +121,19 @@ when the standardization choice matters.</p></dd>
 <span class="r-in"><span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/nb2listw.html" class="external-link">nb2listw</a></span><span class="op">(</span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/cell2nb.html" class="external-link">cell2nb</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, style <span class="op">=</span> <span class="st">"W"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">spatial_markov</span><span class="op">(</span><span class="va">panel</span>, <span class="va">id</span>, <span class="va">year</span>, <span class="va">value</span>, listw <span class="op">=</span> <span class="va">listw</span>, k <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">grid</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span></span>
+<span class="r-in"><span>  geometry <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html" class="external-link">st_make_grid</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">0</span>, ymin <span class="op">=</span> <span class="fl">0</span>, xmax <span class="op">=</span> <span class="fl">2</span>, ymax <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    nb <span class="op">=</span> <span class="fu">sfdep</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_contiguity.html" class="external-link">st_contiguity</a></span><span class="op">(</span><span class="va">geometry</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    wt <span class="op">=</span> <span class="fu">sfdep</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_weights.html" class="external-link">st_weights</a></span><span class="op">(</span><span class="va">nb</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">spatial_markov</span><span class="op">(</span><span class="va">panel</span>, <span class="va">id</span>, <span class="va">year</span>, <span class="va">value</span>, geometry <span class="op">=</span> <span class="va">grid</span>, k <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">spatial</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;grd_spatial_markov&gt;</span>
@@ -123,23 +141,23 @@ when the standardization choice matters.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 8</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   lag_class from_state to_state transition     n probability lag_lower lag_upper</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Q1        Q1         Q1       Q1 -&gt; Q1       3       1           3         3.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Q1        Q1         Q2       Q1 -&gt; Q2       0       0           3         3.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Q1        Q2         Q1       Q2 -&gt; Q1       1       0.333       3         3.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Q1        Q2         Q2       Q2 -&gt; Q2       2       0.667       3         3.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Q2        Q1         Q1       Q1 -&gt; Q1       0       0           3.5       5  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> Q2        Q1         Q2       Q1 -&gt; Q2       2       1           3.5       5  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> Q2        Q2         Q1       Q2 -&gt; Q1       0      <span style="color: #BB0000;">NA</span>           3.5       5  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> Q2        Q2         Q2       Q2 -&gt; Q2       0      <span style="color: #BB0000;">NA</span>           3.5       5  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Q1        Q1         Q1       Q1 -&gt; Q1       2       0.5        2.33      3.67</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Q1        Q1         Q2       Q1 -&gt; Q2       2       0.5        2.33      3.67</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Q1        Q2         Q1       Q2 -&gt; Q1       1       0.333      2.33      3.67</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Q1        Q2         Q2       Q2 -&gt; Q2       2       0.667      2.33      3.67</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Q2        Q1         Q1       Q1 -&gt; Q1       1       1          3.67      5.33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> Q2        Q1         Q2       Q1 -&gt; Q2       0       0          3.67      5.33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> Q2        Q2         Q1       Q2 -&gt; Q1       0      <span style="color: #BB0000;">NA</span>          3.67      5.33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> Q2        Q2         Q2       Q2 -&gt; Q2       0      <span style="color: #BB0000;">NA</span>          3.67      5.33</span>
 <span class="r-in"><span><span class="fu"><a href="lag_intervals.html">lag_intervals</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   class lower upper type       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Q1      3     3.5 spatial_lag</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Q2      3.5   5   spatial_lag</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Q1     2.33  3.67 spatial_lag</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Q2     3.67  5.33 spatial_lag</span>
 <span class="r-in"><span><span class="fu"><a href="transition_matrix.html">transition_matrix</a></span><span class="op">(</span><span class="va">spatial</span>, <span class="st">"count"</span>, lag_class <span class="op">=</span> <span class="st">"Q1"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Q1 Q2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Q1  3  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Q1  2  2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Q2  1  2</span>
 </code></pre></div>
     </div>

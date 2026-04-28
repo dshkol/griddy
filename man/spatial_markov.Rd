@@ -9,8 +9,9 @@ spatial_markov(
   id,
   time,
   value,
-  nb = NULL,
+  geometry = NULL,
   listw = NULL,
+  nb = NULL,
   k = 5,
   lag_k = k,
   class_method = c("pooled_quantile", "time_quantile", "fixed"),
@@ -22,11 +23,15 @@ spatial_markov(
 
 \item{id, time, value}{Columns identifying spatial unit, time, and value.}
 
-\item{nb}{A \code{spdep} neighbor list, used only when \code{listw} is \code{NULL}. It is
-converted with \code{spdep::nb2listw(style = "W")}.}
+\item{geometry}{An \code{sf} tibble with one row per spatial unit (a single time
+slice's geography), carrying \code{nb} and \code{wt} list-columns produced by
+\code{sfdep::st_contiguity()} and \code{sfdep::st_weights()}. The preferred input.}
 
-\item{listw}{A row-standardized \code{spdep} weights (\code{listw}) object. Preferred
-when the standardization choice matters.}
+\item{listw}{A row-standardized \code{spdep} \code{listw} object. Accepted for
+compatibility with prior workflows; use \code{geometry} for new code.}
+
+\item{nb}{A \code{spdep} neighbor list, used only when both \code{geometry} and
+\code{listw} are \code{NULL}. Converted with \code{spdep::nb2listw(style = "W")}.}
 
 \item{k}{Number of value classes.}
 
@@ -51,8 +56,19 @@ panel <- data.frame(
   value = c(1, 2, 3, 2, 3, 4, 4, 3, 5, 5, 6, 7)
 )
 
-listw <- spdep::nb2listw(spdep::cell2nb(2, 2), style = "W")
-spatial <- spatial_markov(panel, id, year, value, listw = listw, k = 2)
+grid <- sf::st_sf(
+  id = 1:4,
+  geometry = sf::st_make_grid(
+    sf::st_bbox(c(xmin = 0, ymin = 0, xmax = 2, ymax = 2)),
+    n = c(2, 2)
+  )
+) |>
+  dplyr::mutate(
+    nb = sfdep::st_contiguity(geometry),
+    wt = sfdep::st_weights(nb)
+  )
+
+spatial <- spatial_markov(panel, id, year, value, geometry = grid, k = 2)
 
 spatial
 lag_intervals(spatial)

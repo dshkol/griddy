@@ -5,10 +5,13 @@
 #'
 #' @param data A long data frame or `sf` object.
 #' @param id,time,value Columns identifying spatial unit, time, and value.
-#' @param listw A row-standardized `spdep` weights (`listw`) object. Preferred
-#'   when the standardization choice matters.
-#' @param nb A `spdep` neighbor list, used only when `listw` is `NULL`. It is
-#'   converted with `spdep::nb2listw(style = "W")`.
+#' @param geometry An `sf` tibble with one row per spatial unit (a single time
+#'   slice's geography), carrying `nb` and `wt` list-columns produced by
+#'   `sfdep::st_contiguity()` and `sfdep::st_weights()`. The preferred input.
+#' @param listw A row-standardized `spdep` `listw` object. Accepted for
+#'   compatibility with prior workflows; use `geometry` for new code.
+#' @param nb A `spdep` neighbor list, used only when both `geometry` and
+#'   `listw` are `NULL`. Converted with `spdep::nb2listw(style = "W")`.
 #' @param k Number of value classes.
 #' @param lag_k Number of spatial-lag classes.
 #' @param class_method Value classification method passed to [classify_dynamics()].
@@ -23,16 +26,28 @@
 #'   value = c(1, 2, 3, 2, 3, 4, 4, 3, 5, 5, 6, 7)
 #' )
 #'
-#' listw <- spdep::nb2listw(spdep::cell2nb(2, 2), style = "W")
-#' spatial <- spatial_markov(panel, id, year, value, listw = listw, k = 2)
+#' grid <- sf::st_sf(
+#'   id = 1:4,
+#'   geometry = sf::st_make_grid(
+#'     sf::st_bbox(c(xmin = 0, ymin = 0, xmax = 2, ymax = 2)),
+#'     n = c(2, 2)
+#'   )
+#' ) |>
+#'   dplyr::mutate(
+#'     nb = sfdep::st_contiguity(geometry),
+#'     wt = sfdep::st_weights(nb)
+#'   )
+#'
+#' spatial <- spatial_markov(panel, id, year, value, geometry = grid, k = 2)
 #'
 #' spatial
 #' lag_intervals(spatial)
 #' transition_matrix(spatial, "count", lag_class = "Q1")
 #' @export
 spatial_markov <- function(data, id, time, value,
-                           nb = NULL,
+                           geometry = NULL,
                            listw = NULL,
+                           nb = NULL,
                            k = 5,
                            lag_k = k,
                            class_method = c("pooled_quantile", "time_quantile", "fixed"),
@@ -42,9 +57,28 @@ spatial_markov <- function(data, id, time, value,
   time <- rlang::ensym(time)
   value <- rlang::ensym(value)
 
-  if (is.null(listw)) {
+  if (!is.null(geometry)) {
+    if (!"nb" %in% names(geometry)) {
+      stop(
+        "`geometry` must carry an `nb` list-column. ",
+        "Build one with `sfdep::st_contiguity()`.",
+        call. = FALSE
+      )
+    }
+    nb_obj <- geometry$nb
+    if ("wt" %in% names(geometry)) {
+      listw <- spdep::nb2listw(
+        nb_obj,
+        glist = geometry$wt,
+        style = "W",
+        zero.policy = zero.policy
+      )
+    } else {
+      listw <- spdep::nb2listw(nb_obj, style = "W", zero.policy = zero.policy)
+    }
+  } else if (is.null(listw)) {
     if (is.null(nb)) {
-      stop("Provide either `listw` or `nb`.", call. = FALSE)
+      stop("Provide `geometry`, `listw`, or `nb`.", call. = FALSE)
     }
     listw <- spdep::nb2listw(nb, style = "W", zero.policy = zero.policy)
   }

@@ -21,7 +21,7 @@ key is set and skipped otherwise. It does not ship with the installed package.
 ```{r, fig.alt=c("Heatmap of ACS tract transition probabilities between income quintiles.", "Faceted heatmaps of ACS tract spatial Markov transition probabilities by spatial-lag quintile.", "Map of ACS tract endpoint rank mobility.")}
 library(tidycensus)
 library(sf)
-library(spdep)
+library(sfdep)
 
 years <- c(2012, 2017, 2022)
 
@@ -64,13 +64,15 @@ panel <- acs |>
 
 geography <- geography |>
   filter(GEOID %in% common_ids) |>
-  arrange(GEOID)
-
-listw <- nb2listw(poly2nb(geography, queen = TRUE), style = "W", zero.policy = TRUE)
+  arrange(GEOID) |>
+  mutate(
+    nb = st_contiguity(geometry, queen = TRUE),
+    wt = st_weights(nb, allow_zero = TRUE)
+  )
 
 classes <- classify_dynamics(panel, GEOID, year, median_income, k = 5)
 classic <- markov_dynamics(classes, GEOID, year, class)
-spatial <- spatial_markov(panel, GEOID, year, median_income, listw = listw, k = 5)
+spatial <- spatial_markov(panel, GEOID, year, median_income, geometry = geography, k = 5)
 mobility <- rank_mobility(panel, GEOID, year, median_income)
 
 plot_transition_matrix(classic)

@@ -47,33 +47,36 @@ The bundled `usjoin` panel is the canonical PySAL `giddy` reference dataset:
 library(griddy)
 library(dplyr)
 library(sf)
+library(sfdep)
 library(spData)
-library(spdep)
 
 data(usjoin)
 
 geom <- us_states |>
   filter(NAME %in% usjoin$name) |>
-  arrange(NAME)
+  arrange(NAME) |>
+  mutate(
+    nb = st_contiguity(geometry),
+    wt = st_weights(nb)
+  )
 
 panel <- usjoin |>
   filter(name %in% geom$NAME) |>
   arrange(name, year)
 
-listw <- nb2listw(poly2nb(geom, queen = TRUE), style = "W")
-
 classes <- classify_dynamics(panel, name, year, income, k = 5)
 classic <- markov_dynamics(classes, name, year, class)
-spatial <- spatial_markov(panel, name, year, income, listw = listw, k = 5)
+spatial <- spatial_markov(panel, name, year, income, geometry = geom, k = 5)
 
 classic$transitions |> select(id, from_time, to_time, transition) |> head()
 lag_intervals(spatial)
 ```
 
-`spatial_markov()` accepts either `listw` (a prebuilt `spdep` weights object)
-or `nb` (a neighbor list, converted internally via
-`spdep::nb2listw(style = "W")`). `listw` is preferred when the
-row-standardization choice matters.
+`spatial_markov()` takes a `geometry` argument: an `sf` tibble with one row
+per spatial unit and `nb` / `wt` list-columns produced by `sfdep`. This keeps
+the spatial frame, neighbor structure, and row-standardization choice in one
+tidy object. `listw` and `nb` arguments remain accepted for compatibility with
+existing workflows.
 
 ## Documentation
 
