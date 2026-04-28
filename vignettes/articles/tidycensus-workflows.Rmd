@@ -1,15 +1,11 @@
 ---
 title: "Working With tidycensus"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Working With tidycensus}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
-grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
-knitr::opts_chunk$set(eval = grd_eval_docs)
+knitr::opts_chunk$set(
+  eval = nzchar(Sys.getenv("CENSUS_API_KEY"))
+)
 ```
 
 ```{r, message=FALSE, warning=FALSE}
@@ -18,9 +14,9 @@ library(dplyr)
 library(tidyr)
 ```
 
-This vignette is a template for ACS workflows. It is evaluated for pkgdown and
-skipped during package checks because it requires a Census API key and live
-data.
+This article is a website-only template for ACS workflows: it requires a
+Census API key and live data, so it is rendered on the pkgdown site when the
+key is set and skipped otherwise. It does not ship with the installed package.
 
 ```{r, fig.alt=c("Heatmap of ACS tract transition probabilities between income quintiles.", "Faceted heatmaps of ACS tract spatial Markov transition probabilities by spatial-lag quintile.", "Map of ACS tract endpoint rank mobility.")}
 library(tidycensus)
@@ -70,7 +66,7 @@ geography <- geography |>
   filter(GEOID %in% common_ids) |>
   arrange(GEOID)
 
-listw <- nb2listw(poly2nb(geography, queen = TRUE), style = "W")
+listw <- nb2listw(poly2nb(geography, queen = TRUE), style = "W", zero.policy = TRUE)
 
 classes <- classify_dynamics(panel, GEOID, year, median_income, k = 5)
 classic <- markov_dynamics(classes, GEOID, year, class)

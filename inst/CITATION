@@ -1,0 +1,27 @@
+citHeader("To cite griddy in publications use:")
+
+bibentry(
+  bibtype = "Manual",
+  title = "{griddy}: Geospatial Distribution Dynamics for Simple Features",
+  author = person("Dmitry", "Shkolnik"),
+  year = format(Sys.Date(), "%Y"),
+  note = sprintf("R package version %s", utils::packageVersion("griddy")),
+  url = "https://github.com/dshkol/griddy"
+)
+
+bibentry(
+  bibtype = "Article",
+  title = "Spatial empirics for economic growth and convergence",
+  author = person("Sergio J.", "Rey"),
+  journal = "Geographical Analysis",
+  year = "2001",
+  volume = "33",
+  number = "3",
+  pages = "195--214",
+  doi = "10.1111/j.1538-4632.2001.tb00444.x",
+  textVersion = paste(
+    "Rey, S. J. (2001).",
+    "Spatial empirics for economic growth and convergence.",
+    "Geographical Analysis, 33(3), 195-214."
+  )
+)

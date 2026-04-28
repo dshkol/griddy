@@ -1,0 +1,40 @@
+# Workflow derived from r-lib/actions examples.
+# Help: https://github.com/r-lib/actions
+#
+# This repo serves the pkgdown site from `main:/docs`. The workflow validates
+# that the site builds on push and pull request; it does not deploy. Refresh
+# `docs/` locally with `pkgdown::build_site()` (or `build_site_github_pages()`)
+# and commit the result on `main`.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+name: pkgdown.yaml
+
+permissions: read-all
+
+jobs:
+  pkgdown-build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      IN_PKGDOWN: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::pkgdown, local::.
+          needs: website
+
+      - name: Build site
+        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+        shell: Rscript {0}

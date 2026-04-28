@@ -1,15 +1,12 @@
 ---
 title: "Working With cancensus"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Working With cancensus}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
-grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
-knitr::opts_chunk$set(eval = grd_eval_docs)
+knitr::opts_chunk$set(
+  eval = nzchar(Sys.getenv("CM_API_KEY")) ||
+    nzchar(Sys.getenv("CANCENSUS_API_KEY"))
+)
 ```
 
 ```{r, message=FALSE, warning=FALSE}
@@ -17,9 +14,10 @@ library(griddy)
 library(dplyr)
 ```
 
-This vignette is a template for Canadian Census workflows. It is evaluated for
-pkgdown and skipped during package checks because it requires live CensusMapper
-access.
+This article is a website-only template for Canadian Census workflows: it
+requires live CensusMapper access, so it is rendered on the pkgdown site when
+the API key is set and skipped otherwise. It does not ship with the installed
+package.
 
 ```{r, fig.alt=c("Heatmap of Canadian Census tract transition probabilities between income quintiles.", "Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile.")}
 library(cancensus)
@@ -54,7 +52,7 @@ common_ids <- intersect(panel_2016$GeoUID, panel_2021$GeoUID)
 panel <- bind_rows(panel_2016, panel_2021) |>
   filter(GeoUID %in% common_ids)
 geography <- panel |> filter(year == 2021L) |> arrange(GeoUID)
-listw <- nb2listw(poly2nb(geography, queen = TRUE), style = "W")
+listw <- nb2listw(poly2nb(geography, queen = TRUE), style = "W", zero.policy = TRUE)
 
 classes <- classify_dynamics(panel, GeoUID, year, median_income, k = 5)
 classic <- markov_dynamics(classes, GeoUID, year, class)

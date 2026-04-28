@@ -54,6 +54,9 @@ reference:
       - plot_transition_matrix
       - plot_spatial_markov
       - plot_rank_mobility
+  - title: Data
+    contents:
+      - usjoin
 
 articles:
   - title: Get Started
@@ -62,8 +65,8 @@ articles:
       - griddy
   - title: Data Workflows
     contents:
-      - tidycensus-workflows
-      - cancensus-workflows
+      - articles/tidycensus-workflows
+      - articles/cancensus-workflows
   - title: Validation And Benchmarks
     contents:
       - prior-art-comparison
