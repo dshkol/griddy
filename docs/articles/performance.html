@@ -122,9 +122,9 @@ would.</p>
 <span><span class="co">## less accurate nanosecond times to avoid potential integer overflows</span></span></code></pre>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
 <span><span class="co">##      expr       min        lq      mean    median        uq       max neval cld</span></span>
-<span><span class="co">##  classify  15.15011  15.50091  15.53948  15.51132  15.73621  15.79886     5  a </span></span>
-<span><span class="co">##    markov 119.56309 120.12073 137.50055 121.96323 126.46220 199.39350     5   b</span></span>
-<span><span class="co">##   spatial 153.94434 156.69134 160.07435 159.60701 161.00351 169.12553     5   b</span></span></code></pre>
+<span><span class="co">##  classify  16.86236  16.89639  17.37902  16.90225  17.45567  18.77845     5  a </span></span>
+<span><span class="co">##    markov 132.86280 135.34891 153.70839 137.17924 140.54263 222.60839     5   b</span></span>
+<span><span class="co">##   spatial 176.87597 179.12125 181.45109 179.95736 181.77600 189.52488     5   b</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="comparison-against-estdar">Comparison against estdaR<a class="anchor" aria-label="anchor" href="#comparison-against-estdar"></a>
@@ -157,9 +157,9 @@ implementation overhead, not differing inputs.</p>
 <span>  times <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
-<span><span class="co">##    expr       min        lq      mean    median        uq       max neval cld</span></span>
-<span><span class="co">##  griddy 156.47572 157.48461 162.69522 158.01511 164.27392 177.22676     5  a </span></span>
-<span><span class="co">##  estdaR  29.38778  29.40672  30.21347  30.37071  30.51855  31.38357     5   b</span></span></code></pre>
+<span><span class="co">##    expr       min        lq      mean  median        uq       max neval cld</span></span>
+<span><span class="co">##  griddy 178.76947 179.14778 184.71034 180.425 185.08929 200.12014     5  a </span></span>
+<span><span class="co">##  estdaR  31.68242  32.49193  33.44521  33.123  34.95709  34.97161     5   b</span></span></code></pre>
 <p><code>griddy</code> carries the long-format reshape, classification,
 and label preservation overhead that <code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> skips
 by working directly on a unit-by-period matrix. The expected pattern is

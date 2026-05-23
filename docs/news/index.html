@@ -52,6 +52,11 @@
 <code><a href="../reference/plot_transition_matrix.html">plot_transition_matrix()</a></code>, <code><a href="../reference/plot_spatial_markov.html">plot_spatial_markov()</a></code>, and <code><a href="../reference/plot_rank_mobility.html">plot_rank_mobility()</a></code> return <code>ggplot2</code> objects.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="spatial-weights-0-0-0-9000">Spatial weights<a class="anchor" aria-label="anchor" href="#spatial-weights-0-0-0-9000"></a></h3>
+<ul><li>
+<code><a href="../reference/spatial_markov.html">spatial_markov()</a></code> accepts a <code>geometry</code> argument: an <code>sf</code> tibble with one row per spatial unit and <code>nb</code> / <code>wt</code> list-columns produced by <code>sfdep</code>. This is the preferred input. <code>listw</code> and <code>nb</code> arguments remain accepted for compatibility with prior workflows and oracle comparisons.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="data-0-0-0-9000">Data<a class="anchor" aria-label="anchor" href="#data-0-0-0-9000"></a></h3>
 <ul><li>Bundled <code>usjoin</code>: 48 contiguous US state per-capita personal income, 1929–2009, mirroring PySAL’s reference dataset for spatial Markov examples.</li>
 </ul></div>

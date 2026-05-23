@@ -4,8 +4,9 @@ title: "Working With cancensus"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  eval = nzchar(Sys.getenv("CM_API_KEY")) ||
-    nzchar(Sys.getenv("CANCENSUS_API_KEY"))
+  eval = identical(Sys.getenv("IN_PKGDOWN"), "true") &&
+    (nzchar(Sys.getenv("CM_API_KEY")) ||
+      nzchar(Sys.getenv("CANCENSUS_API_KEY")))
 )
 ```
 
@@ -19,7 +20,7 @@ requires live CensusMapper access, so it is rendered on the pkgdown site when
 the API key is set and skipped otherwise. It does not ship with the installed
 package.
 
-```{r, fig.alt=c("Heatmap of Canadian Census tract transition probabilities between income quintiles.", "Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile.")}
+```{r, results='hide', fig.alt=c("Heatmap of Canadian Census tract transition probabilities between income quintiles.", "Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile.")}
 library(cancensus)
 library(sf)
 library(sfdep)
