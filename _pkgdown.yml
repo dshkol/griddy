@@ -69,5 +69,5 @@ articles:
       - articles/cancensus-workflows
   - title: Validation And Benchmarks
     contents:
-      - prior-art-comparison
-      - performance
+      - articles/prior-art-comparison
+      - articles/performance

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">griddy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
       <h1>Performance Benchmarks</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/dshkol/griddy/blob/HEAD/vignettes/performance.Rmd" class="external-link"><code>vignettes/performance.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dshkol/griddy/blob/HEAD/vignettes/articles/performance.Rmd" class="external-link"><code>vignettes/articles/performance.Rmd</code></a></small>
       <div class="d-none name"><code>performance.Rmd</code></div>
     </div>
 
@@ -121,10 +121,10 @@ would.</p>
 <pre><code><span><span class="co">## Warning in microbenchmark(classify = classify_dynamics(fx$panel, id, year, :</span></span>
 <span><span class="co">## less accurate nanosecond times to avoid potential integer overflows</span></span></code></pre>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
-<span><span class="co">##      expr       min        lq      mean    median        uq       max neval cld</span></span>
-<span><span class="co">##  classify  16.86236  16.89639  17.37902  16.90225  17.45567  18.77845     5  a </span></span>
-<span><span class="co">##    markov 132.86280 135.34891 153.70839 137.17924 140.54263 222.60839     5   b</span></span>
-<span><span class="co">##   spatial 176.87597 179.12125 181.45109 179.95736 181.77600 189.52488     5   b</span></span></code></pre>
+<span><span class="co">##      expr      min        lq      mean    median        uq       max neval cld</span></span>
+<span><span class="co">##  classify  16.6109  17.25813  17.27496  17.26936  17.51967  17.71672     5  a </span></span>
+<span><span class="co">##    markov 130.1650 132.89728 150.15373 134.61186 138.29817 214.79638     5   b</span></span>
+<span><span class="co">##   spatial 172.4819 174.70227 177.10260 176.25515 178.64073 183.43293     5   b</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="comparison-against-estdar">Comparison against estdaR<a class="anchor" aria-label="anchor" href="#comparison-against-estdar"></a>
@@ -157,9 +157,9 @@ implementation overhead, not differing inputs.</p>
 <span>  times <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
-<span><span class="co">##    expr       min        lq      mean  median        uq       max neval cld</span></span>
-<span><span class="co">##  griddy 178.76947 179.14778 184.71034 180.425 185.08929 200.12014     5  a </span></span>
-<span><span class="co">##  estdaR  31.68242  32.49193  33.44521  33.123  34.95709  34.97161     5   b</span></span></code></pre>
+<span><span class="co">##    expr       min        lq      mean    median        uq       max neval cld</span></span>
+<span><span class="co">##  griddy 174.23385 175.40235 180.01731 178.04090 179.57393 192.83551     5  a </span></span>
+<span><span class="co">##  estdaR  31.43548  32.59566  32.69199  32.77126  33.04112  33.61643     5   b</span></span></code></pre>
 <p><code>griddy</code> carries the long-format reshape, classification,
 and label preservation overhead that <code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> skips
 by working directly on a unit-by-period matrix. The expected pattern is

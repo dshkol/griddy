@@ -5,6 +5,7 @@
 ^audit\.md$
 ^gap_audit\.md$
 ^scope_brief\.md$
+^cran-comments\.md$
 ^prototypes$
 ^data-raw$
 ^griddy_.*\.tar\.gz$
@@ -14,6 +15,8 @@
 ^LICENSE\.md$
 ^\.github$
 ^vignettes/articles$
+^tests/testthat/test-oracles-optional\.R$
+^tests/testthat/fixtures$
 ^tools/oracle$
 ^tools/benchman$
 ^.*\.Rproj$

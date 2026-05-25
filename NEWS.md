@@ -1,6 +1,6 @@
-# griddy 0.0.0.9000 (development)
+# griddy 0.1.0
 
-Initial development release.
+Initial CRAN release.
 
 ## Workflow
 

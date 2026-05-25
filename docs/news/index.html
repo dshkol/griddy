@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">griddy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,10 +40,10 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.0.9000" id="griddy-0009000-development">griddy 0.0.0.9000 (development)<a class="anchor" aria-label="anchor" href="#griddy-0009000-development"></a></h2>
-<p>Initial development release.</p>
+<h2 class="pkg-version" data-toc-text="0.1.0" id="griddy-010">griddy 0.1.0<a class="anchor" aria-label="anchor" href="#griddy-010"></a></h2>
+<p>Initial CRAN release.</p>
 <div class="section level3">
-<h3 id="workflow-0-0-0-9000">Workflow<a class="anchor" aria-label="anchor" href="#workflow-0-0-0-9000"></a></h3>
+<h3 id="workflow-0-1-0">Workflow<a class="anchor" aria-label="anchor" href="#workflow-0-1-0"></a></h3>
 <ul><li>
 <code><a href="../reference/classify_dynamics.html">classify_dynamics()</a></code>, <code><a href="../reference/markov_dynamics.html">markov_dynamics()</a></code>, <code><a href="../reference/spatial_markov.html">spatial_markov()</a></code>, and <code><a href="../reference/rank_mobility.html">rank_mobility()</a></code> accept long <code>sf</code> panels keyed by explicit <code>id</code>, <code>time</code>, and <code>value</code> columns.</li>
 <li>
@@ -52,16 +52,16 @@
 <code><a href="../reference/plot_transition_matrix.html">plot_transition_matrix()</a></code>, <code><a href="../reference/plot_spatial_markov.html">plot_spatial_markov()</a></code>, and <code><a href="../reference/plot_rank_mobility.html">plot_rank_mobility()</a></code> return <code>ggplot2</code> objects.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="spatial-weights-0-0-0-9000">Spatial weights<a class="anchor" aria-label="anchor" href="#spatial-weights-0-0-0-9000"></a></h3>
+<h3 id="spatial-weights-0-1-0">Spatial weights<a class="anchor" aria-label="anchor" href="#spatial-weights-0-1-0"></a></h3>
 <ul><li>
 <code><a href="../reference/spatial_markov.html">spatial_markov()</a></code> accepts a <code>geometry</code> argument: an <code>sf</code> tibble with one row per spatial unit and <code>nb</code> / <code>wt</code> list-columns produced by <code>sfdep</code>. This is the preferred input. <code>listw</code> and <code>nb</code> arguments remain accepted for compatibility with prior workflows and oracle comparisons.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="data-0-0-0-9000">Data<a class="anchor" aria-label="anchor" href="#data-0-0-0-9000"></a></h3>
+<h3 id="data-0-1-0">Data<a class="anchor" aria-label="anchor" href="#data-0-1-0"></a></h3>
 <ul><li>Bundled <code>usjoin</code>: 48 contiguous US state per-capita personal income, 1929–2009, mirroring PySAL’s reference dataset for spatial Markov examples.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="validation-0-0-0-9000">Validation<a class="anchor" aria-label="anchor" href="#validation-0-0-0-9000"></a></h3>
+<h3 id="validation-0-1-0">Validation<a class="anchor" aria-label="anchor" href="#validation-0-1-0"></a></h3>
 <ul><li>Static fixtures cross-checked against <code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> and <code>spdyn::spMarkov()</code>. Optional live cross-checks run when those packages or PySAL <code>giddy</code> are installed.</li>
 </ul></div>
 </div>
