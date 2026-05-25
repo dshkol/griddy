@@ -35,34 +35,34 @@ library(tidyr)
 
 ## Shared panel
 
-The bundled `usjoin` panel mirrors PySAL's reference dataset, so prior R
-implementations and `griddy` are working from the same series. `griddy`
-consumes weights via the `sfdep` idiom; `estdaR` and `spdyn` consume `listw`
-objects from `spdep`. We construct both from the same neighbor list to keep
-the comparison fair.
+The comparison uses the `spData` US states income panel because it is available
+from CRAN and can be represented in the wide shape expected by both prior R
+implementations. `estdaR` and `spdyn` consume `listw` objects from `spdep`;
+`griddy` accepts the same object for compatibility, so all three methods use
+identical row-standardized weights.
 
 ```{r}
-data(usjoin)
+data(us_states, package = "spData")
+data(us_states_df, package = "spData")
 
-geom <- us_states |>
-  filter(NAME %in% usjoin$name) |>
-  arrange(NAME) |>
-  mutate(
-    nb = st_contiguity(geometry),
-    wt = st_weights(nb)
-  )
+states <- us_states |>
+  left_join(us_states_df, by = c("NAME" = "state")) |>
+  filter(!NAME %in% c("Alaska", "Hawaii", "Puerto Rico")) |>
+  arrange(NAME)
 
-panel <- usjoin |>
-  filter(name %in% geom$NAME) |>
-  arrange(name, year)
+panel <- states |>
+  select(NAME, median_income_10, median_income_15, geometry) |>
+  pivot_longer(
+    starts_with("median_income_"),
+    names_to = "year",
+    values_to = "income"
+  ) |>
+  mutate(year = if_else(year == "median_income_10", 2010L, 2015L))
 
-listw <- nb2listw(geom$nb, glist = geom$wt, style = "W")
+nb <- poly2nb(states, queen = TRUE)
+listw <- nb2listw(nb, style = "W")
 
-spatial <- spatial_markov(panel, name, year, income, geometry = geom, k = 5)
-
-spatial$transitions |>
-  select(id, from_time, to_time, lag_class, transition, spatial_lag) |>
-  head()
+spatial <- spatial_markov(panel, NAME, year, income, listw = listw, k = 5)
 
 lag_intervals(spatial)
 transition_matrix(spatial, "count", lag_class = "Q1")
@@ -70,30 +70,23 @@ transition_matrix(spatial, "count", lag_class = "Q1")
 
 ## Cross-package agreement
 
-The next chunk runs only when `estdaR` and `spdyn` are both installed. The
-package test suite carries static fixtures from both so ordinary CI can
-validate the spatial Markov counts without depending on either package.
+The next chunk uses live `estdaR` and `spdyn` calls when both packages are
+installed. Otherwise, it compares against the committed oracle fixture produced
+from those packages. This keeps the rendered site explicit about the agreement
+without making the website build depend on packages that are not available from
+CRAN.
 
-```{r, eval=grd_eval_docs && requireNamespace("estdaR", quietly = TRUE) && requireNamespace("spdyn", quietly = TRUE)}
-library(estdaR)
-library(spdyn)
+```{r, eval=grd_eval_docs}
+has_live_oracles <- requireNamespace("estdaR", quietly = TRUE) &&
+  requireNamespace("spdyn", quietly = TRUE)
 
 wide <- panel |>
-  pivot_wider(id_cols = name, names_from = year, values_from = income) |>
-  arrange(name)
+  st_drop_geometry() |>
+  pivot_wider(id_cols = NAME, names_from = year, values_from = income) |>
+  arrange(NAME)
 
-wide_mat <- as.matrix(wide |> select(-name))
+wide_mat <- as.matrix(wide |> select(-NAME))
 year_cols <- as.character(unique(panel$year))
-
-estdar_sp <- estdaR::sp.mkv(wide_mat, listw, classes = 5, fixed = TRUE)
-spdyn_sp <- spdyn::spMarkov(
-  wide,
-  listw,
-  stateVars = year_cols,
-  n.states = 5,
-  pool = TRUE,
-  std = FALSE
-)
 
 griddy_counts <- aperm(
   array(
@@ -104,14 +97,34 @@ griddy_counts <- aperm(
   c(2, 1, 3)
 )
 
-all.equal(unname(griddy_counts), unname(estdar_sp$Transitions))
-all.equal(unname(griddy_counts), unname(spdyn_sp$t))
+if (has_live_oracles) {
+  estdar_sp <- estdaR::sp.mkv(wide_mat, listw, classes = 5, fixed = TRUE)
+  spdyn_sp <- spdyn::spMarkov(
+    wide,
+    listw,
+    stateVars = year_cols,
+    n.states = 5,
+    pool = TRUE,
+    std = FALSE
+  )
+
+  estdaR_counts <- estdar_sp$Transitions
+  spdyn_counts <- spdyn_sp$t
+} else {
+  fixture_path <- file.path("..", "..", "tests", "testthat", "fixtures", "r_prior_spatial_counts.rds")
+  fixture <- readRDS(fixture_path)
+  estdaR_counts <- fixture$estdaR_spatial_counts
+  spdyn_counts <- fixture$spdyn_spatial_counts
+}
+
+all.equal(unname(griddy_counts), unname(estdaR_counts))
+all.equal(unname(griddy_counts), unname(spdyn_counts))
 ```
 
 When the two prior implementations and `griddy` agree to within numerical
-tolerance, all three calls return `TRUE`. Disagreements with both at once are
-treated as bugs in `griddy`. Disagreements with one but not the other are
-documented under "Conventions worth knowing" below.
+tolerance, both calls return `TRUE`. Disagreements with both at once are treated
+as bugs in `griddy`. Disagreements with one but not the other are documented
+under "Conventions worth knowing" below.
 
 ## Conventions worth knowing
 
@@ -130,5 +143,6 @@ Three places where a naive cross-comparison can produce false disagreement:
 
 The package test suite uses static fixtures from `estdaR::sp.mkv()` and
 `spdyn::spMarkov()` so ordinary CI can validate the spatial Markov counts
-without installing either package. Live cross-checks run conditionally via
-`skip_if_not_installed()`.
+without installing either package. The live oracle script in `tools/oracle/`
+can be run manually after installing both prior-art packages to refresh the
+fixture.
