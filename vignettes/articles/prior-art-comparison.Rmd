@@ -9,14 +9,30 @@ vignette: >
 
 `estdaR` (Vallone et al.) and `spdyn` (Loaiza) are prior R implementations of
 spatial distribution dynamics methods. Both predate `griddy` and remain useful
-as methodological comparators. `griddy` does not compete on methodology —
-it targets a different interface: long `sf` panels, tidy outputs, and
-map-ready objects, with the unit identity, time index, class labels, transition
-labels, and spatial-lag intervals attached to the result.
+as methodological comparators, but neither is available from CRAN. That matters
+for reproducibility and installability: `griddy` packages the same core spatial
+Markov workflow behind a CRAN-oriented, `sf`-first interface with long panels,
+tidy outputs, map-ready objects, and attached unit identities, time indexes,
+class labels, transition labels, and spatial-lag intervals.
 
 This vignette shows that `griddy::spatial_markov()` produces the same
 transition counts as `estdaR::sp.mkv()` and `spdyn::spMarkov()` on a shared
 panel, and walks through where the conventions intentionally differ.
+
+The prior-art oracle fixture used here was generated from non-CRAN installs:
+
+```{r, eval=FALSE}
+install.packages("remotes")
+remotes::install_github("amvallone/estdaR")
+install.packages("spdyn", repos = "https://download.r-forge.r-project.org")
+
+source("tools/oracle/r_prior_art_oracles.R")
+```
+
+The live packages are used when they are installed. Otherwise the site renders
+against the checked-in fixture produced by that script, which keeps the
+comparison visible without making the website build depend on non-CRAN
+packages.
 
 ```{r setup, include=FALSE}
 grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")

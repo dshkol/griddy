@@ -1,6 +1,10 @@
 # Optional R-side prior-art oracle checks.
-# Install estdaR and spdyn manually before running. This script is excluded from
-# the package build and should be used to create development notes or fixtures.
+# estdaR and spdyn are not available from CRAN. Install them manually before
+# running:
+#   remotes::install_github("amvallone/estdaR")
+#   install.packages("spdyn", repos = "https://download.r-forge.r-project.org")
+# This script is excluded from the package build and should be used to create
+# development notes or fixtures.
 
 if (!requireNamespace("estdaR", quietly = TRUE)) {
   stop("Install estdaR before running this oracle script.", call. = FALSE)

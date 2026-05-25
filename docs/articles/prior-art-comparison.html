@@ -70,16 +70,29 @@
 <p><code>estdaR</code> (Vallone et al.) and <code>spdyn</code> (Loaiza)
 are prior R implementations of spatial distribution dynamics methods.
 Both predate <code>griddy</code> and remain useful as methodological
-comparators. <code>griddy</code> does not compete on methodology — it
-targets a different interface: long <code>sf</code> panels, tidy
-outputs, and map-ready objects, with the unit identity, time index,
-class labels, transition labels, and spatial-lag intervals attached to
-the result.</p>
+comparators, but neither is available from CRAN. That matters for
+reproducibility and installability: <code>griddy</code> packages the
+same core spatial Markov workflow behind a CRAN-oriented,
+<code>sf</code>-first interface with long panels, tidy outputs,
+map-ready objects, and attached unit identities, time indexes, class
+labels, transition labels, and spatial-lag intervals.</p>
 <p>This vignette shows that <code><a href="../reference/spatial_markov.html">griddy::spatial_markov()</a></code>
 produces the same transition counts as <code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> and
 <code>spdyn::spMarkov()</code> on a shared panel, and walks through
 where the conventions intentionally differ.</p>
+<p>The prior-art oracle fixture used here was generated from non-CRAN
+installs:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"amvallone/estdaR"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"spdyn"</span>, repos <span class="op">=</span> <span class="st">"https://download.r-forge.r-project.org"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"tools/oracle/r_prior_art_oracles.R"</span><span class="op">)</span></span></code></pre></div>
+<p>The live packages are used when they are installed. Otherwise the
+site renders against the checked-in fixture produced by that script,
+which keeps the comparison visible without making the website build
+depend on non-CRAN packages.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dshkol/griddy" class="external-link">griddy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
@@ -97,7 +110,7 @@ shape expected by both prior R implementations. <code>estdaR</code> and
 <code>spdep</code>; <code>griddy</code> accepts the same object for
 compatibility, so all three methods use identical row-standardized
 weights.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">us_states</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">us_states_df</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span></span>
 <span></span>
@@ -129,7 +142,7 @@ weights.</p>
 <span><span class="co">## <span style="color: #BCBCBC;">3</span> Q3    <span style="text-decoration: underline;">25</span>701. <span style="text-decoration: underline;">26</span>850. spatial_lag</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">4</span> Q4    <span style="text-decoration: underline;">26</span>850. <span style="text-decoration: underline;">28</span>552. spatial_lag</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">5</span> Q5    <span style="text-decoration: underline;">28</span>552. <span style="text-decoration: underline;">33</span>541  spatial_lag</span></span></code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/transition_matrix.html">transition_matrix</a></span><span class="op">(</span><span class="va">spatial</span>, <span class="st">"count"</span>, lag_class <span class="op">=</span> <span class="st">"Q1"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    Q1 Q2 Q3 Q4 Q5</span></span>
 <span><span class="co">## Q1  4  2  0  0  0</span></span>
@@ -146,7 +159,7 @@ calls when both packages are installed. Otherwise, it compares against
 the committed oracle fixture produced from those packages. This keeps
 the rendered site explicit about the agreement without making the
 website build depend on packages that are not available from CRAN.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">has_live_oracles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"estdaR"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"spdyn"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -189,7 +202,7 @@ website build depend on packages that are not available from CRAN.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">griddy_counts</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">estdaR_counts</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">griddy_counts</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">spdyn_counts</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
 <p>When the two prior implementations and <code>griddy</code> agree to
