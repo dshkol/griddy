@@ -3,8 +3,6 @@ Title: Geospatial Distribution Dynamics for Simple Features
 Version: 0.1.0
 Authors@R:
     person("Dmitry", "Shkolnik", email = "shkolnikd@gmail.com", role = c("aut", "cre"))
-Author: Dmitry Shkolnik [aut, cre]
-Maintainer: Dmitry Shkolnik <shkolnikd@gmail.com>
 Description: Tools for exploratory geospatial distribution dynamics with
     'sf' objects and tidy data. Provides pooled and time-specific
     classification of longitudinal spatial values, classic discrete Markov

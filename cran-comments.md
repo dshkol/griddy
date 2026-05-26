@@ -1,6 +1,14 @@
 ## Test environments
 
 * local macOS Sequoia 15.4.1, R 4.5.0
+* GitHub Actions:
+  * macOS latest, R release
+  * Windows latest, R release
+  * Ubuntu latest, R devel
+  * Ubuntu latest, R release
+  * Ubuntu latest, R oldrel-1
+* R-hub GitHub Actions: submitted for linux, windows, and macOS
+* win-builder: submitted for R-devel and R-release
 
 ## R CMD check results
 
