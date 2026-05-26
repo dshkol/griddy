@@ -7,8 +7,12 @@
   * Ubuntu latest, R devel
   * Ubuntu latest, R release
   * Ubuntu latest, R oldrel-1
-* R-hub GitHub Actions: submitted for linux, windows, and macOS
-* win-builder: submitted for R-devel and R-release
+* R-hub GitHub Actions:
+  * linux, R-devel
+  * windows, R-devel
+* win-builder:
+  * R-devel
+  * R-release
 
 ## R CMD check results
 
