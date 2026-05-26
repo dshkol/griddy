@@ -1,12 +1,6 @@
 # griddy
 
-`griddy` is an experimental R package for geospatial distribution dynamics
-with `sf` and tidy data. It is inspired by PySAL `giddy` and by established
-spatial distribution dynamics work, especially Rey (2001).
-
-This is not a methods-novelty project. Prior R implementations exist,
-including `estdaR` and `spdyn`. The package target is a maintained,
-CRAN-grade, long-data, map-ready workflow.
+`griddy` is an experimental R package for geospatial distribution dynamics with `sf` and tidy data. It is inspired by PySAL `giddy` and by established spatial distribution dynamics work, especially Rey (2001). Prior R implementations exist, including `estdaR` and `spdyn`, but neither is on CRAN or designed along tidy principles. This package is intentionally designed to work best with long data and `sf` native spatial workflows.
 
 Current scope:
 
@@ -83,6 +77,6 @@ existing workflows.
 The pkgdown site is organized around:
 
 - core workflow and concepts
-- `tidycensus` and `cancensus` templates
+- `tidycensus` and `cancensus` examples showing applications with US and Canadian census data
 - prior-art comparison against `estdaR` and `spdyn`
 - performance benchmarking notes

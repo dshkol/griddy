@@ -38,7 +38,8 @@ usjoin
 Pooled quantile classification cuts the entire panel into five bins and reuses
 the same breakpoints for every year. That keeps class meanings comparable
 across periods, which matters because year-specific quantiles can hide absolute
-movement.
+movement. A state in Q5 in 2009 is being compared to the same income scale as
+a state in Q5 in 1929, not merely to its contemporaries.
 
 ```{r}
 classes <- classify_dynamics(usjoin, name, year, income, k = 5)
@@ -46,12 +47,56 @@ classes <- classify_dynamics(usjoin, name, year, income, k = 5)
 class_intervals(classes)
 ```
 
+Because the output is still a tidy data frame, the classes can be joined
+straight back to geometry for mapped inspection. The two endpoint maps show the
+same class breakpoints at the beginning and end of the panel.
+
+```{r, fig.alt="Two maps of contiguous US states showing pooled income classes in 1929 and 2009 using the same five class intervals.", fig.width=7, fig.height=3.8}
+states <- us_states |>
+  st_drop_geometry() |>
+  filter(NAME %in% usjoin$name) |>
+  pull(NAME)
+
+geom <- us_states |>
+  filter(NAME %in% usjoin$name) |>
+  arrange(NAME)
+
+class_map <- classes |>
+  filter(year %in% range(year)) |>
+  left_join(geom |> select(NAME, geometry), by = c("name" = "NAME")) |>
+  st_as_sf()
+
+ggplot(class_map) +
+  geom_sf(aes(fill = class), color = "white", linewidth = 0.15) +
+  facet_wrap(vars(year), nrow = 1) +
+  scale_fill_viridis_d(option = "C", direction = -1, name = "Income class") +
+  coord_sf(datum = NA) +
+  labs(
+    title = "Income classes are comparable across the full panel",
+    subtitle = "Pooled quintile breaks are reused in every year"
+  ) +
+  theme_void(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    plot.title.position = "plot",
+    strip.text = element_text(face = "bold")
+  )
+```
+
 ## Classic Markov
+
+The classic Markov matrix estimates movement between income classes from one
+year to the next, pooling transitions across all states and adjacent years.
+The `print()` method gives the transition probabilities; `transition_matrix()`
+can return either probabilities or raw counts for downstream work.
 
 ```{r, fig.alt="Heatmap of classic Markov transition probabilities for US state per-capita income, 1929 to 2009."}
 classic <- markov_dynamics(classes, name, year, class)
 
 classic
+transition_matrix(classic, "count")
+steady_state(classic)
+
 plot_transition_matrix(classic)
 ```
 
@@ -67,11 +112,6 @@ poor) neighbors shifts the transition odds beyond what the unit's own class
 would predict.
 
 ```{r}
-states <- us_states |>
-  st_drop_geometry() |>
-  filter(NAME %in% usjoin$name) |>
-  pull(NAME)
-
 geom <- us_states |>
   filter(NAME %in% usjoin$name) |>
   arrange(NAME) |>
@@ -104,11 +144,38 @@ income lag class (Q1) are much stickier at the bottom of the distribution than
 the pooled transition matrix would suggest. The spatial context conditioning is
 what spatial Markov is built to surface.
 
+The lag classes themselves are map-ready. This map shows the starting spatial
+context in 1929: each state's class is based on the weighted income of its
+neighbors, not on its own income.
+
+```{r, fig.alt="Map of contiguous US states showing each state's 1929 spatial-lag income class based on neighboring states.", fig.width=6.8, fig.height=4}
+lag_map <- spatial$transitions |>
+  filter(from_time == min(from_time)) |>
+  distinct(id, lag_class, spatial_lag) |>
+  left_join(geom |> select(NAME, geometry), by = c("id" = "NAME")) |>
+  st_as_sf()
+
+ggplot(lag_map) +
+  geom_sf(aes(fill = lag_class), color = "white", linewidth = 0.15) +
+  scale_fill_viridis_d(option = "C", direction = -1, name = "Spatial-lag class") +
+  coord_sf(datum = NA) +
+  labs(
+    title = "Spatial Markov conditions on neighboring-state income",
+    subtitle = "Spatial-lag class at the start of the panel"
+  ) +
+  theme_void(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    plot.title.position = "plot"
+  )
+```
+
 ## Rank Mobility
 
 Rank mobility is intentionally simple in v0.1: an endpoint comparison of unit
 ranks between the first and last observed periods. It is descriptive and
-map-ready, not the full PySAL rank-method suite.
+map-ready, not the full PySAL rank-method suite. Positive values mean a state
+moved up the income ranking; negative values mean it moved down.
 
 ```{r, fig.alt="Map of endpoint rank mobility for US states, 1929 to 2009, with positive values indicating upward rank movement."}
 mobility_panel <- usjoin |>
@@ -124,7 +191,30 @@ mobility |>
   select(name, start_rank, end_rank, rank_change) |>
   head()
 
-plot_rank_mobility(mobility)
+plot_rank_mobility(mobility) +
+  coord_sf(datum = NA) +
+  labs(
+    title = "Endpoint rank mobility, 1929 to 2009",
+    subtitle = "Positive values indicate upward movement in the state income ranking"
+  ) +
+  theme_void(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    plot.title.position = "plot"
+  )
+```
+
+For shorter-run churn, use adjacent-period comparisons. The same result schema
+is returned, but each row describes movement from one observed period to the
+next.
+
+```{r}
+adjacent_mobility <- rank_mobility(panel, name, year, income, compare = "adjacent")
+
+adjacent_mobility |>
+  arrange(desc(abs_rank_change)) |>
+  select(name, year, to_time, rank_change) |>
+  head()
 ```
 
 ## Output schemas
