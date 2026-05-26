@@ -1,6 +1,6 @@
 # griddy
 
-`griddy` is an experimental R package for geospatial distribution dynamics with `sf` and tidy data. It is inspired by PySAL `giddy` and by established spatial distribution dynamics work, especially Rey (2001). Prior R implementations exist, including `estdaR` and `spdyn`, but neither is on CRAN or designed along tidy principles. This package is intentionally designed to work best with long data and `sf` native spatial workflows.
+`griddy` is an R package for geospatial distribution dynamics with `sf` and tidy data. It is inspired by PySAL `giddy` and by established spatial distribution dynamics work, especially Rey (2001). Prior R implementations exist, including `estdaR` and `spdyn`, but neither is on CRAN or designed along tidy principles. This package is designed to work best with long data and `sf` native spatial workflows.
 
 Current scope:
 
@@ -10,7 +10,7 @@ Current scope:
 - compute simple rank mobility
 - return tidy tables and `ggplot2` plots
 
-The API and scope are still provisional.
+The initial CRAN release focuses on the core classification, Markov, spatial Markov, rank mobility, and plotting workflows.
 
 ## Installation
 
