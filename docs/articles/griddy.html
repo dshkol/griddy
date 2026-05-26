@@ -77,27 +77,28 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
 <p><code>griddy</code> works on long spatial panels: one row per place
 per period, keyed by explicit <code>id</code>, <code>time</code>, and
-<code>value</code> columns. The bundled <code>usjoin</code> panel — 48
-contiguous US states, per-capita personal income, 1929 to 2009 — mirrors
-the canonical PySAL <code>giddy</code> example used in Rey (2001).</p>
+<code>value</code> columns. The bundled <code>usjoin</code> panel
+contains 48 contiguous US states, per-capita personal income, and annual
+observations from 1929 to 2009. It mirrors the canonical PySAL
+<code>giddy</code> example used in Rey (2001).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">usjoin</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">usjoin</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3,888 × 4</span></span></span>
-<span><span class="co">##    name    state_fips  year income</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> Alabama          1  <span style="text-decoration: underline;">1</span>929    323</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> Alabama          1  <span style="text-decoration: underline;">1</span>930    267</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> Alabama          1  <span style="text-decoration: underline;">1</span>931    224</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> Alabama          1  <span style="text-decoration: underline;">1</span>932    162</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> Alabama          1  <span style="text-decoration: underline;">1</span>933    166</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> Alabama          1  <span style="text-decoration: underline;">1</span>934    211</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> Alabama          1  <span style="text-decoration: underline;">1</span>935    217</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Alabama          1  <span style="text-decoration: underline;">1</span>936    251</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Alabama          1  <span style="text-decoration: underline;">1</span>937    267</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> Alabama          1  <span style="text-decoration: underline;">1</span>938    244</span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ 3,878 more rows</span></span></span></code></pre>
+<span><span class="va">usjoin</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,888 × 4</span></span></span>
+<span><span class="co">#&gt;    name    state_fips  year income</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Alabama          1  <span style="text-decoration: underline;">1</span>929    323</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Alabama          1  <span style="text-decoration: underline;">1</span>930    267</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Alabama          1  <span style="text-decoration: underline;">1</span>931    224</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Alabama          1  <span style="text-decoration: underline;">1</span>932    162</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Alabama          1  <span style="text-decoration: underline;">1</span>933    166</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Alabama          1  <span style="text-decoration: underline;">1</span>934    211</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Alabama          1  <span style="text-decoration: underline;">1</span>935    217</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Alabama          1  <span style="text-decoration: underline;">1</span>936    251</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Alabama          1  <span style="text-decoration: underline;">1</span>937    267</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Alabama          1  <span style="text-decoration: underline;">1</span>938    244</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3,878 more rows</span></span></span></code></pre></div>
 <div class="section level2">
 <h2 id="classification">Classification<a class="anchor" aria-label="anchor" href="#classification"></a>
 </h2>
@@ -107,23 +108,24 @@ meanings comparable across periods, which matters because year-specific
 quantiles can hide absolute movement. A state in Q5 in 2009 is being
 compared to the same income scale as a state in Q5 in 1929, not merely
 to its contemporaries.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">classes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_dynamics.html">classify_dynamics</a></span><span class="op">(</span><span class="va">usjoin</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">income</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/class_intervals.html">class_intervals</a></span><span class="op">(</span><span class="va">classes</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
-<span><span class="co">##   class  lower  upper type </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Q1      127   <span style="text-decoration: underline;">1</span>049. value</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> Q2     <span style="text-decoration: underline;">1</span>049.  <span style="text-decoration: underline;">2</span>238. value</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Q3     <span style="text-decoration: underline;">2</span>238.  <span style="text-decoration: underline;">7</span>050. value</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> Q4     <span style="text-decoration: underline;">7</span>050. <span style="text-decoration: underline;">20</span>739. value</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> Q5    <span style="text-decoration: underline;">20</span>739. <span style="text-decoration: underline;">54</span>528  value</span></span></code></pre>
-<p>Because the output is still a tidy data frame, the classes can be
-joined straight back to geometry for mapped inspection. The two endpoint
-maps show the same class breakpoints at the beginning and end of the
-panel.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<span><span class="fu"><a href="../reference/class_intervals.html">class_intervals</a></span><span class="op">(</span><span class="va">classes</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
+<span><span class="co">#&gt;   class  lower  upper type </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Q1      127   <span style="text-decoration: underline;">1</span>049. value</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Q2     <span style="text-decoration: underline;">1</span>049.  <span style="text-decoration: underline;">2</span>238. value</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Q3     <span style="text-decoration: underline;">2</span>238.  <span style="text-decoration: underline;">7</span>050. value</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Q4     <span style="text-decoration: underline;">7</span>050. <span style="text-decoration: underline;">20</span>739. value</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Q5    <span style="text-decoration: underline;">20</span>739. <span style="text-decoration: underline;">54</span>528  value</span></span></code></pre></div>
+<p>Nominal income growth means the endpoints are nearly homogeneous
+under pooled breaks: the early panel sits near the bottom of the pooled
+distribution and the late panel sits near the top. A mid-panel year is a
+better mapped diagnostic because it shows both the absolute class scale
+and the cross-state ordering.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">states</span> <span class="op">&lt;-</span> <span class="va">us_states</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">usjoin</span><span class="op">$</span><span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -131,29 +133,23 @@ panel.</p>
 <span></span>
 <span><span class="va">geom</span> <span class="op">&lt;-</span> <span class="va">us_states</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">usjoin</span><span class="op">$</span><span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">class_map</span> <span class="op">&lt;-</span> <span class="va">classes</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">class_map</span> <span class="op">&lt;-</span> <span class="va">classes</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">1955</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">geom</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">NAME</span>, <span class="va">geometry</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span> <span class="op">=</span> <span class="st">"NAME"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">class_map</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">class</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"white"</span>, linewidth <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_d</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"C"</span>, direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, name <span class="op">=</span> <span class="st">"Income class"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>datum <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Income classes are comparable across the full panel"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Pooled quintile breaks are reused in every year"</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Pooled classes remain map-ready"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"1955 uses breaks estimated from the full 1929-2009 panel"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>    plot.title.position <span class="op">=</span> <span class="st">"plot"</span>,</span>
-<span>    strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="griddy_files/figure-html/unnamed-chunk-4-1.png" alt="Two maps of contiguous US states showing pooled income classes in 1929 and 2009 using the same five class intervals." width="672"></p>
+<span>  <span class="fu">map_theme</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="griddy_files/figure-html/unnamed-chunk-5-1.png" alt="Map of contiguous US states showing pooled income classes in 1955 using the same five class intervals estimated from the full 1929 to 2009 panel." width="652.8"></p>
 </div>
 <div class="section level2">
 <h2 id="classic-markov">Classic Markov<a class="anchor" aria-label="anchor" href="#classic-markov"></a>
@@ -163,38 +159,39 @@ from one year to the next, pooling transitions across all states and
 adjacent years. The <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method gives the transition
 probabilities; <code><a href="../reference/transition_matrix.html">transition_matrix()</a></code> can return either
 probabilities or raw counts for downstream work.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">classic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/markov_dynamics.html">markov_dynamics</a></span><span class="op">(</span><span class="va">classes</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">class</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">classic</span></span></code></pre></div>
-<pre><code><span><span class="co">## &lt;grd_markov&gt;</span></span>
-<span><span class="co">## 5 states, 3840 observed transitions</span></span>
-<span><span class="co">##     </span></span>
-<span><span class="co">##               Q1          Q2          Q3          Q4          Q5</span></span>
-<span><span class="co">##   Q1 0.934447301 0.065552699 0.000000000 0.000000000 0.000000000</span></span>
-<span><span class="co">##   Q2 0.005148005 0.929214929 0.065637066 0.000000000 0.000000000</span></span>
-<span><span class="co">##   Q3 0.000000000 0.003856041 0.934447301 0.061696658 0.000000000</span></span>
-<span><span class="co">##   Q4 0.000000000 0.000000000 0.000000000 0.938223938 0.061776062</span></span>
-<span><span class="co">##   Q5 0.000000000 0.000000000 0.000000000 0.000000000 1.000000000</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/transition_matrix.html">transition_matrix</a></span><span class="op">(</span><span class="va">classic</span>, <span class="st">"count"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##     </span></span>
-<span><span class="co">##       Q1  Q2  Q3  Q4  Q5</span></span>
-<span><span class="co">##   Q1 727  51   0   0   0</span></span>
-<span><span class="co">##   Q2   4 722  51   0   0</span></span>
-<span><span class="co">##   Q3   0   3 727  48   0</span></span>
-<span><span class="co">##   Q4   0   0   0 729  48</span></span>
-<span><span class="co">##   Q5   0   0   0   0 730</span></span></code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/steady_state.html">steady_state</a></span><span class="op">(</span><span class="va">classic</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Q1 Q2 Q3 Q4 Q5 </span></span>
-<span><span class="co">##  0  0  0  0  1</span></span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_transition_matrix.html">plot_transition_matrix</a></span><span class="op">(</span><span class="va">classic</span><span class="op">)</span></span></code></pre></div>
-<p><img src="griddy_files/figure-html/unnamed-chunk-5-1.png" alt="Heatmap of classic Markov transition probabilities for US state per-capita income, 1929 to 2009." width="700"></p>
+<span><span class="va">classic</span></span>
+<span><span class="co">#&gt; &lt;grd_markov&gt;</span></span>
+<span><span class="co">#&gt; 5 states, 3840 observed transitions</span></span>
+<span><span class="co">#&gt;     </span></span>
+<span><span class="co">#&gt;               Q1          Q2          Q3          Q4          Q5</span></span>
+<span><span class="co">#&gt;   Q1 0.934447301 0.065552699 0.000000000 0.000000000 0.000000000</span></span>
+<span><span class="co">#&gt;   Q2 0.005148005 0.929214929 0.065637066 0.000000000 0.000000000</span></span>
+<span><span class="co">#&gt;   Q3 0.000000000 0.003856041 0.934447301 0.061696658 0.000000000</span></span>
+<span><span class="co">#&gt;   Q4 0.000000000 0.000000000 0.000000000 0.938223938 0.061776062</span></span>
+<span><span class="co">#&gt;   Q5 0.000000000 0.000000000 0.000000000 0.000000000 1.000000000</span></span>
+<span><span class="fu"><a href="../reference/transition_matrix.html">transition_matrix</a></span><span class="op">(</span><span class="va">classic</span>, <span class="st">"count"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     </span></span>
+<span><span class="co">#&gt;       Q1  Q2  Q3  Q4  Q5</span></span>
+<span><span class="co">#&gt;   Q1 727  51   0   0   0</span></span>
+<span><span class="co">#&gt;   Q2   4 722  51   0   0</span></span>
+<span><span class="co">#&gt;   Q3   0   3 727  48   0</span></span>
+<span><span class="co">#&gt;   Q4   0   0   0 729  48</span></span>
+<span><span class="co">#&gt;   Q5   0   0   0   0 730</span></span>
+<span><span class="fu"><a href="../reference/steady_state.html">steady_state</a></span><span class="op">(</span><span class="va">classic</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Q1 Q2 Q3 Q4 Q5 </span></span>
+<span><span class="co">#&gt;  0  0  0  0  1</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plot_transition_matrix.html">plot_transition_matrix</a></span><span class="op">(</span><span class="va">classic</span><span class="op">)</span></span></code></pre></div>
+<p><img src="griddy_files/figure-html/unnamed-chunk-6-1.png" alt="Heatmap of classic Markov transition probabilities for US state per-capita income, 1929 to 2009." width="700"></p>
 <p>The diagonal dominance of the matrix — most states stay in their
 starting quintile from one year to the next — is the headline finding
-from this panel and recovers the result Rey (2001) reports.</p>
+from this panel and recovers the result Rey (2001) reports. The
+stationary distribution is a mechanical summary of this empirical
+matrix, not a forecast. Here Q5 is absorbing in the observed one-year
+transitions, so the long-run vector puts all mass in Q5.</p>
 </div>
 <div class="section level2">
 <h2 id="spatial-markov">Spatial Markov<a class="anchor" aria-label="anchor" href="#spatial-markov"></a>
@@ -203,7 +200,7 @@ from this panel and recovers the result Rey (2001) reports.</p>
 class of each unit’s spatial lag. The expectation is that being
 surrounded by rich (or poor) neighbors shifts the transition odds beyond
 what the unit’s own class would predict.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">geom</span> <span class="op">&lt;-</span> <span class="va">us_states</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">usjoin</span><span class="op">$</span><span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -220,40 +217,42 @@ an <code>sf</code> tibble with one row per unit and <code>nb</code> /
 <code>wt</code> list-columns produced by <code>sfdep</code>. Carrying
 weights as columns on the geography keeps the spatial frame, the
 weights, and their row-standardization choice in one tidy object.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">income</span>, geometry <span class="op">=</span> <span class="va">geom</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/lag_intervals.html">lag_intervals</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
-<span><span class="co">##   class  lower  upper type       </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Q1      181   <span style="text-decoration: underline;">1</span>077. spatial_lag</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> Q2     <span style="text-decoration: underline;">1</span>077.  <span style="text-decoration: underline;">2</span>213. spatial_lag</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Q3     <span style="text-decoration: underline;">2</span>213.  <span style="text-decoration: underline;">7</span>052. spatial_lag</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> Q4     <span style="text-decoration: underline;">7</span>052. <span style="text-decoration: underline;">21</span>042. spatial_lag</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> Q5    <span style="text-decoration: underline;">21</span>042. <span style="text-decoration: underline;">52</span>568. spatial_lag</span></span></code></pre>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/transition_matrix.html">transition_matrix</a></span><span class="op">(</span><span class="va">spatial</span>, <span class="st">"probability"</span>, lag_class <span class="op">=</span> <span class="st">"Q1"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##            Q1        Q2 Q3 Q4 Q5</span></span>
-<span><span class="co">## Q1 0.95270270 0.0472973  0  0  0</span></span>
-<span><span class="co">## Q2 0.05263158 0.9473684  0  0  0</span></span>
-<span><span class="co">## Q3         NA        NA NA NA NA</span></span>
-<span><span class="co">## Q4         NA        NA NA NA NA</span></span>
-<span><span class="co">## Q5         NA        NA NA NA NA</span></span></code></pre>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_spatial_markov.html">plot_spatial_markov</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></code></pre></div>
-<p><img src="griddy_files/figure-html/unnamed-chunk-7-1.png" alt="Faceted heatmaps of spatial Markov transition probabilities for US state per-capita income, by spatial-lag quintile." width="700"></p>
+<span><span class="fu"><a href="../reference/lag_intervals.html">lag_intervals</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
+<span><span class="co">#&gt;   class  lower  upper type       </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Q1      181   <span style="text-decoration: underline;">1</span>077. spatial_lag</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Q2     <span style="text-decoration: underline;">1</span>077.  <span style="text-decoration: underline;">2</span>213. spatial_lag</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Q3     <span style="text-decoration: underline;">2</span>213.  <span style="text-decoration: underline;">7</span>052. spatial_lag</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Q4     <span style="text-decoration: underline;">7</span>052. <span style="text-decoration: underline;">21</span>042. spatial_lag</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Q5    <span style="text-decoration: underline;">21</span>042. <span style="text-decoration: underline;">52</span>568. spatial_lag</span></span>
+<span><span class="fu"><a href="../reference/transition_matrix.html">transition_matrix</a></span><span class="op">(</span><span class="va">spatial</span>, <span class="st">"probability"</span>, lag_class <span class="op">=</span> <span class="st">"Q1"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            Q1        Q2 Q3 Q4 Q5</span></span>
+<span><span class="co">#&gt; Q1 0.95270270 0.0472973  0  0  0</span></span>
+<span><span class="co">#&gt; Q2 0.05263158 0.9473684  0  0  0</span></span>
+<span><span class="co">#&gt; Q3         NA        NA NA NA NA</span></span>
+<span><span class="co">#&gt; Q4         NA        NA NA NA NA</span></span>
+<span><span class="co">#&gt; Q5         NA        NA NA NA NA</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plot_spatial_markov.html">plot_spatial_markov</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></code></pre></div>
+<p><img src="griddy_files/figure-html/unnamed-chunk-8-1.png" alt="Faceted heatmaps of spatial Markov transition probabilities for US state per-capita income, by spatial-lag quintile." width="700"></p>
 <p>Reading the facets left to right: states whose neighbors sit in the
 lowest income lag class (Q1) are much stickier at the bottom of the
 distribution than the pooled transition matrix would suggest. The
-spatial context conditioning is what spatial Markov is built to
-surface.</p>
-<p>The lag classes themselves are map-ready. This map shows the starting
-spatial context in 1929: each state’s class is based on the weighted
-income of its neighbors, not on its own income.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+spatial context conditioning is what spatial Markov is built to surface.
+Grey rows indicate lag-class/state combinations with no observed
+transitions, so their probabilities are undefined rather than zero.</p>
+<p>The lag classes themselves are map-ready. The map below uses 1994
+because the spatial-lag distribution is split across two classes in that
+year; at the start of the panel, all states have Q1 spatial lags under
+pooled nominal-income breaks. Each state’s class below is based on the
+weighted income of its neighbors, not on its own income.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lag_map</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">$</span><span class="va">transitions</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">from_time</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">from_time</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">from_time</span> <span class="op">==</span> <span class="fl">1994</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">lag_class</span>, <span class="va">spatial_lag</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">geom</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">NAME</span>, <span class="va">geometry</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span> <span class="op">=</span> <span class="st">"NAME"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -264,14 +263,10 @@ income of its neighbors, not on its own income.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>datum <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Spatial Markov conditions on neighboring-state income"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Spatial-lag class at the start of the panel"</span></span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Spatial-lag class in 1994"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>    plot.title.position <span class="op">=</span> <span class="st">"plot"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="griddy_files/figure-html/unnamed-chunk-8-1.png" alt="Map of contiguous US states showing each state's 1929 spatial-lag income class based on neighboring states." width="652.8"></p>
+<span>  <span class="fu">map_theme</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="griddy_files/figure-html/unnamed-chunk-9-1.png" alt="Map of contiguous US states showing each state's 1994 spatial-lag income class based on neighboring states." width="652.8"></p>
 </div>
 <div class="section level2">
 <h2 id="rank-mobility">Rank Mobility<a class="anchor" aria-label="anchor" href="#rank-mobility"></a>
@@ -281,7 +276,7 @@ of unit ranks between the first and last observed periods. It is
 descriptive and map-ready, not the full PySAL rank-method suite.
 Positive values mean a state moved up the income ranking; negative
 values mean it moved down.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mobility_panel</span> <span class="op">&lt;-</span> <span class="va">usjoin</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">states</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">geom</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span> <span class="op">=</span> <span class="st">"NAME"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -293,50 +288,46 @@ values mean it moved down.</p>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">abs_rank_change</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">start_rank</span>, <span class="va">end_rank</span>, <span class="va">rank_change</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## &lt;grd_rank_mobility&gt;</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
-<span><span class="co">##   name         start_rank end_rank rank_change</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Virginia             36        6          30</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> North Dakota         41       17          24</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Michigan             10       32         -<span style="color: #BB0000;">22</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> Ohio                 12       31         -<span style="color: #BB0000;">19</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> Utah                 29       47         -<span style="color: #BB0000;">18</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> Arizona              24       41         -<span style="color: #BB0000;">17</span></span></span></code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rank_mobility.html">plot_rank_mobility</a></span><span class="op">(</span><span class="va">mobility</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;grd_rank_mobility&gt;</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   name         start_rank end_rank rank_change</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Virginia             36        6          30</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> North Dakota         41       17          24</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Michigan             10       32         -<span style="color: #BB0000;">22</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Ohio                 12       31         -<span style="color: #BB0000;">19</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Utah                 29       47         -<span style="color: #BB0000;">18</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Arizona              24       41         -<span style="color: #BB0000;">17</span></span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plot_rank_mobility.html">plot_rank_mobility</a></span><span class="op">(</span><span class="va">mobility</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span>datum <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Endpoint rank mobility, 1929 to 2009"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Positive values indicate upward movement in the state income ranking"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>    plot.title.position <span class="op">=</span> <span class="st">"plot"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="griddy_files/figure-html/unnamed-chunk-9-1.png" alt="Map of endpoint rank mobility for US states, 1929 to 2009, with positive values indicating upward rank movement." width="700"></p>
+<span>  <span class="fu">map_theme</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="griddy_files/figure-html/unnamed-chunk-10-1.png" alt="Map of endpoint rank mobility for US states, 1929 to 2009, with positive values indicating upward rank movement." width="700"></p>
 <p>For shorter-run churn, use adjacent-period comparisons. The same
 result schema is returned, but each row describes movement from one
 observed period to the next.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adjacent_mobility</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank_mobility.html">rank_mobility</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">income</span>, compare <span class="op">=</span> <span class="st">"adjacent"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">adjacent_mobility</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">abs_rank_change</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">year</span>, <span class="va">to_time</span>, <span class="va">rank_change</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## &lt;grd_rank_mobility&gt;</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
-<span><span class="co">##   name          year to_time rank_change</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> North Dakota  <span style="text-decoration: underline;">1</span>972    <span style="text-decoration: underline;">1</span>973          27</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> North Dakota  <span style="text-decoration: underline;">1</span>946    <span style="text-decoration: underline;">1</span>947          23</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> South Dakota  <span style="text-decoration: underline;">1</span>948    <span style="text-decoration: underline;">1</span>949         -<span style="color: #BB0000;">22</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> North Dakota  <span style="text-decoration: underline;">1</span>961    <span style="text-decoration: underline;">1</span>962          20</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> Iowa          <span style="text-decoration: underline;">1</span>947    <span style="text-decoration: underline;">1</span>948          19</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> North Dakota  <span style="text-decoration: underline;">1</span>975    <span style="text-decoration: underline;">1</span>976         -<span style="color: #BB0000;">18</span></span></span></code></pre>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;grd_rank_mobility&gt;</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   name          year to_time rank_change</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> North Dakota  <span style="text-decoration: underline;">1</span>972    <span style="text-decoration: underline;">1</span>973          27</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> North Dakota  <span style="text-decoration: underline;">1</span>946    <span style="text-decoration: underline;">1</span>947          23</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> South Dakota  <span style="text-decoration: underline;">1</span>948    <span style="text-decoration: underline;">1</span>949         -<span style="color: #BB0000;">22</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> North Dakota  <span style="text-decoration: underline;">1</span>961    <span style="text-decoration: underline;">1</span>962          20</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Iowa          <span style="text-decoration: underline;">1</span>947    <span style="text-decoration: underline;">1</span>948          19</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> North Dakota  <span style="text-decoration: underline;">1</span>975    <span style="text-decoration: underline;">1</span>976         -<span style="color: #BB0000;">18</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="output-schemas">Output schemas<a class="anchor" aria-label="anchor" href="#output-schemas"></a>
@@ -344,28 +335,27 @@ observed period to the next.</p>
 <p>Each result object exposes a tidy <code>transitions</code> table and
 a long <code>matrix</code> table keyed by class labels. Inspecting them
 directly is the simplest way to learn the schema.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">classic</span><span class="op">$</span><span class="va">transitions</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">##   id      from_time to_time from_state to_state transition</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Alabama      <span style="text-decoration: underline;">1</span>929    <span style="text-decoration: underline;">1</span>930 Q1         Q1       Q1 -&gt; Q1  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> Alabama      <span style="text-decoration: underline;">1</span>930    <span style="text-decoration: underline;">1</span>931 Q1         Q1       Q1 -&gt; Q1  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Alabama      <span style="text-decoration: underline;">1</span>931    <span style="text-decoration: underline;">1</span>932 Q1         Q1       Q1 -&gt; Q1  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> Alabama      <span style="text-decoration: underline;">1</span>932    <span style="text-decoration: underline;">1</span>933 Q1         Q1       Q1 -&gt; Q1  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> Alabama      <span style="text-decoration: underline;">1</span>933    <span style="text-decoration: underline;">1</span>934 Q1         Q1       Q1 -&gt; Q1  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> Alabama      <span style="text-decoration: underline;">1</span>934    <span style="text-decoration: underline;">1</span>935 Q1         Q1       Q1 -&gt; Q1</span></span></code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span><span class="op">$</span><span class="va">transitions</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">from_time</span>, <span class="va">to_time</span>, <span class="va">lag_class</span>, <span class="va">transition</span>, <span class="va">spatial_lag</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">##   id      from_time to_time lag_class transition spatial_lag</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> Alabama      <span style="text-decoration: underline;">1</span>929    <span style="text-decoration: underline;">1</span>930 Q1        Q1 -&gt; Q1          382.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> Alabama      <span style="text-decoration: underline;">1</span>930    <span style="text-decoration: underline;">1</span>931 Q1        Q1 -&gt; Q1          326 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> Alabama      <span style="text-decoration: underline;">1</span>931    <span style="text-decoration: underline;">1</span>932 Q1        Q1 -&gt; Q1          276.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> Alabama      <span style="text-decoration: underline;">1</span>932    <span style="text-decoration: underline;">1</span>933 Q1        Q1 -&gt; Q1          211 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> Alabama      <span style="text-decoration: underline;">1</span>933    <span style="text-decoration: underline;">1</span>934 Q1        Q1 -&gt; Q1          207.</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> Alabama      <span style="text-decoration: underline;">1</span>934    <span style="text-decoration: underline;">1</span>935 Q1        Q1 -&gt; Q1          253.</span></span></code></pre>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">classic</span><span class="op">$</span><span class="va">transitions</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt;   id      from_time to_time from_state to_state transition</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Alabama      <span style="text-decoration: underline;">1</span>929    <span style="text-decoration: underline;">1</span>930 Q1         Q1       Q1 -&gt; Q1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Alabama      <span style="text-decoration: underline;">1</span>930    <span style="text-decoration: underline;">1</span>931 Q1         Q1       Q1 -&gt; Q1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Alabama      <span style="text-decoration: underline;">1</span>931    <span style="text-decoration: underline;">1</span>932 Q1         Q1       Q1 -&gt; Q1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Alabama      <span style="text-decoration: underline;">1</span>932    <span style="text-decoration: underline;">1</span>933 Q1         Q1       Q1 -&gt; Q1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Alabama      <span style="text-decoration: underline;">1</span>933    <span style="text-decoration: underline;">1</span>934 Q1         Q1       Q1 -&gt; Q1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Alabama      <span style="text-decoration: underline;">1</span>934    <span style="text-decoration: underline;">1</span>935 Q1         Q1       Q1 -&gt; Q1</span></span>
+<span><span class="va">spatial</span><span class="op">$</span><span class="va">transitions</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">from_time</span>, <span class="va">to_time</span>, <span class="va">lag_class</span>, <span class="va">transition</span>, <span class="va">spatial_lag</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt;   id      from_time to_time lag_class transition spatial_lag</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Alabama      <span style="text-decoration: underline;">1</span>929    <span style="text-decoration: underline;">1</span>930 Q1        Q1 -&gt; Q1          382.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Alabama      <span style="text-decoration: underline;">1</span>930    <span style="text-decoration: underline;">1</span>931 Q1        Q1 -&gt; Q1          326 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Alabama      <span style="text-decoration: underline;">1</span>931    <span style="text-decoration: underline;">1</span>932 Q1        Q1 -&gt; Q1          276.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Alabama      <span style="text-decoration: underline;">1</span>932    <span style="text-decoration: underline;">1</span>933 Q1        Q1 -&gt; Q1          211 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Alabama      <span style="text-decoration: underline;">1</span>933    <span style="text-decoration: underline;">1</span>934 Q1        Q1 -&gt; Q1          207.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Alabama      <span style="text-decoration: underline;">1</span>934    <span style="text-decoration: underline;">1</span>935 Q1        Q1 -&gt; Q1          253.</span></span></code></pre></div>
 <p>For programmatic access, every griddy object also has
 <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> and the S3 generics
 <code><a href="../reference/transition_matrix.html">transition_matrix()</a></code>, <code><a href="../reference/class_intervals.html">class_intervals()</a></code>, and
