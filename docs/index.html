@@ -57,8 +57,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="griddy">griddy<a class="anchor" aria-label="anchor" href="#griddy"></a>
 </h1></div>
-<p><code>griddy</code> is an experimental R package for geospatial distribution dynamics with <code>sf</code> and tidy data. It is inspired by PySAL <code>giddy</code> and by established spatial distribution dynamics work, especially Rey (2001).</p>
-<p>This is not a methods-novelty project. Prior R implementations exist, including <code>estdaR</code> and <code>spdyn</code>. The package target is a maintained, CRAN-grade, long-data, map-ready workflow.</p>
+<p><code>griddy</code> is an experimental R package for geospatial distribution dynamics with <code>sf</code> and tidy data. It is inspired by PySAL <code>giddy</code> and by established spatial distribution dynamics work, especially Rey (2001). Prior R implementations exist, including <code>estdaR</code> and <code>spdyn</code>, but neither is on CRAN or designed along tidy principles. This package is intentionally designed to work best with long data and <code>sf</code> native spatial workflows.</p>
 <p>Current scope:</p>
 <ul>
 <li>classify longitudinal spatial values into comparable classes</li>
@@ -123,7 +122,7 @@
 <ul>
 <li>core workflow and concepts</li>
 <li>
-<code>tidycensus</code> and <code>cancensus</code> templates</li>
+<code>tidycensus</code> and <code>cancensus</code> examples showing applications with US and Canadian census data</li>
 <li>prior-art comparison against <code>estdaR</code> and <code>spdyn</code>
 </li>
 <li>performance benchmarking notes</li>
