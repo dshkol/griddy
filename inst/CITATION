@@ -5,7 +5,7 @@ bibentry(
   title = "{griddy}: Geospatial Distribution Dynamics for Simple Features",
   author = person("Dmitry", "Shkolnik"),
   year = format(Sys.Date(), "%Y"),
-  note = sprintf("R package version %s", utils::packageVersion("griddy")),
+  note = sprintf("R package version %s", meta$Version),
   url = "https://github.com/dshkol/griddy"
 )
 

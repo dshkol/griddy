@@ -21,3 +21,4 @@
 ^tools/benchman$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^CRAN-SUBMISSION$

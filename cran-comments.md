@@ -22,6 +22,13 @@
 * HTML validation was skipped locally because the installed HTML Tidy is not
   recent enough.
 
+## Resubmission
+
+This is a resubmission. In this version I have fixed `inst/CITATION` so it
+does not call `utils::packageVersion("griddy")` before the package is
+installed. The CITATION file now uses the `meta$Version` object supplied by R
+when reading the file.
+
 ## Submission
 
 Initial CRAN release.
