@@ -48,15 +48,14 @@ rank_mobility <- function(data, id, time, value,
       dplyr::slice_tail(n = 1) |>
       dplyr::ungroup()
   } else {
+    unit <- dplyr::pull(ranked, !!id)
     ranked |>
-      dplyr::group_by(!!id) |>
       dplyr::mutate(
-        to_time = dplyr::lead(!!time),
-        to_rank = dplyr::lead(.data$rank),
+        to_time = .grd_lead_within(!!time, unit),
+        to_rank = .grd_lead_within(.data$rank, unit),
         rank_change = .data$rank - .data$to_rank,
         abs_rank_change = abs(.data$rank_change)
       ) |>
-      dplyr::ungroup() |>
       dplyr::filter(!is.na(.data$to_rank))
   }
 

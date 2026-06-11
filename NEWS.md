@@ -1,3 +1,14 @@
+# griddy (development version)
+
+## Performance
+
+- `spatial_markov()`, `markov_dynamics()`, and `rank_mobility(compare =
+  "adjacent")` replace per-unit grouped `dplyr::lead()` calls with a
+  vectorized within-group shift, and `spatial_markov()` computes spatial lags
+  with a single matrix `spdep::lag.listw()` call instead of one call per
+  period. On a 3,600-unit, 10-period panel `spatial_markov()` runs about 4x
+  faster. Outputs are unchanged.
+
 # griddy 0.1.0
 
 Initial CRAN release.

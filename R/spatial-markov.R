@@ -114,17 +114,22 @@ spatial_markov <- function(data, id, time, value,
 
   lag_panel <- flat |>
     dplyr::select(!!id, !!time, !!value) |>
-    dplyr::group_by(!!time) |>
-    dplyr::group_modify(function(.x, .y) {
-      arranged <- .x |>
-        dplyr::arrange(match(.data[[id_name]], id_order))
-      if (!identical(as.character(arranged[[id_name]]), as.character(id_order))) {
-        stop("Each time period must contain the same IDs as the weights object order.", call. = FALSE)
-      }
-      arranged$spatial_lag <- spdep::lag.listw(listw, arranged[[value_name]], zero.policy = zero.policy)
-      arranged
-    }) |>
-    dplyr::ungroup()
+    dplyr::arrange(!!time, match(.data[[id_name]], id_order))
+
+  n_rows <- nrow(lag_panel)
+  if (n_rows %% n_units != 0L ||
+      !identical(
+        as.character(lag_panel[[id_name]]),
+        rep(as.character(id_order), n_rows %/% n_units)
+      )) {
+    stop("Each time period must contain the same IDs as the weights object order.", call. = FALSE)
+  }
+
+  value_matrix <- matrix(lag_panel[[value_name]], nrow = n_units)
+  lag_panel$spatial_lag <- as.vector(
+    spdep::lag.listw(listw, value_matrix, zero.policy = zero.policy)
+  )
+  lag_panel <- dplyr::relocate(lag_panel, !!time)
 
   lag_breaks <- .grd_quantile_breaks(lag_panel$spatial_lag, lag_k)
   lag_intervals <- .grd_break_table(lag_breaks, type = "spatial_lag")
@@ -137,13 +142,14 @@ spatial_markov <- function(data, id, time, value,
   lag_levels <- levels(lag_panel$lag_class)
 
   transitions <- lag_panel |>
-    dplyr::arrange(!!id, !!time) |>
-    dplyr::group_by(!!id) |>
+    dplyr::arrange(!!id, !!time)
+  unit <- transitions[[id_name]]
+
+  transitions <- transitions |>
     dplyr::mutate(
-      to_state = dplyr::lead(.data$value_class),
-      to_time = dplyr::lead(!!time)
+      to_state = .grd_lead_within(.data$value_class, unit),
+      to_time = .grd_lead_within(!!time, unit)
     ) |>
-    dplyr::ungroup() |>
     dplyr::filter(!is.na(.data$to_state)) |>
     dplyr::transmute(
       id = !!id,
