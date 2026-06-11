@@ -92,6 +92,8 @@ microbenchmark(
 
 `griddy` carries the long-format reshape, classification, and label
 preservation overhead that `estdaR::sp.mkv()` skips by working directly on a
-unit-by-period matrix. The expected pattern is that `griddy` is slower at this
-panel size; how much slower is the relevant question. If the gap exceeds an
-order of magnitude on tract-scale panels it should be revisited.
+unit-by-period matrix. Transition tabulation and spatial-lag computation are
+vectorized internally (no per-unit or per-period grouped operations), so the
+remaining gap reflects that bookkeeping. The expected pattern is that `griddy`
+is modestly slower at this panel size; if the gap exceeds an order of
+magnitude on tract-scale panels it should be revisited.
