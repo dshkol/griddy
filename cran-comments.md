@@ -7,28 +7,24 @@
   * Ubuntu latest, R devel
   * Ubuntu latest, R release
   * Ubuntu latest, R oldrel-1
-* R-hub GitHub Actions:
-  * linux, R-devel
-  * windows, R-devel
 * win-builder:
   * R-devel
   * R-release
 
 ## R CMD check results
 
-0 errors | 0 warnings | 2 notes
+0 errors | 0 warnings | 1 note
 
-* New submission.
 * HTML validation was skipped locally because the installed HTML Tidy is not
   recent enough.
 
-## Resubmission
-
-This is a resubmission. In this version I have fixed `inst/CITATION` so it
-does not call `utils::packageVersion("griddy")` before the package is
-installed. The CITATION file now uses the `meta$Version` object supplied by R
-when reading the file.
-
 ## Submission
 
-Initial CRAN release.
+This is a patch release with internal performance improvements. Transition
+tabulation and spatial-lag computation are vectorized (replacing per-unit and
+per-period grouped operations). Outputs are unchanged and the public API is
+unmodified.
+
+## Reverse dependencies
+
+There are currently no reverse dependencies on CRAN.

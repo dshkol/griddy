@@ -1,4 +1,4 @@
-# griddy (development version)
+# griddy 0.1.1
 
 ## Performance
 
