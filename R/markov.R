@@ -29,17 +29,19 @@ markov_dynamics <- function(classes, id, time, state = class) {
   state <- rlang::ensym(state)
 
   data <- .grd_drop_geometry(classes)
+  data <- tibble::new_tibble(lapply(data, identity), nrow = nrow(data))
   state_vec <- dplyr::pull(data, !!state)
   state_levels <- if (is.factor(state_vec)) levels(state_vec) else sort(unique(stats::na.omit(as.character(state_vec))))
 
+  data <- data |>
+    dplyr::arrange(!!id, !!time)
+  unit <- dplyr::pull(data, !!id)
+
   transitions <- data |>
-    dplyr::arrange(!!id, !!time) |>
-    dplyr::group_by(!!id) |>
     dplyr::mutate(
-      to_state = dplyr::lead(!!state),
-      to_time = dplyr::lead(!!time)
+      to_state = .grd_lead_within(!!state, unit),
+      to_time = .grd_lead_within(!!time, unit)
     ) |>
-    dplyr::ungroup() |>
     dplyr::filter(!is.na(.data$to_state)) |>
     dplyr::transmute(
       id = !!id,

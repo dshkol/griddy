@@ -66,6 +66,22 @@
   factor(labels[out], levels = labels, ordered = TRUE)
 }
 
+# Vectorized within-group lead for data sorted by (grp, time). Equivalent to
+# `group_by(grp) |> mutate(out = lead(x))` without per-group slicing overhead.
+.grd_lead_within <- function(x, grp) {
+  n <- length(x)
+  if (n == 0L) {
+    return(x)
+  }
+  out <- x[c(seq_len(n)[-1L], NA_integer_)]
+  a <- grp[-n]
+  b <- grp[-1L]
+  differs <- (a != b) | (is.na(a) != is.na(b))
+  differs[is.na(differs)] <- FALSE
+  out[c(differs, TRUE)] <- NA
+  out
+}
+
 .grd_prob_table <- function(counts) {
   probs <- prop.table(counts, margin = 1)
   probs[is.nan(probs)] <- NA_real_
