@@ -49,6 +49,9 @@ reference:
       - spatial_markov
       - lag_intervals
       - rank_mobility
+  - title: Inference
+    contents:
+      - homogeneity_test
   - title: Plotting
     contents:
       - plot_transition_matrix

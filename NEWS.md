@@ -1,5 +1,15 @@
 # griddy (development version)
 
+## New features
+
+- `homogeneity_test()` tests whether transition dynamics differ across
+  regimes -- for `grd_spatial_markov` objects, whether the matrices
+  conditioned on spatial-lag class differ from the pooled matrix (Rey, Kang,
+  and Wolf 2016). Reports the Pearson chi-squared Q and likelihood-ratio
+  tests with the Bickenbach--Bald (2003) degrees-of-freedom adjustment and
+  the Kullback (1962) information test, all validated against PySAL `giddy`
+  via static fixtures. A list method accepts arbitrary regime count matrices.
+
 # griddy 0.1.1
 
 ## Performance

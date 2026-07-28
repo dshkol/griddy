@@ -95,6 +95,31 @@ test_that("estdaR spatial Markov agrees on bundled state example when installed"
   expect_equal(unname(grd_counts), unname(prior$Transitions))
 })
 
+test_that("homogeneity_test agrees with the PySAL giddy oracle fixtures", {
+  mats <- lapply(1:5, function(idx) {
+    as.matrix(utils::read.csv(
+      test_path("fixtures", "pysal", sprintf("pysal_spatial_counts_lag_%d.csv", idx))
+    ))
+  })
+  fixture <- utils::read.csv(
+    test_path("fixtures", "pysal", "pysal_spatial_homogeneity.csv")
+  )
+
+  out <- homogeneity_test(mats)
+
+  expect_equal(out$statistic[out$test == "chi2"], fixture$Q)
+  expect_equal(out$p_value[out$test == "chi2"], fixture$Q_p_value)
+  expect_equal(out$statistic[out$test == "likelihood_ratio"], fixture$LR)
+  expect_equal(out$p_value[out$test == "likelihood_ratio"], fixture$LR_p_value)
+  expect_equal(out$df[out$test != "kullback"], rep(fixture$dof, 2))
+  expect_equal(out$statistic[out$test == "kullback"], fixture$kullback)
+  expect_equal(out$df[out$test == "kullback"], fixture$kullback_dof)
+  expect_lt(
+    abs(out$p_value[out$test == "kullback"] - fixture$kullback_p_value),
+    1e-15
+  )
+})
+
 test_that("PySAL giddy oracle comparison is optional", {
   skip_if(Sys.which("python3") == "", "python3 not available")
   code <- "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('giddy') else 1)"
