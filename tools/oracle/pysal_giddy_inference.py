@@ -10,12 +10,33 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy.stats import chi2
+
+
+def kullback_with_origin_margins(F: np.ndarray) -> tuple[float, int, float]:
+    """Kullback conditional-homogeneity test using initial-state totals."""
+
+    def xlogx(values: np.ndarray) -> float:
+        positive = values > 0
+        return float(np.sum(values[positive] * np.log(values[positive])))
+
+    pooled = F.sum(axis=0)
+    statistic = 2 * (
+        sum(xlogx(regime) for regime in F)
+        - sum(xlogx(regime.sum(axis=1)) for regime in F)
+        - xlogx(pooled)
+        + xlogx(pooled.sum(axis=1))
+    )
+    statistic = max(0.0, statistic)
+    strata, states, _ = F.shape
+    dof = states * (strata - 1) * (states - 1)
+    return statistic, dof, float(chi2.sf(statistic, dof))
 
 
 def main() -> None:
     try:
         import libpysal
-        from giddy.markov import Spatial_Markov, kullback
+        from giddy.markov import Spatial_Markov
     except Exception as exc:  # pragma: no cover - development helper
         raise SystemExit(f"Install libpysal and giddy first: {exc}") from exc
 
@@ -26,7 +47,7 @@ def main() -> None:
     w.transform = "r"
 
     spatial = Spatial_Markov(rpci, w, fixed=True, k=5, m=5)
-    kb = kullback(spatial.T)
+    kb_statistic, kb_dof, kb_p_value = kullback_with_origin_margins(spatial.T)
 
     out_dir = Path("tests/testthat/fixtures/pysal")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -38,9 +59,9 @@ def main() -> None:
             "LR": [spatial.LR],
             "LR_p_value": [spatial.LR_p_value],
             "dof": [spatial.dof_hom],
-            "kullback": [kb["Conditional homogeneity"]],
-            "kullback_dof": [kb["Conditional homogeneity dof"]],
-            "kullback_p_value": [kb["Conditional homogeneity pvalue"]],
+            "kullback": [kb_statistic],
+            "kullback_dof": [kb_dof],
+            "kullback_p_value": [kb_p_value],
         }
     ).to_csv(out_dir / "pysal_spatial_homogeneity.csv", index=False)
 

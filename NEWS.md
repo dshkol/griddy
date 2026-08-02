@@ -7,8 +7,12 @@
   conditioned on spatial-lag class differ from the pooled matrix (Rey, Kang,
   and Wolf 2016). Reports the Pearson chi-squared Q and likelihood-ratio
   tests with the Bickenbach--Bald (2003) degrees-of-freedom adjustment and
-  the Kullback (1962) information test, all validated against PySAL `giddy`
-  via static fixtures. A list method accepts arbitrary regime count matrices.
+  the Kullback (1962) information test. The first two are validated against
+  PySAL `giddy` via static fixtures. The Kullback statistic uses the
+  origin-state margins required by the conditional likelihood, deliberately
+  differing from `giddy.markov.kullback()` through giddy 2.3.9 when transition
+  tables are not flow-balanced. A list method accepts arbitrary regime count
+  matrices.
 
 # griddy 0.1.1
 

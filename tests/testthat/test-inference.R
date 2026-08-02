@@ -53,20 +53,15 @@ test_that("kullback statistic reproduces the published Kullback (1962) example",
   expect_lt(kb$p_value, 1e-6)
 })
 
-test_that("identical regimes are homogeneous under the chi2 and LR tests", {
+test_that("identical regimes are homogeneous under every test", {
   m <- matrix(c(10, 5, 3, 12), nrow = 2)
-  out <- homogeneity_test(list(m, m))
-  bb <- out[out$test != "kullback", ]
 
-  expect_equal(bb$statistic, rep(0, 2), tolerance = 1e-10)
-  expect_equal(bb$p_value, rep(1, 2))
-  # The Kullback statistic is not exactly zero for identical regimes (its
-  # marginal term uses terminal-state totals); giddy agrees on this value.
-  expect_equal(
-    out$statistic[out$test == "kullback"],
-    1.0698498515574215,
-    tolerance = 1e-10
-  )
+  for (scale in c(1, 10, 100, 1000)) {
+    out <- homogeneity_test(list(m * scale, m * scale))
+
+    expect_equal(out$statistic, rep(0, 3), tolerance = 1e-9)
+    expect_equal(out$p_value, rep(1, 3))
+  }
 })
 
 test_that("homogeneity_test returns a tidy three-row tibble", {
@@ -92,5 +87,25 @@ test_that("invalid inputs are rejected", {
   expect_error(
     homogeneity_test(list(m, matrix(c(-1, 2, 3, 4), 2))),
     "non-negative"
+  )
+  expect_error(
+    homogeneity_test(list(m, matrix(c(1, 2, 3, Inf), 2))),
+    "finite"
+  )
+  expect_error(
+    homogeneity_test(list(m, matrix(c(1, 2, 3, NA), 2))),
+    "finite"
+  )
+  expect_error(
+    homogeneity_test(list(m, matrix(c(1, 2, 3, 4.5), 2))),
+    "whole-number"
+  )
+  expect_error(
+    homogeneity_test(list(m, matrix(0, 2, 2))),
+    "at least one transition"
+  )
+  expect_error(
+    homogeneity_test(list(m, matrix(letters[1:4], 2))),
+    "numeric"
   )
 })

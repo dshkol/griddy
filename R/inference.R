@@ -6,8 +6,11 @@
 #' Wolf 2016). Three statistics are reported: a Pearson chi-squared Q test and
 #' a likelihood-ratio test with the degrees-of-freedom adjustment of
 #' Bickenbach and Bald (2003), and the Kullback information test (Kullback,
-#' Kupperman, and Ku 1962). All mirror their PySAL `giddy` counterparts
-#' (`Spatial_Markov` homogeneity attributes and `giddy.markov.kullback()`).
+#' Kupperman, and Ku 1962). The Pearson and likelihood-ratio statistics mirror
+#' the PySAL `giddy` `Spatial_Markov` homogeneity attributes. The Kullback
+#' statistic uses origin-state (row) margins; this deliberately differs from
+#' `giddy.markov.kullback()` through giddy 2.3.9, which uses terminal-state
+#' (column) margins for the stratum-specific term.
 #'
 #' @param x A `grd_spatial_markov` object, or a list of regime transition
 #'   count matrices of identical dimensions (counts, not probabilities).
@@ -61,6 +64,12 @@ homogeneity_test.list <- function(x, ...) {
   }
   mats <- lapply(x, function(m) {
     m <- as.matrix(m)
+    if (!is.numeric(m)) {
+      stop(
+        "Regime matrices must contain numeric transition counts.",
+        call. = FALSE
+      )
+    }
     storage.mode(m) <- "double"
     m
   })
@@ -71,9 +80,27 @@ homogeneity_test.list <- function(x, ...) {
       call. = FALSE
     )
   }
-  if (any(vapply(mats, function(m) anyNA(m) || any(m < 0), logical(1)))) {
+  if (any(vapply(mats, function(m) any(!is.finite(m)), logical(1)))) {
+    stop(
+      "Regime matrices must contain finite transition counts.",
+      call. = FALSE
+    )
+  }
+  if (any(vapply(mats, function(m) any(m < 0), logical(1)))) {
     stop(
       "Regime matrices must contain non-negative transition counts.",
+      call. = FALSE
+    )
+  }
+  if (any(vapply(mats, function(m) any(m != floor(m)), logical(1)))) {
+    stop(
+      "Regime matrices must contain whole-number transition counts.",
+      call. = FALSE
+    )
+  }
+  if (any(vapply(mats, function(m) sum(m) == 0, logical(1)))) {
+    stop(
+      "Each regime matrix must contain at least one transition.",
       call. = FALSE
     )
   }
@@ -121,8 +148,10 @@ homogeneity_test.list <- function(x, ...) {
   )
 }
 
-# Kullback information test of conditional homogeneity, mirroring
-# giddy.markov.kullback().
+# Kullback information test of conditional homogeneity. The stratum-specific
+# nuisance margins are origin-state (row) totals. giddy <= 2.3.9 instead sums
+# terminal-state columns here; the distinction vanishes for flow-balanced
+# transition tables but not for aggregated panels with endpoint imbalance.
 .grd_kullback <- function(mats) {
   s <- length(mats)
   r <- nrow(mats[[1]])
@@ -132,9 +161,9 @@ homogeneity_test.list <- function(x, ...) {
   pooled <- Reduce(`+`, mats)
   t2 <- 2 * xlogx(pooled)
   t3 <- 2 * xlogx(rowSums(pooled))
-  t4 <- 2 * sum(vapply(mats, function(m) xlogx(colSums(m)), numeric(1)))
+  t4 <- 2 * sum(vapply(mats, function(m) xlogx(rowSums(m)), numeric(1)))
 
-  statistic <- t1 - t4 - t2 + t3
+  statistic <- max(0, t1 - t4 - t2 + t3)
   dof <- as.integer(r * (s - 1) * (r - 1))
   list(
     statistic = statistic,
