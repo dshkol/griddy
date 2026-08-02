@@ -49,6 +49,11 @@ reference:
       - spatial_markov
       - lag_intervals
       - rank_mobility
+  - title: Chain Summaries
+    contents:
+      - sojourn_time
+      - first_passage
+      - mobility_index
   - title: Plotting
     contents:
       - plot_transition_matrix
