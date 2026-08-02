@@ -32,9 +32,18 @@ test_that("first_passage matches the two-state closed form", {
   expect_equal(unname(diag(m)), unname(1 / steady_state(toy_prob())))
 })
 
-test_that("first_passage rejects non-ergodic chains", {
+test_that("first_passage rejects reducible chains", {
   absorbing <- matrix(c(0.5, 0.5, 0, 1), nrow = 2, byrow = TRUE)
-  expect_error(first_passage(absorbing), "ergodic")
+  expect_error(first_passage(absorbing), "irreducible")
+})
+
+test_that("first_passage supports irreducible periodic chains", {
+  periodic <- matrix(c(0, 1, 1, 0), nrow = 2, byrow = TRUE)
+
+  expect_equal(
+    unname(first_passage(periodic)),
+    matrix(c(2, 1, 1, 2), nrow = 2, byrow = TRUE)
+  )
 })
 
 test_that("mobility_index matches closed forms on the toy matrix", {
@@ -74,5 +83,8 @@ test_that("invalid transition matrices are rejected", {
     "missing"
   )
   expect_error(mobility_index(toy_prob(), initial = c(0.4, 0.4)), "initial")
+  expect_error(mobility_index(toy_prob(), initial = c(NA, 1)), "finite")
+  expect_error(mobility_index(toy_prob(), initial = c(Inf, 0)), "finite")
+  expect_error(mobility_index(toy_prob(), initial = c("0.5", "0.5")), "finite")
   expect_error(mobility_index(matrix(1, 1, 1)), "two classes")
 })

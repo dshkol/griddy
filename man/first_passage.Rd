@@ -8,8 +8,8 @@ first_passage(x)
 }
 \arguments{
 \item{x}{A \code{grd_markov} object or a square transition probability matrix.
-The underlying chain must be ergodic (irreducible and aperiodic);
-matrices with absorbing or unreachable classes are rejected.}
+The underlying chain must be irreducible; periodic chains are supported,
+while matrices with absorbing or unreachable classes are rejected.}
 }
 \value{
 A square numeric matrix of mean first-passage times.

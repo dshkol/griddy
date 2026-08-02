@@ -41,8 +41,8 @@ sojourn_time.default <- function(x) {
 #' the reciprocal of the stationary distribution.
 #'
 #' @param x A `grd_markov` object or a square transition probability matrix.
-#'   The underlying chain must be ergodic (irreducible and aperiodic);
-#'   matrices with absorbing or unreachable classes are rejected.
+#'   The underlying chain must be irreducible; periodic chains are supported,
+#'   while matrices with absorbing or unreachable classes are rejected.
 #'
 #' @return A square numeric matrix of mean first-passage times.
 #'
@@ -68,7 +68,7 @@ first_passage.default <- function(x) {
   stat <- .grd_stationary(P)
   if (anyNA(stat) || any(stat <= .Machine$double.eps)) {
     stop(
-      "`first_passage()` requires an ergodic chain: every class must be ",
+      "`first_passage()` requires an irreducible chain: every class must be ",
       "reachable and have positive stationary probability.",
       call. = FALSE
     )
@@ -79,7 +79,7 @@ first_passage.default <- function(x) {
     error = function(e) {
       stop(
         "`first_passage()` could not invert the fundamental matrix; ",
-        "the chain is not ergodic.",
+        "the chain is not irreducible.",
         call. = FALSE
       )
     }
@@ -150,10 +150,12 @@ mobility_index.default <- function(x,
   if (is.null(initial)) {
     initial <- rep(1 / k, k)
   }
-  if (length(initial) != k || any(initial < 0) ||
+  if (!is.numeric(initial) || length(initial) != k ||
+      any(!is.finite(initial)) || any(initial < 0) ||
       abs(sum(initial) - 1) > 1e-6) {
     stop(
-      "`initial` must be a probability distribution with one entry per class.",
+      "`initial` must be a finite numeric probability distribution with one ",
+      "entry per class.",
       call. = FALSE
     )
   }
