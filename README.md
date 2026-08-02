@@ -8,14 +8,21 @@ Current scope:
 - estimate classic Markov transition matrices
 - estimate spatial Markov transition matrices conditioned on spatial lag class
 - compute simple rank mobility
+- summarize sojourn times, first-passage times, and scalar Markov mobility
+- test whether transition dynamics differ across regimes
 - return tidy tables and `ggplot2` plots
 
-The initial CRAN release focuses on the core classification, Markov, spatial Markov, rank mobility, and plotting workflows.
+Version 0.2.0 extends the core workflow with chain summaries and inferential
+tests for transition-regime homogeneity.
 
 ## Installation
 
 ```r
-# install.packages("pak")
+# CRAN release
+install.packages("griddy")
+
+# Development version
+install.packages("pak")
 pak::pak("dshkol/griddy")
 ```
 

@@ -7,24 +7,19 @@
   * Ubuntu latest, R devel
   * Ubuntu latest, R release
   * Ubuntu latest, R oldrel-1
-* win-builder:
-  * R-devel
-  * R-release
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* HTML validation was skipped locally because the installed HTML Tidy is not
-  recent enough.
+0 errors | 0 warnings | 0 notes
 
 ## Submission
 
-This is a patch release with internal performance improvements. Transition
-tabulation and spatial-lag computation are vectorized (replacing per-unit and
-per-period grouped operations). Outputs are unchanged and the public API is
-unmodified.
+This is a minor release following the initial CRAN release, version 0.1.0.
+It adds expected sojourn times, mean first-passage times, scalar Markov
+mobility indices, and transition-regime homogeneity tests. It also includes
+internal performance improvements to transition tabulation and spatial-lag
+computation. Existing public interfaces remain compatible.
 
 ## Reverse dependencies
 
-There are currently no reverse dependencies on CRAN.
+The current CRAN index reports no reverse dependencies.
