@@ -122,6 +122,32 @@ test_that("homogeneity_test agrees with independently generated fixtures", {
   )
 })
 
+test_that("ergodic measures agree with the PySAL giddy oracle fixtures", {
+  p <- as.matrix(
+    utils::read.csv(test_path("fixtures", "pysal", "pysal_classic_probabilities.csv"))
+  )
+
+  mfpt_fixture <- as.matrix(
+    utils::read.csv(test_path("fixtures", "pysal", "pysal_classic_mfpt.csv"))
+  )
+  expect_equal(unname(first_passage(p)), unname(mfpt_fixture))
+
+  sojourn_fixture <- utils::read.csv(
+    test_path("fixtures", "pysal", "pysal_classic_sojourn.csv")
+  )
+  expect_equal(unname(sojourn_time(p)), sojourn_fixture$sojourn)
+
+  mobility_fixture <- utils::read.csv(
+    test_path("fixtures", "pysal", "pysal_classic_mobility.csv")
+  )
+  out <- mobility_index(p)
+  expect_equal(unname(out["prais"]), mobility_fixture$P)
+  expect_equal(unname(out["determinant"]), mobility_fixture$D)
+  expect_equal(unname(out["eigen"]), mobility_fixture$L2)
+  expect_equal(unname(out["bartholomew1"]), mobility_fixture$B1)
+  expect_equal(unname(out["bartholomew2"]), mobility_fixture$B2)
+})
+
 test_that("PySAL giddy oracle comparison is optional", {
   skip_if(Sys.which("python3") == "", "python3 not available")
   code <- "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('giddy') else 1)"

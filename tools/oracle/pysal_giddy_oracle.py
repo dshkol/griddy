@@ -38,6 +38,21 @@ def main() -> None:
     for idx, matrix in enumerate(spatial.P, start=1):
         pd.DataFrame(matrix).to_csv(out_dir / f"pysal_spatial_probabilities_lag_{idx}.csv", index=False)
 
+    from giddy.ergodic import mfpt
+    from giddy.markov import sojourn_time
+    from giddy.mobility import markov_mobility
+
+    p = np.asarray(classic.p)
+    pd.DataFrame(mfpt(p)).to_csv(out_dir / "pysal_classic_mfpt.csv", index=False)
+    pd.DataFrame({"sojourn": sojourn_time(p)}).to_csv(
+        out_dir / "pysal_classic_sojourn.csv", index=False
+    )
+    mobility = {
+        code: markov_mobility(p, measure=code)
+        for code in ["P", "D", "L2", "B1", "B2"]
+    }
+    pd.DataFrame([mobility]).to_csv(out_dir / "pysal_classic_mobility.csv", index=False)
+
 
 if __name__ == "__main__":
     main()

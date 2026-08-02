@@ -2,6 +2,14 @@
 
 ## New features
 
+- `sojourn_time()`, `first_passage()`, and `mobility_index()` compute expected
+  sojourn times, Kemeny--Snell mean first-passage times, and scalar Markov
+  mobility indices (Prais--Shorrocks, determinant, Sommers--Conlisk
+  eigenvalue, and both Bartholomew indices) from `grd_markov` objects or raw
+  transition probability matrices. Results are validated against PySAL
+  `giddy` (`ergodic.mfpt`, `markov.sojourn_time`,
+  `mobility.markov_mobility`) via static fixtures.
+
 - `homogeneity_test()` tests whether transition dynamics differ across
   regimes -- for `grd_spatial_markov` objects, whether the matrices
   conditioned on spatial-lag class differ from the pooled matrix (Rey, Kang,
