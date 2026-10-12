@@ -6,21 +6,22 @@
   sojourn times, Kemeny--Snell mean first-passage times, and scalar Markov
   mobility indices (Prais--Shorrocks, determinant, Sommers--Conlisk
   eigenvalue, and both Bartholomew indices) from `grd_markov` objects or raw
-  transition probability matrices. Results are validated against PySAL
-  `giddy` (`ergodic.mfpt`, `markov.sojourn_time`,
-  `mobility.markov_mobility`) via static fixtures.
+  transition probability matrices. Static fixtures validate results against
+  PySAL `giddy` (`ergodic.mfpt`, `markov.sojourn_time`,
+  `mobility.markov_mobility`).
 
 - `homogeneity_test()` tests whether transition dynamics differ across
-  regimes -- for `grd_spatial_markov` objects, whether the matrices
+  regimes. For `grd_spatial_markov` objects, it tests whether the matrices
   conditioned on spatial-lag class differ from the pooled matrix (Rey, Kang,
-  and Wolf 2016). Reports the Pearson chi-squared Q and likelihood-ratio
+  and Wolf 2016). It reports the Pearson chi-squared Q and likelihood-ratio
   tests with the Bickenbach--Bald (2003) degrees-of-freedom adjustment and
-  the Kullback (1962) information test. The first two are validated against
-  PySAL `giddy` via static fixtures. The Kullback statistic uses the
+  the Kullback (1962) information test. Static fixtures validate the first two
+  against PySAL `giddy`. The Kullback statistic uses the
   origin-state margins required by the conditional likelihood, deliberately
   differing from `giddy.markov.kullback()` through giddy 2.3.9 when transition
-  tables are not flow-balanced. A list method accepts arbitrary regime count
-  matrices.
+  tables are not flow-balanced (reported upstream in
+  [giddy issue 259](https://github.com/pysal/giddy/issues/259)). A list
+  method accepts arbitrary regime count matrices.
 
 # griddy 0.1.1
 

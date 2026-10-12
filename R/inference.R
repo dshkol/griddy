@@ -10,7 +10,8 @@
 #' the PySAL `giddy` `Spatial_Markov` homogeneity attributes. The Kullback
 #' statistic uses origin-state (row) margins; this deliberately differs from
 #' `giddy.markov.kullback()` through giddy 2.3.9, which uses terminal-state
-#' (column) margins for the stratum-specific term.
+#' (column) margins for the stratum-specific term (reported upstream as
+#' <https://github.com/pysal/giddy/issues/259>).
 #'
 #' @param x A `grd_spatial_markov` object, or a list of regime transition
 #'   count matrices of identical dimensions (counts, not probabilities).

@@ -92,7 +92,7 @@ first_passage.default <- function(x) {
 
 #' Markov Mobility Indices
 #'
-#' Computes scalar mobility indices summarising how much movement a transition
+#' Computes scalar mobility indices summarizing how much movement a transition
 #' probability matrix implies, following Formby, Smith, and Zheng (2004) and
 #' mirroring `giddy.mobility.markov_mobility()` in PySAL `giddy`.
 #'

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">griddy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,23 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.0" id="griddy-010">griddy 0.1.0<a class="anchor" aria-label="anchor" href="#griddy-010"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="griddy-020">griddy 0.2.0<a class="anchor" aria-label="anchor" href="#griddy-020"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-2-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
+<ul><li><p><code><a href="../reference/sojourn_time.html">sojourn_time()</a></code>, <code><a href="../reference/first_passage.html">first_passage()</a></code>, and <code><a href="../reference/mobility_index.html">mobility_index()</a></code> compute expected sojourn times, Kemeny–Snell mean first-passage times, and scalar Markov mobility indices (Prais–Shorrocks, determinant, Sommers–Conlisk eigenvalue, and both Bartholomew indices) from <code>grd_markov</code> objects or raw transition probability matrices. Static fixtures validate results against PySAL <code>giddy</code> (<code>ergodic.mfpt</code>, <code>markov.sojourn_time</code>, <code>mobility.markov_mobility</code>).</p></li>
+<li><p><code><a href="../reference/homogeneity_test.html">homogeneity_test()</a></code> tests whether transition dynamics differ across regimes. For <code>grd_spatial_markov</code> objects, it tests whether the matrices conditioned on spatial-lag class differ from the pooled matrix (Rey, Kang, and Wolf 2016). It reports the Pearson chi-squared Q and likelihood-ratio tests with the Bickenbach–Bald (2003) degrees-of-freedom adjustment and the Kullback (1962) information test. Static fixtures validate the first two against PySAL <code>giddy</code>. The Kullback statistic uses the origin-state margins required by the conditional likelihood, deliberately differing from <code>giddy.markov.kullback()</code> through giddy 2.3.9 when transition tables are not flow-balanced (reported upstream in <a href="https://github.com/pysal/giddy/issues/259" class="external-link">giddy issue 259</a>). A list method accepts arbitrary regime count matrices.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="griddy-011">griddy 0.1.1<a class="anchor" aria-label="anchor" href="#griddy-011"></a></h2>
+<div class="section level3">
+<h3 id="performance-0-1-1">Performance<a class="anchor" aria-label="anchor" href="#performance-0-1-1"></a></h3>
+<ul><li>
+<code><a href="../reference/spatial_markov.html">spatial_markov()</a></code>, <code><a href="../reference/markov_dynamics.html">markov_dynamics()</a></code>, and <code>rank_mobility(compare = "adjacent")</code> replace per-unit grouped <code><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">dplyr::lead()</a></code> calls with a vectorized within-group shift, and <code><a href="../reference/spatial_markov.html">spatial_markov()</a></code> computes spatial lags with a single matrix <code><a href="https://r-spatial.github.io/spdep/reference/lag.listw.html" class="external-link">spdep::lag.listw()</a></code> call instead of one call per period. On a 3,600-unit, 10-period panel <code><a href="../reference/spatial_markov.html">spatial_markov()</a></code> runs about 4x faster. Outputs are unchanged.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.0" id="griddy-010">griddy 0.1.0<a class="anchor" aria-label="anchor" href="#griddy-010"></a></h2><p class="text-muted">CRAN release: 2026-05-30</p>
 <p>Initial CRAN release.</p>
 <div class="section level3">
 <h3 id="workflow-0-1-0">Workflow<a class="anchor" aria-label="anchor" href="#workflow-0-1-0"></a></h3>
