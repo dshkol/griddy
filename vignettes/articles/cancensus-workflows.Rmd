@@ -15,9 +15,10 @@ library(griddy)
 library(dplyr)
 ```
 
-This article is a website-only template for Canadian Census workflows: it
-requires live CensusMapper access, so it is rendered on the pkgdown site when
-the API key is set and skipped otherwise. It does not ship with the installed
+This article runs the core `griddy` workflow on census tracts in the City of
+Vancouver, using median total household income from the 2016 and 2021
+censuses (incomes for 2015 and 2020). It needs a CensusMapper API key. It
+renders on the pkgdown site when one is set and does not ship with the
 package.
 
 ```{r, results='hide', fig.alt=c("Heatmap of Canadian Census tract transition probabilities between income quintiles.", "Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile.")}
@@ -68,5 +69,22 @@ plot_transition_matrix(classic)
 plot_spatial_markov(spatial)
 ```
 
-Canadian census geographies can change between cycles. A production workflow
-should harmonize geography before treating units as a longitudinal panel.
+## Reading the output
+
+With two censuses, each tract contributes exactly one transition, from 2016
+to 2021. The first plot is the transition matrix over those moves. The second
+splits them by the income class of each tract's neighbors in 2016. With one
+transition per tract, the conditional matrices rest on few observations, so
+treat them as an illustration.
+
+## Before using this for analysis
+
+- **Incomes are nominal.** 2015 and 2020 incomes are not adjusted for
+  inflation, so pooled classes mix shared growth with relative movement.
+  Divide each census's incomes by their median before classifying to study
+  relative movement.
+- **Tract boundaries change between censuses.** Matching on `GeoUID` keeps
+  tracts whose identifier persisted, but a persisting identifier does not
+  guarantee an unchanged boundary. The
+  [`tongfen`](https://CRAN.R-project.org/package=tongfen) package builds a
+  common geography across census years.
