@@ -36,6 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/griddy.html">Core Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/prior-art-comparison.html">Prior Art Comparison</a></li>
+    <li><a class="dropdown-item" href="../articles/giddy-coverage.html">Coverage of PySAL giddy</a></li>
     <li><a class="dropdown-item" href="../articles/tidycensus-workflows.html">tidycensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cancensus-workflows.html">cancensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/performance.html">Performance</a></li>
@@ -67,10 +68,10 @@
 
     
     
-<p>Performance matters because spatial Markov workflows can touch tract
-panels with thousands of units and many periods. This vignette records
-the benchmark shape. It is evaluated for pkgdown and skipped during
-package checks.</p>
+<p>Spatial Markov workflows often run on tract panels with thousands of
+units and many periods. This article times <code>griddy</code> on a
+panel of that size and compares it with <code>estdaR</code>. It runs
+when the site is built, not during package checks.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dshkol/griddy" class="external-link">griddy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span></span>
@@ -82,9 +83,9 @@ package checks.</p>
 <div class="section level2">
 <h2 id="synthetic-grid-panel">Synthetic grid panel<a class="anchor" aria-label="anchor" href="#synthetic-grid-panel"></a>
 </h2>
-<p>A 60 by 60 queen-contiguity grid over ten time periods exercises the
-same classification and spatial-lag code paths a tract-scale panel
-would.</p>
+<p>A 60 by 60 queen-contiguity grid over ten periods, 3,600 units in
+all, exercises the same classification and spatial-lag code as a
+tract-scale panel.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">make_panel</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nx</span> <span class="op">=</span> <span class="fl">60</span>, <span class="va">ny</span> <span class="op">=</span> <span class="fl">60</span>, <span class="va">years</span> <span class="op">=</span> <span class="fl">2010</span><span class="op">:</span><span class="fl">2019</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html" class="external-link">st_make_grid</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="fl">0</span>, ymin <span class="op">=</span> <span class="fl">0</span>, xmax <span class="op">=</span> <span class="va">nx</span>, ymax <span class="op">=</span> <span class="va">ny</span><span class="op">)</span><span class="op">)</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">nx</span>, <span class="va">ny</span><span class="op">)</span><span class="op">)</span></span>
@@ -118,32 +119,21 @@ would.</p>
 <span>  spatial <span class="op">=</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">fx</span><span class="op">$</span><span class="va">panel</span>, <span class="va">id</span>, <span class="va">year</span>, <span class="va">value</span>, geometry <span class="op">=</span> <span class="va">geom</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
 <span>  times <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in microbenchmark(classify = classify_dynamics(fx$panel, id, year, :</span></span>
-<span><span class="co">## less accurate nanosecond times to avoid potential integer overflows</span></span></code></pre>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
 <span><span class="co">##      expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span><span class="co">##  classify 16.34280 16.55334 16.91835 16.91209 17.36739 17.41614     5 a  </span></span>
-<span><span class="co">##    markov 26.58969 29.24407 29.28188 29.39671 30.06116 31.11777     5  b </span></span>
-<span><span class="co">##   spatial 41.93414 42.28260 44.05484 42.65210 43.79173 49.61361     5   c</span></span></code></pre>
+<span><span class="co">##  classify 15.22166 15.29501 15.69858 15.39341 15.95019 16.63263     5 a  </span></span>
+<span><span class="co">##    markov 25.17289 27.02970 27.64828 27.64224 28.78905 29.60749     5  b </span></span>
+<span><span class="co">##   spatial 39.54594 40.03355 41.70417 40.62407 42.54074 45.77654     5   c</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="comparison-against-estdar">Comparison against estdaR<a class="anchor" aria-label="anchor" href="#comparison-against-estdar"></a>
 </h2>
 <p>The next chunk runs only when <code>estdaR</code> is installed. It
 calls <code><a href="../reference/spatial_markov.html">griddy::spatial_markov()</a></code> and
-<code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> on the same wide panel, matched class
-breaks, and identical weights. Any difference at this point reflects
-implementation overhead, not differing inputs.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">estdaR</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Loading required package: ggplot2</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: package 'ggplot2' was built under R version 4.5.2</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span>
-<span><span class="co">## Attaching package: 'estdaR'</span></span></code></pre>
-<pre><code><span><span class="co">## The following objects are masked from 'package:spdep':</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">##     geary, moran</span></span></code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> on the same panel, with matched class
+breaks and identical weights, so any difference is implementation
+overhead.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wide_panel</span> <span class="op">&lt;-</span> <span class="va">fx</span><span class="op">$</span><span class="va">panel</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>id_cols <span class="op">=</span> <span class="va">id</span>, names_from <span class="op">=</span> <span class="va">year</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -151,23 +141,27 @@ implementation overhead, not differing inputs.</p>
 <span></span>
 <span><span class="va">wide_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">wide_panel</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span></span>
+<span><span class="va">bench</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span></span>
 <span>  griddy <span class="op">=</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">fx</span><span class="op">$</span><span class="va">panel</span>, <span class="va">id</span>, <span class="va">year</span>, <span class="va">value</span>, geometry <span class="op">=</span> <span class="va">geom</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
 <span>  estdaR <span class="op">=</span> <span class="fu">estdaR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">sp.mkv</a></span><span class="op">(</span><span class="va">wide_mat</span>, <span class="va">listw</span>, classes <span class="op">=</span> <span class="fl">5</span>, fixed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  times <span class="op">=</span> <span class="fl">5</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="va">bench</span></span></code></pre></div>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
 <span><span class="co">##    expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span><span class="co">##  griddy 39.31613 41.36265 41.95270 42.09609 43.41117 43.57746     5  a </span></span>
-<span><span class="co">##  estdaR 30.07629 30.46230 32.31071 32.57741 32.80574 35.63179     5   b</span></span></code></pre>
-<p><code>griddy</code> carries the long-format reshape, classification,
-and label preservation overhead that <code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> skips
-by working directly on a unit-by-period matrix. Transition tabulation
-and spatial-lag computation are vectorized internally (no per-unit or
-per-period grouped operations), so the remaining gap reflects that
-bookkeeping. The expected pattern is that <code>griddy</code> is
-modestly slower at this panel size; if the gap exceeds an order of
-magnitude on tract-scale panels it should be revisited.</p>
+<span><span class="co">##  griddy 37.31176 39.98796 39.62876 39.99423 40.27774 40.57212     5  a </span></span>
+<span><span class="co">##  estdaR 27.82916 29.20024 30.71335 30.89699 31.02741 34.61298     5   b</span></span></code></pre>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># griddy's median time as a multiple of estdaR's</span></span>
+<span><span class="va">medians</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">bench</span><span class="op">)</span><span class="op">$</span><span class="va">median</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">medians</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="va">medians</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 1.3</span></span></code></pre>
+<p><code>griddy</code> is somewhat slower, and the gap is bookkeeping.
+<code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> works directly on a unit-by-period matrix.
+<code>griddy</code> reshapes a long panel, classifies it, and keeps
+unit, time, class, and spatial-lag labels attached to every transition.
+Transition counts and spatial lags are computed in single vectorized
+passes, with no per-unit or per-period grouping.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

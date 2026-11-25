@@ -36,6 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/griddy.html">Core Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/prior-art-comparison.html">Prior Art Comparison</a></li>
+    <li><a class="dropdown-item" href="../articles/giddy-coverage.html">Coverage of PySAL giddy</a></li>
     <li><a class="dropdown-item" href="../articles/tidycensus-workflows.html">tidycensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cancensus-workflows.html">cancensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/performance.html">Performance</a></li>
@@ -71,10 +72,13 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dshkol/griddy" class="external-link">griddy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
-<p>This article is a website-only template for ACS workflows: it
-requires a Census API key and live data, so it is rendered on the
-pkgdown site when the key is set and skipped otherwise. It does not ship
-with the installed package.</p>
+<p>This article runs the core <code>griddy</code> workflow on census
+tracts in San Francisco, using median household income (ACS table
+B19013) from three five-year American Community Survey samples:
+2008–2012, 2013–2017, and 2018–2022. The samples do not overlap, so each
+tract contributes two transitions. The article needs a Census API key.
+It renders on the pkgdown site when one is set and does not ship with
+the package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span></code></pre></div>
@@ -154,9 +158,41 @@ with the installed package.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rank_mobility.html">plot_rank_mobility</a></span><span class="op">(</span><span class="va">mobility</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tidycensus-workflows_files/figure-html/unnamed-chunk-2-3.png" alt="Map of ACS tract endpoint rank mobility." width="700"></p>
-<p>For package-ready examples, cache a small static panel instead of
-calling the API at build time.</p>
-  </main>
+<div class="section level2">
+<h2 id="reading-the-output">Reading the output<a class="anchor" aria-label="anchor" href="#reading-the-output"></a>
+</h2>
+<p>The first plot is the classic transition matrix: the probability that
+a tract in one income class is in each class five years later, pooled
+over both steps. The second splits the same transitions by the income
+class of each tract’s neighbors at the start of the step. The map shows
+each tract’s change in income rank between the first and last
+samples.</p>
+</div>
+<div class="section level2">
+<h2 id="before-using-this-for-analysis">Before using this for analysis<a class="anchor" aria-label="anchor" href="#before-using-this-for-analysis"></a>
+</h2>
+<p>Two simplifications keep the example short.</p>
+<ul>
+<li>
+<strong>Incomes are not comparable across samples.</strong> Each
+sample reports income in dollars of its own final year. With pooled
+breaks, inflation and citywide growth move most tracts into higher
+classes, so the matrix mixes shared growth with relative movement. To
+study relative movement, divide each sample’s incomes by their median
+before classifying. <a href="griddy.html">Get Started</a> does the same
+with state incomes and the national mean.</li>
+<li>
+<strong>Tract boundaries changed in 2020.</strong> The 2008–2012 and
+2013–2017 samples use 2010 tracts, and the 2018–2022 sample uses 2020
+tracts. Matching on <code>GEOID</code> keeps tracts whose identifier
+persisted, but a persisting identifier does not guarantee an unchanged
+boundary, and split or merged tracts drop out. Interpolate the earlier
+samples to 2020 tracts first, for example with
+<code><a href="https://walker-data.com/tidycensus/reference/interpolate_pw.html" class="external-link">tidycensus::interpolate_pw()</a></code>.</li>
+</ul>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

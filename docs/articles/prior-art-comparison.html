@@ -36,6 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/griddy.html">Core Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/prior-art-comparison.html">Prior Art Comparison</a></li>
+    <li><a class="dropdown-item" href="../articles/giddy-coverage.html">Coverage of PySAL giddy</a></li>
     <li><a class="dropdown-item" href="../articles/tidycensus-workflows.html">tidycensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cancensus-workflows.html">cancensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/performance.html">Performance</a></li>
@@ -68,30 +69,28 @@
     
     
 <p><code>estdaR</code> (Vallone et al.) and <code>spdyn</code> (Loaiza)
-are prior R implementations of spatial distribution dynamics methods.
-Both predate <code>griddy</code> and remain useful as methodological
-comparators, but neither is available from CRAN. That matters for
-reproducibility and installability: <code>griddy</code> packages the
-same core spatial Markov workflow behind a CRAN-oriented,
-<code>sf</code>-first interface with long panels, tidy outputs,
-map-ready objects, and attached unit identities, time indexes, class
-labels, transition labels, and spatial-lag intervals.</p>
-<p>This vignette shows that <code><a href="../reference/spatial_markov.html">griddy::spatial_markov()</a></code>
+are earlier R implementations of spatial distribution dynamics methods.
+Both remain useful comparators, but neither is on CRAN, which makes them
+harder to install and to depend on. <code>griddy</code> implements the
+same core spatial Markov workflow for long <code>sf</code> panels, and
+its outputs keep unit identities, time indexes, class labels, transition
+labels, and spatial-lag intervals attached.</p>
+<p>This article shows that <code><a href="../reference/spatial_markov.html">griddy::spatial_markov()</a></code>
 produces the same transition counts as <code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> and
-<code>spdyn::spMarkov()</code> on a shared panel, and walks through
-where the conventions intentionally differ.</p>
-<p>The prior-art oracle fixture used here was generated from non-CRAN
-installs:</p>
+<code>spdyn::spMarkov()</code> on a shared panel, and lists the
+conventions that differ between them. The comparison against PySAL
+<code>giddy</code>, which <code>griddy</code> uses as its main
+validation oracle, is in <a href="giddy-coverage.html">Coverage of PySAL
+giddy</a>.</p>
+<p>When both packages are installed, the article calls them directly.
+Otherwise it reads a fixture generated from non-CRAN installs by this
+script, so the site build does not depend on either package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"amvallone/estdaR"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"spdyn"</span>, repos <span class="op">=</span> <span class="st">"https://download.r-forge.r-project.org"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"tools/oracle/r_prior_art_oracles.R"</span><span class="op">)</span></span></code></pre></div>
-<p>The live packages are used when they are installed. Otherwise the
-site renders against the checked-in fixture produced by that script,
-which keeps the comparison visible without making the website build
-depend on non-CRAN packages.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dshkol/griddy" class="external-link">griddy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -154,11 +153,8 @@ weights.</p>
 <div class="section level2">
 <h2 id="cross-package-agreement">Cross-package agreement<a class="anchor" aria-label="anchor" href="#cross-package-agreement"></a>
 </h2>
-<p>The next chunk uses live <code>estdaR</code> and <code>spdyn</code>
-calls when both packages are installed. Otherwise, it compares against
-the committed oracle fixture produced from those packages. This keeps
-the rendered site explicit about the agreement without making the
-website build depend on packages that are not available from CRAN.</p>
+<p>The next chunk compares <code>griddy</code>’s counts with both
+packages, live or from the fixture as described above.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">has_live_oracles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"estdaR"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"spdyn"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>

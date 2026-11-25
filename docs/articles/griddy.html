@@ -36,6 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/griddy.html">Core Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/prior-art-comparison.html">Prior Art Comparison</a></li>
+    <li><a class="dropdown-item" href="../articles/giddy-coverage.html">Coverage of PySAL giddy</a></li>
     <li><a class="dropdown-item" href="../articles/tidycensus-workflows.html">tidycensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cancensus-workflows.html">cancensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/performance.html">Performance</a></li>
@@ -269,14 +270,108 @@ weighted income of its neighbors, not on its own income.</p>
 <p><img src="griddy_files/figure-html/unnamed-chunk-9-1.png" alt="Map of contiguous US states showing each state's 1994 spatial-lag income class based on neighboring states." width="652.8"></p>
 </div>
 <div class="section level2">
+<h2 id="chain-summaries">Chain Summaries<a class="anchor" aria-label="anchor" href="#chain-summaries"></a>
+</h2>
+<p>The chain summaries need a chain in which every class can be reached
+from every other. The nominal-income chain above is not one: incomes
+rise across the whole panel, states drift into Q5 and stay there, and
+<code><a href="../reference/first_passage.html">first_passage()</a></code> stops with an error. Dividing each state’s
+income by the national mean for that year removes the shared growth.
+This relative income is the series that Rey (2001) and PySAL
+<code>giddy</code> use.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">relative</span> <span class="op">&lt;-</span> <span class="va">panel</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>rel_income <span class="op">=</span> <span class="va">income</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">income</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">rel_classes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify_dynamics.html">classify_dynamics</a></span><span class="op">(</span><span class="va">relative</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">rel_income</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">rel_chain</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/markov_dynamics.html">markov_dynamics</a></span><span class="op">(</span><span class="va">rel_classes</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">class</span><span class="op">)</span></span>
+<span><span class="va">rel_chain</span></span>
+<span><span class="co">#&gt; &lt;grd_markov&gt;</span></span>
+<span><span class="co">#&gt; 5 states, 3840 observed transitions</span></span>
+<span><span class="co">#&gt;     </span></span>
+<span><span class="co">#&gt;               Q1          Q2          Q3          Q4          Q5</span></span>
+<span><span class="co">#&gt;   Q1 0.914618370 0.075032342 0.009055627 0.001293661 0.000000000</span></span>
+<span><span class="co">#&gt;   Q2 0.065703022 0.826544021 0.105124836 0.001314060 0.001314060</span></span>
+<span><span class="co">#&gt;   Q3 0.005208333 0.102864583 0.794270833 0.095052083 0.002604167</span></span>
+<span><span class="co">#&gt;   Q4 0.000000000 0.009138381 0.093994778 0.848563969 0.048302872</span></span>
+<span><span class="co">#&gt;   Q5 0.000000000 0.000000000 0.000000000 0.062176166 0.937823834</span></span></code></pre></div>
+<p><code><a href="../reference/steady_state.html">steady_state()</a></code> gives the long-run share of states in
+each class. <code><a href="../reference/sojourn_time.html">sojourn_time()</a></code> gives the expected number of
+consecutive years a state stays in a class once it enters it.
+<code><a href="../reference/first_passage.html">first_passage()</a></code> gives the expected number of years to reach
+one class from another; its diagonal is the expected time to return to
+the same class.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/steady_state.html">steady_state</a></span><span class="op">(</span><span class="va">rel_chain</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        Q1        Q2        Q3        Q4        Q5 </span></span>
+<span><span class="co">#&gt; 0.1795738 0.2163144 0.2149994 0.2113466 0.1777658</span></span>
+<span><span class="fu"><a href="../reference/sojourn_time.html">sojourn_time</a></span><span class="op">(</span><span class="va">rel_chain</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        Q1        Q2        Q3        Q4        Q5 </span></span>
+<span><span class="co">#&gt; 11.712121  5.765152  4.860759  6.603448 16.083333</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="../reference/first_passage.html">first_passage</a></span><span class="op">(</span><span class="va">rel_chain</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       Q1   Q2   Q3   Q4    Q5</span></span>
+<span><span class="co">#&gt; Q1   5.6 14.9 26.1 51.5 121.7</span></span>
+<span><span class="co">#&gt; Q2  50.7  4.6 16.1 42.0 112.0</span></span>
+<span><span class="co">#&gt; Q3  71.8 24.0  4.7 27.4  98.3</span></span>
+<span><span class="co">#&gt; Q4  87.2 39.1 18.7  4.7  74.4</span></span>
+<span><span class="co">#&gt; Q5 103.2 55.2 34.7 16.1   5.6</span></span></code></pre></div>
+<p>Relative incomes are persistent at both ends of the distribution. A
+state that enters the bottom class stays there for about 12 years on
+average, and one that enters the top class for about 16, against 5 to 7
+years in the middle classes. Reaching the top class from the bottom
+takes about 122 years on average, longer than the 81-year panel.</p>
+<p><code><a href="../reference/mobility_index.html">mobility_index()</a></code> reduces the matrix to a single number.
+The default, Prais–Shorrocks, is 0 when no state ever changes class and
+grows as more probability sits off the diagonal. The other measures
+follow Formby, Smith, and Zheng (2004) and match
+<code>giddy.mobility.markov_mobility()</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mobility_index.html">mobility_index</a></span><span class="op">(</span><span class="va">rel_chain</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        prais  determinant        eigen bartholomew1 bartholomew2 </span></span>
+<span><span class="co">#&gt;   0.16954474   0.54106184   0.04173880   0.16954474   0.03553575</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="testing-homogeneity">Testing Homogeneity<a class="anchor" aria-label="anchor" href="#testing-homogeneity"></a>
+</h2>
+<p>The spatial Markov matrices differ visibly by lag class.
+<code><a href="../reference/homogeneity_test.html">homogeneity_test()</a></code> asks whether the differences are larger
+than sampling variation would produce. Its null hypothesis is that every
+lag class shares the pooled transition matrix.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rel_spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span></span>
+<span>  <span class="va">relative</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">rel_income</span>,</span>
+<span>  geometry <span class="op">=</span> <span class="va">geom</span>, k <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/homogeneity_test.html">homogeneity_test</a></span><span class="op">(</span><span class="va">rel_spatial</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
+<span><span class="co">#&gt;   test             statistic    df  p_value</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> chi2                  201.    60 4.72<span style="color: #949494;">e</span><span style="color: #BB0000;">-17</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> likelihood_ratio      171.    60 1.49<span style="color: #949494;">e</span><span style="color: #BB0000;">-12</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> kullback              171.    60 1.49<span style="color: #949494;">e</span><span style="color: #BB0000;">-12</span></span></span></code></pre></div>
+<p>All three tests reject homogeneity. Where a state’s neighbors sit in
+the income distribution changes its own transition probabilities. The
+<code>chi2</code> and <code>likelihood_ratio</code> rows match
+<code>giddy</code>’s <code>Spatial_Markov</code> output for this panel.
+Degrees of freedom follow Bickenbach and Bode (2003), which drop
+transitions that are never observed. The <code>kullback</code> row
+equals the <code>likelihood_ratio</code> row by construction;
+<code><a href="../reference/homogeneity_test.html">?homogeneity_test</a></code> explains why. To test regimes other than
+spatial-lag classes, pass a list of count matrices; <a href="https://dshkol.github.io/griddy/articles/giddy-coverage.html">Coverage
+of PySAL giddy</a> works through LISA quadrants as an example.</p>
+</div>
+<div class="section level2">
 <h2 id="rank-mobility">Rank Mobility<a class="anchor" aria-label="anchor" href="#rank-mobility"></a>
 </h2>
-<p>Rank mobility is intentionally simple in v0.1: an endpoint comparison
-of unit ranks between the first and last observed periods. It is
-descriptive and map-ready, not the full PySAL rank-method suite.
-Positive values mean a state moved up the income ranking; negative
-values mean it moved down.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p><code><a href="../reference/rank_mobility.html">rank_mobility()</a></code> compares each state’s income rank
+between two periods. By default it compares the first and last observed
+periods. Positive values mean a state moved up the income ranking;
+negative values mean it moved down. Rank-based Markov chains and the
+Kendall’s tau family are not <code>griddy</code> functions; the coverage
+article gives recipes for the chains and lists what is planned.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mobility_panel</span> <span class="op">&lt;-</span> <span class="va">usjoin</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">states</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">geom</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span> <span class="op">=</span> <span class="st">"NAME"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -307,11 +402,11 @@ values mean it moved down.</p>
 <span>    subtitle <span class="op">=</span> <span class="st">"Positive values indicate upward movement in the state income ranking"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">map_theme</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="griddy_files/figure-html/unnamed-chunk-10-1.png" alt="Map of endpoint rank mobility for US states, 1929 to 2009, with positive values indicating upward rank movement." width="700"></p>
+<p><img src="griddy_files/figure-html/unnamed-chunk-14-1.png" alt="Map of endpoint rank mobility for US states, 1929 to 2009, with positive values indicating upward rank movement." width="700"></p>
 <p>For shorter-run churn, use adjacent-period comparisons. The same
 result schema is returned, but each row describes movement from one
 observed period to the next.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adjacent_mobility</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank_mobility.html">rank_mobility</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">income</span>, compare <span class="op">=</span> <span class="st">"adjacent"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">adjacent_mobility</span> <span class="op">|&gt;</span></span>
@@ -335,7 +430,7 @@ observed period to the next.</p>
 <p>Each result object exposes a tidy <code>transitions</code> table and
 a long <code>matrix</code> table keyed by class labels. Inspecting them
 directly is the simplest way to learn the schema.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">classic</span><span class="op">$</span><span class="va">transitions</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
 <span><span class="co">#&gt;   id      from_time to_time from_state to_state transition</span></span>
@@ -360,6 +455,18 @@ directly is the simplest way to learn the schema.</p>
 <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> and the S3 generics
 <code><a href="../reference/transition_matrix.html">transition_matrix()</a></code>, <code><a href="../reference/class_intervals.html">class_intervals()</a></code>, and
 (for spatial objects) <code><a href="../reference/lag_intervals.html">lag_intervals()</a></code>.</p>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Bickenbach, F., and Bode, E. (2003). Evaluating the Markov property
+in studies of economic convergence. <em>International Regional Science
+Review</em>, 26(3), 363–392. <a href="https://doi.org/10.1177/0160017603253789" class="external-link uri">https://doi.org/10.1177/0160017603253789</a></p>
+<p>Formby, J. P., Smith, W. J., and Zheng, B. (2004). Mobility
+measurement, transition matrices and statistical inference. <em>Journal
+of Econometrics</em>, 120(1), 181–205. <a href="https://doi.org/10.1016/S0304-4076(03)00211-2" class="external-link uri">https://doi.org/10.1016/S0304-4076(03)00211-2</a></p>
+<p>Rey, S. J. (2001). Spatial empirics for economic growth and
+convergence. <em>Geographical Analysis</em>, 33(3), 195–214. <a href="https://doi.org/10.1111/j.1538-4632.2001.tb00444.x" class="external-link uri">https://doi.org/10.1111/j.1538-4632.2001.tb00444.x</a></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
