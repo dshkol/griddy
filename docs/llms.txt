@@ -1,0 +1,186 @@
+# griddy
+
+`griddy` is an R package for geospatial distribution dynamics with `sf`
+and tidy data. It is inspired by PySAL `giddy` and by established
+spatial distribution dynamics work, especially Rey (2001). Prior R
+implementations exist, including `estdaR` and `spdyn`, but neither is on
+CRAN or designed along tidy principles. This package is designed to work
+best with long data and `sf` native spatial workflows.
+
+Current scope:
+
+- classify longitudinal spatial values into comparable classes
+- estimate classic Markov transition matrices
+- estimate spatial Markov transition matrices conditioned on spatial lag
+  class
+- compute simple rank mobility
+- summarize sojourn times, first-passage times, and scalar Markov
+  mobility
+- test whether transition dynamics differ across regimes
+- return tidy tables and `ggplot2` plots
+
+Version 0.2.0 extends the core workflow with chain summaries and
+inferential tests for transition-regime homogeneity.
+
+## Installation
+
+``` r
+# CRAN release
+install.packages("griddy")
+
+# Development version
+install.packages("pak")
+pak::pak("dshkol/griddy")
+```
+
+The minimal example below also uses `spData` for state geometry:
+
+``` r
+install.packages("spData")
+```
+
+## What it does
+
+`griddy` keeps the workflow keyed by explicit `id`, `time`, and `value`
+columns instead of matrix row position. The analytical outputs preserve
+transition labels, class intervals, and spatial-lag intervals so they
+can be inspected, joined, and plotted without reverse-engineering array
+dimensions.
+
+## Minimal example
+
+The bundled `usjoin` panel is the canonical PySAL `giddy` reference
+dataset: 48 contiguous US states, per-capita personal income, 1929 to
+2009.
+
+``` r
+library(griddy)
+library(dplyr)
+library(sf)
+library(sfdep)
+library(spData)
+
+data(usjoin)
+
+geom <- us_states |>
+  filter(NAME %in% usjoin$name) |>
+  arrange(NAME) |>
+  mutate(
+    nb = st_contiguity(geometry),
+    wt = st_weights(nb)
+  )
+
+panel <- usjoin |>
+  filter(name %in% geom$NAME) |>
+  arrange(name, year)
+
+classes <- classify_dynamics(panel, name, year, income, k = 5)
+classic <- markov_dynamics(classes, name, year, class)
+spatial <- spatial_markov(panel, name, year, income, geometry = geom, k = 5)
+
+classic$transitions |> select(id, from_time, to_time, transition) |> head()
+lag_intervals(spatial)
+```
+
+[`spatial_markov()`](https://dshkol.github.io/griddy/reference/spatial_markov.md)
+takes a `geometry` argument: an `sf` tibble with one row per spatial
+unit and `nb` / `wt` list-columns produced by `sfdep`. This keeps the
+spatial frame, neighbor structure, and row-standardization choice in one
+tidy object. `listw` and `nb` arguments remain accepted for
+compatibility with existing workflows.
+
+## Documentation
+
+The pkgdown site is organized around:
+
+- core workflow and concepts, including chain summaries and homogeneity
+  tests
+- `tidycensus` and `cancensus` examples showing applications with US and
+  Canadian census data
+- coverage of PySAL `giddy`: what `griddy` implements, short recipes for
+  the rest, and what is planned
+- prior-art comparison against `estdaR` and `spdyn`
+- performance benchmarking notes
+- a usage guide for LLMs and coding agents, with an
+  [`llms.txt`](https://dshkol.github.io/griddy/llms.txt) index of the
+  site
+
+AI coding agents contributing to `griddy` should start with
+[`AGENTS.md`](https://github.com/dshkol/griddy/blob/main/AGENTS.md).
+
+# Package index
+
+## Core Workflow
+
+- [`classify_dynamics()`](https://dshkol.github.io/griddy/reference/classify_dynamics.md)
+  : Classify Longitudinal Values For Distribution Dynamics
+- [`class_intervals()`](https://dshkol.github.io/griddy/reference/class_intervals.md)
+  : Class Intervals Used By A griddy Object
+- [`markov_dynamics()`](https://dshkol.github.io/griddy/reference/markov_dynamics.md)
+  : Estimate Classic Markov Transition Dynamics
+- [`transition_matrix()`](https://dshkol.github.io/griddy/reference/transition_matrix.md)
+  : Extract A Transition Matrix
+- [`steady_state()`](https://dshkol.github.io/griddy/reference/steady_state.md)
+  : Estimate Stationary Distribution
+- [`spatial_markov()`](https://dshkol.github.io/griddy/reference/spatial_markov.md)
+  : Estimate Spatial Markov Transition Dynamics
+- [`lag_intervals()`](https://dshkol.github.io/griddy/reference/lag_intervals.md)
+  : Spatial Lag Intervals Used By A Spatial Markov Object
+- [`rank_mobility()`](https://dshkol.github.io/griddy/reference/rank_mobility.md)
+  : Compute Rank Mobility
+
+## Chain Summaries
+
+- [`sojourn_time()`](https://dshkol.github.io/griddy/reference/sojourn_time.md)
+  : Expected Sojourn Times
+- [`first_passage()`](https://dshkol.github.io/griddy/reference/first_passage.md)
+  : Mean First-Passage Times
+- [`mobility_index()`](https://dshkol.github.io/griddy/reference/mobility_index.md)
+  : Markov Mobility Indices
+
+## Inference
+
+- [`homogeneity_test()`](https://dshkol.github.io/griddy/reference/homogeneity_test.md)
+  : Test Homogeneity Of Transition Matrices Across Regimes
+
+## Plotting
+
+- [`plot_transition_matrix()`](https://dshkol.github.io/griddy/reference/plot_transition_matrix.md)
+  : Plot A Transition Matrix
+- [`plot_spatial_markov()`](https://dshkol.github.io/griddy/reference/plot_spatial_markov.md)
+  : Plot Spatial Markov Matrices
+- [`plot_rank_mobility()`](https://dshkol.github.io/griddy/reference/plot_rank_mobility.md)
+  : Plot Rank Mobility
+
+## Data
+
+- [`usjoin`](https://dshkol.github.io/griddy/reference/usjoin.md) : US
+  State Per-Capita Personal Income, 1929-2009
+
+# Articles
+
+### Get Started
+
+- [Geospatial Distribution Dynamics With
+  griddy](https://dshkol.github.io/griddy/articles/griddy.md):
+
+### Data Workflows
+
+- [Working With
+  tidycensus](https://dshkol.github.io/griddy/articles/tidycensus-workflows.md):
+- [Working With
+  cancensus](https://dshkol.github.io/griddy/articles/cancensus-workflows.md):
+
+### Validation And Benchmarks
+
+- [Coverage of PySAL
+  giddy](https://dshkol.github.io/griddy/articles/giddy-coverage.md):
+- [Comparing Against estdaR and
+  spdyn](https://dshkol.github.io/griddy/articles/prior-art-comparison.md):
+- [Performance
+  Benchmarks](https://dshkol.github.io/griddy/articles/performance.md):
+
+### For LLMs And Agents
+
+- [Usage Guide for LLMs and
+  Agents](https://dshkol.github.io/griddy/articles/llm-usage.md):

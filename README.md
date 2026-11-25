@@ -88,3 +88,6 @@ The pkgdown site is organized around:
 - coverage of PySAL `giddy`: what `griddy` implements, short recipes for the rest, and what is planned
 - prior-art comparison against `estdaR` and `spdyn`
 - performance benchmarking notes
+- a usage guide for LLMs and coding agents, with an [`llms.txt`](https://dshkol.github.io/griddy/llms.txt) index of the site
+
+AI coding agents contributing to `griddy` should start with [`AGENTS.md`](https://github.com/dshkol/griddy/blob/main/AGENTS.md).

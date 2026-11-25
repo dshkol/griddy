@@ -11,6 +11,10 @@ home:
       href: articles/griddy.html
     - text: GitHub
       href: https://github.com/dshkol/griddy
+    - text: Usage guide for LLMs and agents
+      href: articles/llm-usage.html
+    - text: llms.txt
+      href: llms.txt
 
 navbar:
   structure:
@@ -35,6 +39,8 @@ navbar:
           href: articles/cancensus-workflows.html
         - text: Performance
           href: articles/performance.html
+        - text: Usage Guide for LLMs and Agents
+          href: articles/llm-usage.html
     github:
       icon: fab fa-github
       aria-label: GitHub repository
@@ -82,3 +88,6 @@ articles:
       - articles/giddy-coverage
       - articles/prior-art-comparison
       - articles/performance
+  - title: For LLMs And Agents
+    contents:
+      - articles/llm-usage
