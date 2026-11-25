@@ -53,7 +53,8 @@ The comparison uses the `spData` US states income panel because it is available
 from CRAN and can be represented in the wide shape expected by both prior R
 implementations. `estdaR` and `spdyn` consume `listw` objects from `spdep`;
 `griddy` accepts the same object for compatibility, so all three methods use
-identical row-standardized weights.
+identical row-standardized weights. `row.names = states$NAME` gives the weights
+region ids, which `griddy` uses to match them to the panel's `NAME`.
 
 ```{r}
 data(us_states, package = "spData")
@@ -73,7 +74,7 @@ panel <- states |>
   ) |>
   mutate(year = if_else(year == "median_income_10", 2010L, 2015L))
 
-nb <- poly2nb(states, queen = TRUE)
+nb <- poly2nb(states, queen = TRUE, row.names = states$NAME)
 listw <- nb2listw(nb, style = "W")
 
 spatial <- spatial_markov(panel, NAME, year, income, listw = listw, k = 5)

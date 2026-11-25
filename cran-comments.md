@@ -19,8 +19,12 @@
 This release adds expected sojourn times, mean first-passage times, scalar
 Markov mobility indices, and tests of whether transition dynamics differ
 across regimes. It also speeds up transition tabulation and spatial-lag
-computation. Existing functions keep their interfaces and outputs; there are
-no breaking changes.
+computation, and fixes `spatial_markov()`, which matched spatial weights to
+units by row position and so gave wrong results without an error when the
+weights were not sorted by unit id. It now matches them by id. Existing calls
+keep working; where the weights carry no ids, `spatial_markov()` still matches
+by position and now warns. There are no other changes to existing interfaces
+or outputs.
 
 ## Reverse dependencies
 

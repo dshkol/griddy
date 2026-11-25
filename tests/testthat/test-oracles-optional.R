@@ -15,9 +15,11 @@ state_income_panel <- function() {
   list(states = states, panel = panel)
 }
 
-griddy_state_spatial_counts <- function() {
+griddy_state_spatial_counts <- function(rows = NULL) {
   fx <- state_income_panel()
-  listw <- spdep::nb2listw(spdep::poly2nb(fx$states, queen = TRUE), style = "W")
+  states <- if (is.null(rows)) fx$states else fx$states[rows, ]
+  nb <- spdep::poly2nb(states, queen = TRUE, row.names = states$NAME)
+  listw <- spdep::nb2listw(nb, style = "W")
   grd <- spatial_markov(fx$panel, NAME, year, income, listw = listw, k = 5)
   aperm(array(
     grd$matrix$n,
@@ -36,11 +38,22 @@ test_that("static R-side spatial Markov oracle fixture agrees", {
   expect_equal(unname(counts), unname(fixtures$spdyn_spatial_counts))
 })
 
+test_that("static R-side spatial Markov oracle agrees when the weights are shuffled", {
+  skip_if_not_installed("spData")
+
+  fixtures <- readRDS(test_path("fixtures", "r_prior_spatial_counts.rds"))
+  n <- nrow(state_income_panel()$states)
+  counts <- griddy_state_spatial_counts(rows = c(seq(2, n, by = 2), seq(1, n, by = 2)))
+
+  expect_equal(unname(counts), unname(fixtures$estdaR_spatial_counts))
+})
+
 test_that("transition_matrix for spatial objects returns aggregated 5x5 matrices", {
   skip_if_not_installed("spData")
 
   fx <- state_income_panel()
-  listw <- spdep::nb2listw(spdep::poly2nb(fx$states, queen = TRUE), style = "W")
+  nb <- spdep::poly2nb(fx$states, queen = TRUE, row.names = fx$states$NAME)
+  listw <- spdep::nb2listw(nb, style = "W")
   grd <- spatial_markov(fx$panel, NAME, year, income, listw = listw, k = 5)
 
   counts <- transition_matrix(grd, "count", lag_class = "Q1")
