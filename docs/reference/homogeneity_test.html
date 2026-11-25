@@ -6,22 +6,14 @@ Wolf 2016). Three statistics are reported: a Pearson chi-squared Q test and
 a likelihood-ratio test with the degrees-of-freedom adjustment of
 Bickenbach and Bald (2003), and the Kullback information test (Kullback,
 Kupperman, and Ku 1962). The Pearson and likelihood-ratio statistics mirror
-the PySAL giddy Spatial_Markov homogeneity attributes. The Kullback
-statistic uses origin-state (row) margins; this deliberately differs from
-giddy.markov.kullback() through giddy 2.3.9, which uses terminal-state
-(column) margins for the stratum-specific term (reported upstream as
-https://github.com/pysal/giddy/issues/259)."><meta property="og:description" content="Tests whether transition dynamics are homogeneous across regimes – for a
+the PySAL giddy Spatial_Markov homogeneity attributes."><meta property="og:description" content="Tests whether transition dynamics are homogeneous across regimes – for a
 spatial Markov object, whether the transition matrices conditioned on
 spatial-lag class genuinely differ from the pooled matrix (Rey, Kang, and
 Wolf 2016). Three statistics are reported: a Pearson chi-squared Q test and
 a likelihood-ratio test with the degrees-of-freedom adjustment of
 Bickenbach and Bald (2003), and the Kullback information test (Kullback,
 Kupperman, and Ku 1962). The Pearson and likelihood-ratio statistics mirror
-the PySAL giddy Spatial_Markov homogeneity attributes. The Kullback
-statistic uses origin-state (row) margins; this deliberately differs from
-giddy.markov.kullback() through giddy 2.3.9, which uses terminal-state
-(column) margins for the stratum-specific term (reported upstream as
-https://github.com/pysal/giddy/issues/259)."></head><body>
+the PySAL giddy Spatial_Markov homogeneity attributes."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -70,11 +62,7 @@ Wolf 2016). Three statistics are reported: a Pearson chi-squared Q test and
 a likelihood-ratio test with the degrees-of-freedom adjustment of
 Bickenbach and Bald (2003), and the Kullback information test (Kullback,
 Kupperman, and Ku 1962). The Pearson and likelihood-ratio statistics mirror
-the PySAL <code>giddy</code> <code>Spatial_Markov</code> homogeneity attributes. The Kullback
-statistic uses origin-state (row) margins; this deliberately differs from
-<code>giddy.markov.kullback()</code> through giddy 2.3.9, which uses terminal-state
-(column) margins for the stratum-specific term (reported upstream as
-<a href="https://github.com/pysal/giddy/issues/259" class="external-link">https://github.com/pysal/giddy/issues/259</a>).</p>
+the PySAL <code>giddy</code> <code>Spatial_Markov</code> homogeneity attributes.</p>
     </div>
 
     <div class="section level2">
@@ -101,6 +89,21 @@ count matrices of identical dimensions (counts, not probabilities).</p></dd>
 <code>kullback</code>) and columns <code>test</code>, <code>statistic</code>, <code>df</code>, and <code>p_value</code>. The
 null hypothesis is that all regimes share the pooled transition matrix;
 small p-values indicate the conditional dynamics differ.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The Kullback statistic uses origin-state (row) margins, which makes it
+algebraically identical to the likelihood-ratio statistic. It is reported
+for comparability with <code>giddy.markov.kullback()</code> and uses the same
+Bickenbach–Bald degrees of freedom as the other two tests. giddy 2.3.9 and
+earlier differ in two ways: the stratum-specific term uses terminal-state
+(column) margins (fixed upstream in
+<a href="https://github.com/pysal/giddy/pull/260" class="external-link">https://github.com/pysal/giddy/pull/260</a>), and the degrees of freedom are
+the unadjusted \(r(s - 1)(r - 1)\), which overstates them when some
+transitions are never observed (see
+<a href="https://github.com/pysal/giddy/issues/265" class="external-link">https://github.com/pysal/giddy/issues/265</a>). Origin states with no
+transitions in any regime contribute no degrees of freedom to any of the
+three tests.</p>
     </div>
 
     <div class="section level2">
@@ -131,7 +134,7 @@ small p-values indicate the conditional dynamics differ.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> chi2                     0     0       1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> likelihood_ratio         0     0       1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> kullback                 0    12       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> kullback                 0     0       1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

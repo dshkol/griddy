@@ -49,8 +49,51 @@ test_that("kullback statistic reproduces the published Kullback (1962) example",
   kb <- out[out$test == "kullback", ]
 
   expect_equal(kb$statistic, 160.961, tolerance = 1e-5)
-  expect_equal(kb$df, 30L)
+  # The published table uses the unadjusted r(s - 1)(r - 1) = 30. Origin
+  # state 4 never reaches destination 1 in either stratum, so the
+  # Bickenbach-Bald count drops one degree of freedom.
+  expect_equal(kb$df, 29L)
   expect_lt(kb$p_value, 1e-6)
+})
+
+test_that("kullback coincides with the likelihood-ratio test", {
+  set.seed(260)
+  for (shape in list(c(3, 2), c(4, 3), c(5, 4))) {
+    r <- shape[1]
+    s <- shape[2]
+    mats <- replicate(s, matrix(rpois(r * r, 8), r), simplify = FALSE)
+    out <- homogeneity_test(mats)
+    lr <- out[out$test == "likelihood_ratio", ]
+    kb <- out[out$test == "kullback", ]
+
+    expect_equal(kb$statistic, lr$statistic, tolerance = 1e-10)
+    expect_identical(kb$df, lr$df)
+    expect_equal(kb$p_value, lr$p_value, tolerance = 1e-10)
+  }
+})
+
+test_that("degrees of freedom exclude unobserved regimes and destinations", {
+  # Origin 1 reaches destinations 1 and 2 in both regimes: (2 - 1) * (2 - 1).
+  # Origin 2 has transitions in regime 1 only: (1 - 1) * (1 - 1).
+  # Origin 3 reaches destinations 2 and 3 in both regimes: (2 - 1) * (2 - 1).
+  m1 <- matrix(c(5, 2, 0, 3, 0, 0, 0, 1, 4), nrow = 3, byrow = TRUE)
+  m2 <- matrix(c(2, 6, 0, 0, 0, 0, 0, 3, 2), nrow = 3, byrow = TRUE)
+
+  out <- homogeneity_test(list(m1, m2))
+
+  expect_equal(out$df, rep(2L, 3))
+  expect_equal(
+    out$statistic[out$test == "kullback"],
+    out$statistic[out$test == "likelihood_ratio"],
+    tolerance = 1e-10
+  )
+
+  # An origin state with no transitions in any regime adds nothing.
+  m1[2, ] <- 0
+  out_empty <- homogeneity_test(list(m1, m2))
+
+  expect_equal(out_empty$df, rep(2L, 3))
+  expect_equal(out_empty$statistic, out$statistic, tolerance = 1e-10)
 })
 
 test_that("identical regimes are homogeneous under every test", {

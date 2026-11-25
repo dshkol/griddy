@@ -7,11 +7,20 @@
 #' a likelihood-ratio test with the degrees-of-freedom adjustment of
 #' Bickenbach and Bald (2003), and the Kullback information test (Kullback,
 #' Kupperman, and Ku 1962). The Pearson and likelihood-ratio statistics mirror
-#' the PySAL `giddy` `Spatial_Markov` homogeneity attributes. The Kullback
-#' statistic uses origin-state (row) margins; this deliberately differs from
-#' `giddy.markov.kullback()` through giddy 2.3.9, which uses terminal-state
-#' (column) margins for the stratum-specific term (reported upstream as
-#' <https://github.com/pysal/giddy/issues/259>).
+#' the PySAL `giddy` `Spatial_Markov` homogeneity attributes.
+#'
+#' The Kullback statistic uses origin-state (row) margins, which makes it
+#' algebraically identical to the likelihood-ratio statistic. It is reported
+#' for comparability with `giddy.markov.kullback()` and uses the same
+#' Bickenbach--Bald degrees of freedom as the other two tests. giddy 2.3.9 and
+#' earlier differ in two ways: the stratum-specific term uses terminal-state
+#' (column) margins (fixed upstream in
+#' <https://github.com/pysal/giddy/pull/260>), and the degrees of freedom are
+#' the unadjusted \eqn{r(s - 1)(r - 1)}, which overstates them when some
+#' transitions are never observed (see
+#' <https://github.com/pysal/giddy/issues/265>). Origin states with no
+#' transitions in any regime contribute no degrees of freedom to any of the
+#' three tests.
 #'
 #' @param x A `grd_spatial_markov` object, or a list of regime transition
 #'   count matrices of identical dimensions (counts, not probabilities).
@@ -115,23 +124,30 @@ homogeneity_test.list <- function(x, ...) {
   )
 }
 
+# Bickenbach & Bald (2003) degrees of freedom: for each origin state,
+# (regimes with transitions out of it - 1) * (destinations reached from it in
+# the pooled matrix - 1). An origin state with no transitions in any regime
+# contributes nothing to the statistics, so it contributes no degrees of
+# freedom; giddy.markov.Homogeneity_Results counts it as +1.
+.grd_homogeneity_dof <- function(mats) {
+  a_i <- rowSums(Reduce(`+`, mats) > 0)
+  b_i <- Reduce(`+`, lapply(mats, function(m) rowSums(m) > 0))
+  as.integer(sum(pmax(b_i - 1, 0) * pmax(a_i - 1, 0)))
+}
+
 # Pearson Q and likelihood-ratio homogeneity statistics with the
 # Bickenbach & Bald (2003) degrees-of-freedom adjustment, mirroring
 # giddy.markov.Homogeneity_Results.
 .grd_homogeneity <- function(mats) {
-  r <- nrow(mats[[1]])
   total <- Reduce(`+`, mats)
   n_i <- rowSums(total)
-  A_i <- rowSums(total > 0)
   p_ij <- total / ifelse(n_i == 0, 1, n_i)
   den <- p_ij + (p_ij == 0)
 
-  b_i <- numeric(r)
   Q <- 0
   LR <- 0
   for (nijm in mats) {
     nim <- rowSums(nijm)
-    b_i <- b_i + (nim > 0)
     p_ijm <- nijm / ifelse(nim == 0, 1, nim)
     Q <- Q + sum(nim * (p_ijm - p_ij)^2 / den)
     mask <- (nijm > 0) & (p_ij > 0)
@@ -139,7 +155,7 @@ homogeneity_test.list <- function(x, ...) {
     LR <- LR + sum(nijm * log(ratio))
   }
   LR <- 2 * LR
-  dof <- as.integer(sum((b_i - 1) * (A_i - 1)))
+  dof <- .grd_homogeneity_dof(mats)
   list(
     Q = Q,
     LR = LR,
@@ -151,11 +167,17 @@ homogeneity_test.list <- function(x, ...) {
 
 # Kullback information test of conditional homogeneity. The stratum-specific
 # nuisance margins are origin-state (row) totals. giddy <= 2.3.9 instead sums
-# terminal-state columns here; the distinction vanishes for flow-balanced
-# transition tables but not for aggregated panels with endpoint imbalance.
+# terminal-state columns here (fixed upstream in pysal/giddy#260); the
+# distinction vanishes for flow-balanced transition tables but not for
+# aggregated panels with endpoint imbalance.
+#
+# With origin margins, t1 - t4 - t2 + t3 expands to
+# 2 * sum(n_ijm * log(p_ijm / p_ij)), the likelihood-ratio statistic, i.e. a
+# sum over origin states of G-tests of regime x destination independence.
+# Each such G-test has (regimes observed - 1) * (destinations observed - 1)
+# degrees of freedom, so the Bickenbach & Bald count applies, not the
+# unadjusted r * (s - 1) * (r - 1) used by giddy (pysal/giddy#265).
 .grd_kullback <- function(mats) {
-  s <- length(mats)
-  r <- nrow(mats[[1]])
   xlogx <- function(v) sum(v * log(ifelse(v == 0, 1, v)))
 
   t1 <- 2 * sum(vapply(mats, xlogx, numeric(1)))
@@ -165,7 +187,7 @@ homogeneity_test.list <- function(x, ...) {
   t4 <- 2 * sum(vapply(mats, function(m) xlogx(rowSums(m)), numeric(1)))
 
   statistic <- max(0, t1 - t4 - t2 + t3)
-  dof <- as.integer(r * (s - 1) * (r - 1))
+  dof <- .grd_homogeneity_dof(mats)
   list(
     statistic = statistic,
     dof = dof,

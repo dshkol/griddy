@@ -17,10 +17,14 @@
   tests with the Bickenbach--Bald (2003) degrees-of-freedom adjustment and
   the Kullback (1962) information test. Static fixtures validate the first two
   against PySAL `giddy`. The Kullback statistic uses the
-  origin-state margins required by the conditional likelihood, deliberately
-  differing from `giddy.markov.kullback()` through giddy 2.3.9 when transition
-  tables are not flow-balanced (reported upstream in
-  [giddy issue 259](https://github.com/pysal/giddy/issues/259)). A list
+  origin-state margins required by the conditional likelihood, which makes it
+  identical to the likelihood-ratio statistic, and it shares the
+  Bickenbach--Bald degrees of freedom. It therefore differs from
+  `giddy.markov.kullback()` through giddy 2.3.9, which uses terminal-state
+  margins (fixed upstream in
+  [giddy PR 260](https://github.com/pysal/giddy/pull/260)) and unadjusted
+  degrees of freedom (see
+  [giddy issue 265](https://github.com/pysal/giddy/issues/265)). A list
   method accepts arbitrary regime count matrices.
 
 # griddy 0.1.1

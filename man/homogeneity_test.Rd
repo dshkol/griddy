@@ -26,11 +26,21 @@ Wolf 2016). Three statistics are reported: a Pearson chi-squared Q test and
 a likelihood-ratio test with the degrees-of-freedom adjustment of
 Bickenbach and Bald (2003), and the Kullback information test (Kullback,
 Kupperman, and Ku 1962). The Pearson and likelihood-ratio statistics mirror
-the PySAL \code{giddy} \code{Spatial_Markov} homogeneity attributes. The Kullback
-statistic uses origin-state (row) margins; this deliberately differs from
-\code{giddy.markov.kullback()} through giddy 2.3.9, which uses terminal-state
-(column) margins for the stratum-specific term (reported upstream as
-\url{https://github.com/pysal/giddy/issues/259}).
+the PySAL \code{giddy} \code{Spatial_Markov} homogeneity attributes.
+}
+\details{
+The Kullback statistic uses origin-state (row) margins, which makes it
+algebraically identical to the likelihood-ratio statistic. It is reported
+for comparability with \code{giddy.markov.kullback()} and uses the same
+Bickenbach--Bald degrees of freedom as the other two tests. giddy 2.3.9 and
+earlier differ in two ways: the stratum-specific term uses terminal-state
+(column) margins (fixed upstream in
+\url{https://github.com/pysal/giddy/pull/260}), and the degrees of freedom are
+the unadjusted \eqn{r(s - 1)(r - 1)}, which overstates them when some
+transitions are never observed (see
+\url{https://github.com/pysal/giddy/issues/265}). Origin states with no
+transitions in any regime contribute no degrees of freedom to any of the
+three tests.
 }
 \examples{
 \dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
