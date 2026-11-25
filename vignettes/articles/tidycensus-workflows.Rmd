@@ -15,9 +15,12 @@ library(dplyr)
 library(tidyr)
 ```
 
-This article is a website-only template for ACS workflows: it requires a
-Census API key and live data, so it is rendered on the pkgdown site when the
-key is set and skipped otherwise. It does not ship with the installed package.
+This article runs the core `griddy` workflow on census tracts in San
+Francisco, using median household income (ACS table B19013) from three
+five-year American Community Survey samples: 2008–2012, 2013–2017, and
+2018–2022. The samples do not overlap, so each tract contributes two
+transitions. The article needs a Census API key. It renders on the pkgdown
+site when one is set and does not ship with the package.
 
 ```{r, results='hide', fig.alt=c("Heatmap of ACS tract transition probabilities between income quintiles.", "Faceted heatmaps of ACS tract spatial Markov transition probabilities by spatial-lag quintile.", "Map of ACS tract endpoint rank mobility.")}
 library(tidycensus)
@@ -81,5 +84,28 @@ plot_spatial_markov(spatial)
 plot_rank_mobility(mobility)
 ```
 
-For package-ready examples, cache a small static panel instead of calling the
-API at build time.
+## Reading the output
+
+The first plot is the classic transition matrix: the probability that a tract
+in one income class is in each class five years later, pooled over both steps.
+The second splits the same transitions by the income class of each tract's
+neighbors at the start of the step. The map shows each tract's change in
+income rank between the first and last samples.
+
+## Before using this for analysis
+
+Two simplifications keep the example short.
+
+- **Incomes are not comparable across samples.** Each sample reports income
+  in dollars of its own final year. With pooled breaks, inflation and
+  citywide growth move most tracts into higher classes, so the matrix mixes
+  shared growth with relative movement. To study relative movement, divide
+  each sample's incomes by their median before classifying.
+  [Get Started](griddy.html) does the same with state incomes and the
+  national mean.
+- **Tract boundaries changed in 2020.** The 2008–2012 and 2013–2017 samples
+  use 2010 tracts, and the 2018–2022 sample uses 2020 tracts. Matching on
+  `GEOID` keeps tracts whose identifier persisted, but a persisting identifier
+  does not guarantee an unchanged boundary, and split or merged tracts drop
+  out. Interpolate the earlier samples to 2020 tracts first, for example with
+  `tidycensus::interpolate_pw()`.

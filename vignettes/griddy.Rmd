@@ -184,12 +184,90 @@ ggplot(lag_map) +
   map_theme()
 ```
 
+## Chain Summaries
+
+The chain summaries need a chain in which every class can be reached from
+every other. The nominal-income chain above is not one: incomes rise across
+the whole panel, states drift into Q5 and stay there, and `first_passage()`
+stops with an error. Dividing each state's income by the national mean for
+that year removes the shared growth. This relative income is the series that
+Rey (2001) and PySAL `giddy` use.
+
+```{r}
+relative <- panel |>
+  group_by(year) |>
+  mutate(rel_income = income / mean(income)) |>
+  ungroup()
+
+rel_classes <- classify_dynamics(relative, name, year, rel_income, k = 5)
+rel_chain <- markov_dynamics(rel_classes, name, year, class)
+rel_chain
+```
+
+`steady_state()` gives the long-run share of states in each class.
+`sojourn_time()` gives the expected number of consecutive years a state stays
+in a class once it enters it. `first_passage()` gives the expected number of
+years to reach one class from another; its diagonal is the expected time to
+return to the same class.
+
+```{r}
+steady_state(rel_chain)
+sojourn_time(rel_chain)
+round(first_passage(rel_chain), 1)
+```
+
+Relative incomes are persistent at both ends of the distribution. A state that
+enters the bottom class stays there for about
+`r round(sojourn_time(rel_chain)[["Q1"]])` years on average, and one that
+enters the top class for about `r round(sojourn_time(rel_chain)[["Q5"]])`,
+against `r round(min(sojourn_time(rel_chain)[2:4]))` to
+`r round(max(sojourn_time(rel_chain)[2:4]))` years in the middle classes.
+Reaching the top class from the bottom takes about
+`r round(first_passage(rel_chain)["Q1", "Q5"])` years on average, longer than
+the `r diff(range(usjoin$year)) + 1`-year panel.
+
+`mobility_index()` reduces the matrix to a single number. The default,
+Prais–Shorrocks, is 0 when no state ever changes class and grows as more
+probability sits off the diagonal. The other measures follow Formby, Smith, and
+Zheng (2004) and match `giddy.mobility.markov_mobility()`.
+
+```{r}
+mobility_index(rel_chain)
+```
+
+## Testing Homogeneity
+
+The spatial Markov matrices differ visibly by lag class. `homogeneity_test()`
+asks whether the differences are larger than sampling variation would
+produce. Its null hypothesis is that every lag class shares the pooled
+transition matrix.
+
+```{r}
+rel_spatial <- spatial_markov(
+  relative, name, year, rel_income,
+  geometry = geom, k = 5
+)
+homogeneity_test(rel_spatial)
+```
+
+All three tests reject homogeneity. Where a state's neighbors sit in the
+income distribution changes its own transition probabilities. The `chi2` and
+`likelihood_ratio` rows match `giddy`'s `Spatial_Markov` output for this panel.
+Degrees of freedom follow Bickenbach and Bode (2003), which drop transitions
+that are never observed. The `kullback` row equals the `likelihood_ratio` row
+by construction; `?homogeneity_test` explains why. To test regimes other than
+spatial-lag classes, pass a list of count matrices; [Coverage of PySAL
+giddy](https://dshkol.github.io/griddy/articles/giddy-coverage.html) works
+through LISA quadrants as an example.
+
 ## Rank Mobility
 
-Rank mobility is intentionally simple in v0.1: an endpoint comparison of unit
-ranks between the first and last observed periods. It is descriptive and
-map-ready, not the full PySAL rank-method suite. Positive values mean a state
-moved up the income ranking; negative values mean it moved down.
+`rank_mobility()` compares each state's income rank between two periods. By
+default it compares the first and last observed periods. Positive values mean a
+state moved up the income ranking; negative values mean it moved down.
+Rank-based Markov chains and the Kendall's tau family are not `griddy`
+functions; the coverage article gives recipes for the chains and lists what is
+planned.
 
 ```{r, fig.alt="Map of endpoint rank mobility for US states, 1929 to 2009, with positive values indicating upward rank movement."}
 mobility_panel <- usjoin |>
@@ -241,3 +319,17 @@ spatial$transitions |> select(id, from_time, to_time, lag_class, transition, spa
 For programmatic access, every griddy object also has `as.data.frame()` and the
 S3 generics `transition_matrix()`, `class_intervals()`, and (for spatial
 objects) `lag_intervals()`.
+
+## References
+
+Bickenbach, F., and Bode, E. (2003). Evaluating the Markov property in studies
+of economic convergence. *International Regional Science Review*, 26(3),
+363–392. <https://doi.org/10.1177/0160017603253789>
+
+Formby, J. P., Smith, W. J., and Zheng, B. (2004). Mobility measurement,
+transition matrices and statistical inference. *Journal of Econometrics*,
+120(1), 181–205. <https://doi.org/10.1016/S0304-4076(03)00211-2>
+
+Rey, S. J. (2001). Spatial empirics for economic growth and convergence.
+*Geographical Analysis*, 33(3), 195–214.
+<https://doi.org/10.1111/j.1538-4632.2001.tb00444.x>

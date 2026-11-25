@@ -7,9 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Performance matters because spatial Markov workflows can touch tract panels
-with thousands of units and many periods. This vignette records the benchmark
-shape. It is evaluated for pkgdown and skipped during package checks.
+Spatial Markov workflows often run on tract panels with thousands of units and
+many periods. This article times `griddy` on a panel of that size and compares
+it with `estdaR`. It runs when the site is built, not during package checks.
 
 ```{r setup, include=FALSE}
 grd_eval_docs <- identical(Sys.getenv("IN_PKGDOWN"), "true")
@@ -28,10 +28,11 @@ library(tidyr)
 
 ## Synthetic grid panel
 
-A 60 by 60 queen-contiguity grid over ten time periods exercises the same
-classification and spatial-lag code paths a tract-scale panel would.
+A 60 by 60 queen-contiguity grid over ten periods, 3,600 units in all,
+exercises the same classification and spatial-lag code as a tract-scale
+panel.
 
-```{r}
+```{r, warning=FALSE}
 make_panel <- function(nx = 60, ny = 60, years = 2010:2019) {
   cells <- st_make_grid(st_bbox(c(xmin = 0, ymin = 0, xmax = nx, ymax = ny)), n = c(nx, ny))
   grid <- st_sf(id = seq_along(cells), geometry = cells)
@@ -69,13 +70,11 @@ microbenchmark(
 ## Comparison against estdaR
 
 The next chunk runs only when `estdaR` is installed. It calls
-`griddy::spatial_markov()` and `estdaR::sp.mkv()` on the same wide panel,
-matched class breaks, and identical weights. Any difference at this point
-reflects implementation overhead, not differing inputs.
+`griddy::spatial_markov()` and `estdaR::sp.mkv()` on the same panel, with
+matched class breaks and identical weights, so any difference is
+implementation overhead.
 
-```{r, eval=grd_eval_docs && requireNamespace("estdaR", quietly = TRUE)}
-library(estdaR)
-
+```{r, eval=grd_eval_docs && requireNamespace("estdaR", quietly = TRUE), warning=FALSE, message=FALSE}
 wide_panel <- fx$panel |>
   st_drop_geometry() |>
   pivot_wider(id_cols = id, names_from = year, values_from = value) |>
@@ -83,17 +82,20 @@ wide_panel <- fx$panel |>
 
 wide_mat <- as.matrix(wide_panel |> select(-id))
 
-microbenchmark(
+bench <- microbenchmark(
   griddy = spatial_markov(fx$panel, id, year, value, geometry = geom, k = 5),
   estdaR = estdaR::sp.mkv(wide_mat, listw, classes = 5, fixed = TRUE),
   times = 5
 )
+bench
+
+# griddy's median time as a multiple of estdaR's
+medians <- summary(bench)$median
+round(medians[1] / medians[2], 1)
 ```
 
-`griddy` carries the long-format reshape, classification, and label
-preservation overhead that `estdaR::sp.mkv()` skips by working directly on a
-unit-by-period matrix. Transition tabulation and spatial-lag computation are
-vectorized internally (no per-unit or per-period grouped operations), so the
-remaining gap reflects that bookkeeping. The expected pattern is that `griddy`
-is modestly slower at this panel size; if the gap exceeds an order of
-magnitude on tract-scale panels it should be revisited.
+`griddy` is somewhat slower, and the gap is bookkeeping. `estdaR::sp.mkv()`
+works directly on a unit-by-period matrix. `griddy` reshapes a long panel,
+classifies it, and keeps unit, time, class, and spatial-lag labels attached to
+every transition. Transition counts and spatial lags are computed in single
+vectorized passes, with no per-unit or per-period grouping.

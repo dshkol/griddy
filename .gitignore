@@ -20,3 +20,6 @@
 /src/*.so
 /src/*.dll
 /blog/
+# Internal working notes (drafts, briefs, audits). Keep them here, not in the
+# repo root: pkgdown renders every root-level .md file onto the site.
+/notes/

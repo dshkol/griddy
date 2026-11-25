@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">griddy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/griddy.html">Core Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/prior-art-comparison.html">Prior Art Comparison</a></li>
+    <li><a class="dropdown-item" href="../articles/giddy-coverage.html">Coverage of PySAL giddy</a></li>
     <li><a class="dropdown-item" href="../articles/tidycensus-workflows.html">tidycensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cancensus-workflows.html">cancensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/performance.html">Performance</a></li>
@@ -70,10 +71,11 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dshkol/griddy" class="external-link">griddy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
-<p>This article is a website-only template for Canadian Census
-workflows: it requires live CensusMapper access, so it is rendered on
-the pkgdown site when the API key is set and skipped otherwise. It does
-not ship with the installed package.</p>
+<p>This article runs the core <code>griddy</code> workflow on census
+tracts in the City of Vancouver, using median total household income
+from the 2016 and 2021 censuses (incomes for 2015 and 2020). It needs a
+CensusMapper API key. It renders on the pkgdown site when one is set and
+does not ship with the package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/cancensus" class="external-link">cancensus</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Census data is currently stored temporarily.</span></span>
@@ -164,10 +166,33 @@ not ship with the installed package.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_spatial_markov.html">plot_spatial_markov</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></code></pre></div>
 <p><img src="cancensus-workflows_files/figure-html/unnamed-chunk-2-2.png" alt="Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile." width="700"></p>
-<p>Canadian census geographies can change between cycles. A production
-workflow should harmonize geography before treating units as a
-longitudinal panel.</p>
-  </main>
+<div class="section level2">
+<h2 id="reading-the-output">Reading the output<a class="anchor" aria-label="anchor" href="#reading-the-output"></a>
+</h2>
+<p>With two censuses, each tract contributes exactly one transition,
+from 2016 to 2021. The first plot is the transition matrix over those
+moves. The second splits them by the income class of each tract’s
+neighbors in 2016. With one transition per tract, the conditional
+matrices rest on few observations, so treat them as an illustration.</p>
+</div>
+<div class="section level2">
+<h2 id="before-using-this-for-analysis">Before using this for analysis<a class="anchor" aria-label="anchor" href="#before-using-this-for-analysis"></a>
+</h2>
+<ul>
+<li>
+<strong>Incomes are nominal.</strong> 2015 and 2020 incomes are not
+adjusted for inflation, so pooled classes mix shared growth with
+relative movement. Divide each census’s incomes by their median before
+classifying to study relative movement.</li>
+<li>
+<strong>Tract boundaries change between censuses.</strong> Matching
+on <code>GeoUID</code> keeps tracts whose identifier persisted, but a
+persisting identifier does not guarantee an unchanged boundary. The <a href="https://CRAN.R-project.org/package=tongfen" class="external-link"><code>tongfen</code></a>
+package builds a common geography across census years.</li>
+</ul>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

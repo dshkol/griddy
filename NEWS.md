@@ -6,23 +6,39 @@
   sojourn times, Kemeny--Snell mean first-passage times, and scalar Markov
   mobility indices (Prais--Shorrocks, determinant, Sommers--Conlisk
   eigenvalue, and both Bartholomew indices) from `grd_markov` objects or raw
-  transition probability matrices. Results are validated against PySAL
-  `giddy` (`ergodic.mfpt`, `markov.sojourn_time`,
-  `mobility.markov_mobility`) via static fixtures.
+  transition probability matrices. Static fixtures validate results against
+  PySAL `giddy` (`ergodic.mfpt`, `markov.sojourn_time`,
+  `mobility.markov_mobility`).
 
 - `homogeneity_test()` tests whether transition dynamics differ across
-  regimes -- for `grd_spatial_markov` objects, whether the matrices
+  regimes. For `grd_spatial_markov` objects, it tests whether the matrices
   conditioned on spatial-lag class differ from the pooled matrix (Rey, Kang,
-  and Wolf 2016). Reports the Pearson chi-squared Q and likelihood-ratio
-  tests with the Bickenbach--Bald (2003) degrees-of-freedom adjustment and
-  the Kullback (1962) information test. The first two are validated against
-  PySAL `giddy` via static fixtures. The Kullback statistic uses the
-  origin-state margins required by the conditional likelihood, deliberately
-  differing from `giddy.markov.kullback()` through giddy 2.3.9 when transition
-  tables are not flow-balanced. A list method accepts arbitrary regime count
-  matrices.
+  and Wolf 2016). It reports the Pearson chi-squared Q and likelihood-ratio
+  tests with the Bickenbach--Bode (2003) degrees-of-freedom adjustment and
+  the Kullback (1962) information test. Static fixtures validate the first two
+  against PySAL `giddy`. The Kullback statistic uses the
+  origin-state margins required by the conditional likelihood, which makes it
+  identical to the likelihood-ratio statistic, and it shares the
+  Bickenbach--Bode degrees of freedom. It therefore differs from
+  `giddy.markov.kullback()` through giddy 2.3.9, which uses terminal-state
+  margins (fixed upstream in
+  [giddy PR 260](https://github.com/pysal/giddy/pull/260)) and unadjusted
+  degrees of freedom (see
+  [giddy issue 265](https://github.com/pysal/giddy/issues/265)). A list
+  method accepts arbitrary regime count matrices.
+
+## Documentation
+
+- New article, "Coverage of PySAL giddy", maps every public entry of giddy
+  2.3.9 to a `griddy` function, a short recipe, a planned feature, or another
+  package.
+
+- The Get Started vignette covers the chain summaries and homogeneity tests.
 
 # griddy 0.1.1
+
+This version was tagged on GitHub but not released to CRAN. Its changes reach
+CRAN in 0.2.0.
 
 ## Performance
 

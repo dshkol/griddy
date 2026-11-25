@@ -35,7 +35,7 @@ All indices are 0 for the identity matrix (no mobility) and increase
 with mobility.
 }
 \description{
-Computes scalar mobility indices summarising how much movement a transition
+Computes scalar mobility indices summarizing how much movement a transition
 probability matrix implies, following Formby, Smith, and Zheng (2004) and
 mirroring \code{giddy.mobility.markov_mobility()} in PySAL \code{giddy}.
 }

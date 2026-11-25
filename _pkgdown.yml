@@ -27,6 +27,8 @@ navbar:
           href: articles/griddy.html
         - text: Prior Art Comparison
           href: articles/prior-art-comparison.html
+        - text: Coverage of PySAL giddy
+          href: articles/giddy-coverage.html
         - text: tidycensus Workflow
           href: articles/tidycensus-workflows.html
         - text: cancensus Workflow
@@ -77,5 +79,6 @@ articles:
       - articles/cancensus-workflows
   - title: Validation And Benchmarks
     contents:
+      - articles/giddy-coverage
       - articles/prior-art-comparison
       - articles/performance

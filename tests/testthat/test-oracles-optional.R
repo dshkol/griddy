@@ -113,8 +113,12 @@ test_that("homogeneity_test agrees with independently generated fixtures", {
   expect_equal(out$p_value[out$test == "likelihood_ratio"], fixture$LR_p_value)
   expect_equal(out$df[out$test != "kullback"], rep(fixture$dof, 2))
   # Kullback uses an independent origin-margin calculation rather than
-  # giddy.markov.kullback(), whose stratum term uses column margins in 2.3.9.
+  # giddy.markov.kullback(), whose stratum term uses column margins in 2.3.9
+  # and whose degrees of freedom are unadjusted. With origin margins and
+  # Bickenbach-Bode degrees of freedom it reproduces giddy's LR test.
   expect_equal(out$statistic[out$test == "kullback"], fixture$kullback)
+  expect_equal(fixture$kullback, fixture$LR)
+  expect_equal(fixture$kullback_dof, fixture$dof)
   expect_equal(out$df[out$test == "kullback"], fixture$kullback_dof)
   expect_lt(
     abs(out$p_value[out$test == "kullback"] - fixture$kullback_p_value),
