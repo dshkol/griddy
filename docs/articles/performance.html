@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/tidycensus-workflows.html">tidycensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cancensus-workflows.html">cancensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/performance.html">Performance</a></li>
+    <li><a class="dropdown-item" href="../articles/llm-usage.html">Usage Guide for LLMs and Agents</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -121,9 +122,9 @@ tract-scale panel.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
 <span><span class="co">##      expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span><span class="co">##  classify 15.22166 15.29501 15.69858 15.39341 15.95019 16.63263     5 a  </span></span>
-<span><span class="co">##    markov 25.17289 27.02970 27.64828 27.64224 28.78905 29.60749     5  b </span></span>
-<span><span class="co">##   spatial 39.54594 40.03355 41.70417 40.62407 42.54074 45.77654     5   c</span></span></code></pre>
+<span><span class="co">##  classify 13.81212 14.12056 14.89371 14.79534 14.88677 16.85375     5 a  </span></span>
+<span><span class="co">##    markov 24.86511 24.96113 26.29378 26.40962 27.32232 27.91075     5  b </span></span>
+<span><span class="co">##   spatial 38.68284 38.71601 40.38134 39.37472 40.89615 44.23699     5   c</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="comparison-against-estdar">Comparison against estdaR<a class="anchor" aria-label="anchor" href="#comparison-against-estdar"></a>
@@ -149,8 +150,8 @@ overhead.</p>
 <span><span class="va">bench</span></span></code></pre></div>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
 <span><span class="co">##    expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span><span class="co">##  griddy 37.31176 39.98796 39.62876 39.99423 40.27774 40.57212     5  a </span></span>
-<span><span class="co">##  estdaR 27.82916 29.20024 30.71335 30.89699 31.02741 34.61298     5   b</span></span></code></pre>
+<span><span class="co">##  griddy 37.98437 38.04263 38.67189 39.00687 39.04090 39.28468     5  a </span></span>
+<span><span class="co">##  estdaR 27.86606 28.27081 29.79210 30.14464 30.19859 32.48040     5   b</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># griddy's median time as a multiple of estdaR's</span></span>
 <span><span class="va">medians</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">bench</span><span class="op">)</span><span class="op">$</span><span class="va">median</span></span>
@@ -174,7 +175,7 @@ passes, with no per-unit or per-period grouping.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

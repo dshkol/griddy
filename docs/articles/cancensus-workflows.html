@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/tidycensus-workflows.html">tidycensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cancensus-workflows.html">cancensus Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/performance.html">Performance</a></li>
+    <li><a class="dropdown-item" href="../articles/llm-usage.html">Usage Guide for LLMs and Agents</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -162,10 +163,10 @@ does not ship with the package.</p>
 <span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">GeoUID</span>, <span class="va">year</span>, <span class="va">median_income</span>, geometry <span class="op">=</span> <span class="va">geography</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_transition_matrix.html">plot_transition_matrix</a></span><span class="op">(</span><span class="va">classic</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cancensus-workflows_files/figure-html/unnamed-chunk-2-1.png" alt="Heatmap of Canadian Census tract transition probabilities between income quintiles." width="700"></p>
+<p><img src="cancensus-workflows_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" alt="Heatmap of Canadian Census tract transition probabilities between income quintiles." width="700"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_spatial_markov.html">plot_spatial_markov</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cancensus-workflows_files/figure-html/unnamed-chunk-2-2.png" alt="Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile." width="700"></p>
+<p><img src="cancensus-workflows_files/figure-html/unnamed-chunk-2-2.png" class="r-plt" alt="Faceted heatmaps of Canadian Census tract spatial Markov transition probabilities by spatial-lag quintile." width="700"></p>
 <div class="section level2">
 <h2 id="reading-the-output">Reading the output<a class="anchor" aria-label="anchor" href="#reading-the-output"></a>
 </h2>
@@ -202,7 +203,7 @@ package builds a common geography across census years.</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
