@@ -25,3 +25,28 @@ bibentry(
     "Geographical Analysis, 33(3), 195-214."
   )
 )
+
+bibentry(
+  bibtype = "Article",
+  title = paste(
+    "The properties of tests for spatial effects in discrete Markov chain",
+    "models of regional income distribution dynamics"
+  ),
+  author = c(
+    person("Sergio J.", "Rey"),
+    person("Wei", "Kang"),
+    person("Levi", "Wolf")
+  ),
+  journal = "Journal of Geographical Systems",
+  year = "2016",
+  volume = "18",
+  number = "4",
+  pages = "377--398",
+  doi = "10.1007/s10109-016-0234-x",
+  textVersion = paste(
+    "Rey, S. J., Kang, W., and Wolf, L. (2016).",
+    "The properties of tests for spatial effects in discrete Markov chain",
+    "models of regional income distribution dynamics.",
+    "Journal of Geographical Systems, 18(4), 377-398."
+  )
+)

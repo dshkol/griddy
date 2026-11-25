@@ -1,4 +1,4 @@
-# griddy 0.2.0 
+# griddy 0.2.0
 
 ## Test environments
 
@@ -16,7 +16,11 @@
 
 ## Submission
 
-This release adds more features to bring the package to closer compatibility with PySAL's giddy. Added are: expected sojourn times, mean first-passage times, scalar Markov mobility indices, and transition-regime homogeneity tests. It also includes internal performance improvements to transition tabulation and spatial-lag computation. Existing APIs remain compatible, and there are no breaking changes introduced. 
+This release adds expected sojourn times, mean first-passage times, scalar
+Markov mobility indices, and tests of whether transition dynamics differ
+across regimes. It also speeds up transition tabulation and spatial-lag
+computation. Existing functions keep their interfaces and outputs; there are
+no breaking changes.
 
 ## Reverse dependencies
 

@@ -27,7 +27,18 @@
   [giddy issue 265](https://github.com/pysal/giddy/issues/265)). A list
   method accepts arbitrary regime count matrices.
 
+## Documentation
+
+- New article, "Coverage of PySAL giddy", maps every public entry of giddy
+  2.3.9 to a `griddy` function, a short recipe, a planned feature, or another
+  package.
+
+- The Get Started vignette covers the chain summaries and homogeneity tests.
+
 # griddy 0.1.1
+
+This version was tagged on GitHub but not released to CRAN. Its changes reach
+CRAN in 0.2.0.
 
 ## Performance
 

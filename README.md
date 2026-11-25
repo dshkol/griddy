@@ -83,7 +83,8 @@ existing workflows.
 
 The pkgdown site is organized around:
 
-- core workflow and concepts
+- core workflow and concepts, including chain summaries and homogeneity tests
 - `tidycensus` and `cancensus` examples showing applications with US and Canadian census data
+- coverage of PySAL `giddy`: what `griddy` implements, short recipes for the rest, and what is planned
 - prior-art comparison against `estdaR` and `spdyn`
 - performance benchmarking notes
