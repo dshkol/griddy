@@ -122,9 +122,9 @@ tract-scale panel.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
 <span><span class="co">##      expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span><span class="co">##  classify 13.81212 14.12056 14.89371 14.79534 14.88677 16.85375     5 a  </span></span>
-<span><span class="co">##    markov 24.86511 24.96113 26.29378 26.40962 27.32232 27.91075     5  b </span></span>
-<span><span class="co">##   spatial 38.68284 38.71601 40.38134 39.37472 40.89615 44.23699     5   c</span></span></code></pre>
+<span><span class="co">##  classify 15.01211 15.15709 15.93457 15.94609 16.67466 16.88290     5 a  </span></span>
+<span><span class="co">##    markov 27.50989 30.10655 33.35099 31.60637 33.29212 44.24003     5  b </span></span>
+<span><span class="co">##   spatial 38.18711 38.61556 40.10199 41.08335 41.17905 41.44485     5   c</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="comparison-against-estdar">Comparison against estdaR<a class="anchor" aria-label="anchor" href="#comparison-against-estdar"></a>
@@ -150,13 +150,13 @@ overhead.</p>
 <span><span class="va">bench</span></span></code></pre></div>
 <pre><code><span><span class="co">## Unit: milliseconds</span></span>
 <span><span class="co">##    expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span><span class="co">##  griddy 37.98437 38.04263 38.67189 39.00687 39.04090 39.28468     5  a </span></span>
-<span><span class="co">##  estdaR 27.86606 28.27081 29.79210 30.14464 30.19859 32.48040     5   b</span></span></code></pre>
+<span><span class="co">##  griddy 36.46819 38.21167 38.91454 38.74742 39.65889 41.48655     5  a </span></span>
+<span><span class="co">##  estdaR 29.13415 29.17978 31.94893 32.46097 33.72266 35.24708     5   b</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># griddy's median time as a multiple of estdaR's</span></span>
 <span><span class="va">medians</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">bench</span><span class="op">)</span><span class="op">$</span><span class="va">median</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">medians</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="va">medians</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1.3</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1.2</span></span></code></pre>
 <p><code>griddy</code> is somewhat slower, and the gap is bookkeeping.
 <code><a href="https://rdrr.io/pkg/estdaR/man/sp.mkv.html" class="external-link">estdaR::sp.mkv()</a></code> works directly on a unit-by-period matrix.
 <code>griddy</code> reshapes a long panel, classifies it, and keeps

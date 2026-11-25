@@ -98,11 +98,13 @@ strings.</p>
 <p>For spatial Markov, pass <code>geometry</code>: an <code>sf</code>
 tibble with one row per unit, taken from a single period, carrying
 <code>nb</code> and <code>wt</code> list-columns from
-<code>sfdep</code>. <code>listw</code> and <code>nb</code> arguments are
-accepted for older code; prefer <code>geometry</code>.</p>
+<code>sfdep</code>. Its rows are matched to units by id: through a
+column with the same name as <code>id</code>, or through the column
+named in <code>geometry_id</code>. <code>listw</code> and
+<code>nb</code> arguments are accepted for older code; prefer
+<code>geometry</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">geom</span> <span class="op">&lt;-</span> <span class="va">geography</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">unit_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    nb <span class="op">=</span> <span class="fu">sfdep</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_contiguity.html" class="external-link">st_contiguity</a></span><span class="op">(</span><span class="va">geometry</span><span class="op">)</span>,</span>
 <span>    wt <span class="op">=</span> <span class="fu">sfdep</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_weights.html" class="external-link">st_weights</a></span><span class="op">(</span><span class="va">nb</span><span class="op">)</span></span>
@@ -120,7 +122,7 @@ their exact signatures.</p>
 <span>  k <span class="op">=</span> <span class="fl">5</span>, breaks <span class="op">=</span> <span class="cn">NULL</span>, labels <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/markov_dynamics.html">markov_dynamics</a></span><span class="op">(</span><span class="va">classes</span>, <span class="va">id</span>, <span class="va">time</span>, state <span class="op">=</span> <span class="va">class</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">id</span>, <span class="va">time</span>, <span class="va">value</span>,</span>
-<span>  geometry <span class="op">=</span> <span class="cn">NULL</span>, listw <span class="op">=</span> <span class="cn">NULL</span>, nb <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  geometry <span class="op">=</span> <span class="cn">NULL</span>, geometry_id <span class="op">=</span> <span class="cn">NULL</span>, listw <span class="op">=</span> <span class="cn">NULL</span>, nb <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">5</span>, lag_k <span class="op">=</span> <span class="va">k</span>,</span>
 <span>  class_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pooled_quantile"</span>, <span class="st">"time_quantile"</span>, <span class="st">"fixed"</span><span class="op">)</span>,</span>
 <span>  zero.policy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -199,7 +201,6 @@ states from 1929 to 2009.</p>
 <span></span>
 <span><span class="va">geom</span> <span class="op">&lt;-</span> <span class="va">us_states</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">usjoin</span><span class="op">$</span><span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_contiguity.html" class="external-link">st_contiguity</a></span><span class="op">(</span><span class="va">geometry</span><span class="op">)</span>, wt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_weights.html" class="external-link">st_weights</a></span><span class="op">(</span><span class="va">nb</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">relative</span> <span class="op">&lt;-</span> <span class="va">usjoin</span> <span class="op">|&gt;</span></span>
@@ -218,7 +219,10 @@ states from 1929 to 2009.</p>
 <span><span class="co">#&gt;     prais </span></span>
 <span><span class="co">#&gt; 0.1695447</span></span>
 <span></span>
-<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">relative</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">rel_income</span>, geometry <span class="op">=</span> <span class="va">geom</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span></span>
+<span>  <span class="va">relative</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">rel_income</span>,</span>
+<span>  geometry <span class="op">=</span> <span class="va">geom</span>, geometry_id <span class="op">=</span> <span class="va">NAME</span>, k <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/homogeneity_test.html">homogeneity_test</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
 <span><span class="co">#&gt;   test             statistic    df  p_value</span></span>
@@ -232,17 +236,26 @@ states from 1929 to 2009.</p>
 </h2>
 <ul>
 <li>
-<strong>Sort <code>geometry</code> by <code>id</code>.</strong>
-<code><a href="../reference/spatial_markov.html">spatial_markov()</a></code> matches the rows of <code>geometry</code>
-(or <code>listw</code>) to units by position. It assumes they are in
-ascending order of <code>id</code> and checks only that the number of
-rows matches. If the rows are in a different order, every unit gets the
-wrong neighbors, and no error is raised. Sort <code>geometry</code> by
-the same key, in the same order, as the panel’s <code>id</code>.</li>
+<strong>Give the weights ids.</strong> <code><a href="../reference/spatial_markov.html">spatial_markov()</a></code>
+matches the rows of <code>geometry</code> to units through a column with
+the same name as <code>id</code>, or through the column named in
+<code>geometry_id</code>, so row order does not matter. For
+<code>listw</code> or <code>nb</code>, it uses the region ids when they
+are the values of <code>id</code>; set them with
+<code>spdep::poly2nb(x, row.names = x$id)</code>. Without usable ids it
+matches rows by position, in ascending order of <code>id</code>, and
+warns. Do not ignore that warning: weights in any other row order give
+units the wrong neighbors. Before 0.2.0, rows were always matched by
+position, with no warning.</li>
+<li>
+<strong>Build <code>nb</code> and <code>wt</code> last.</strong>
+They refer to rows of <code>geometry</code> by position. Filtering or
+reordering <code>geometry</code> after building them gives units the
+wrong neighbors, and matching by id cannot detect it.</li>
 <li>
 <strong>Balance the panel for spatial Markov.</strong> Every unit
-must appear in every period; <code><a href="../reference/spatial_markov.html">spatial_markov()</a></code> stops
-otherwise.</li>
+must appear in every period, and the weights must cover exactly the
+panel’s units; <code><a href="../reference/spatial_markov.html">spatial_markov()</a></code> stops otherwise.</li>
 <li>
 <strong>Use relative values for chain summaries.</strong> With
 pooled breaks on a growing nominal series, units drift into the top

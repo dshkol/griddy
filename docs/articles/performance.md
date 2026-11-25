@@ -58,9 +58,9 @@ microbenchmark(
 
     ## Unit: milliseconds
     ##      expr      min       lq     mean   median       uq      max neval cld
-    ##  classify 13.81212 14.12056 14.89371 14.79534 14.88677 16.85375     5 a  
-    ##    markov 24.86511 24.96113 26.29378 26.40962 27.32232 27.91075     5  b 
-    ##   spatial 38.68284 38.71601 40.38134 39.37472 40.89615 44.23699     5   c
+    ##  classify 15.01211 15.15709 15.93457 15.94609 16.67466 16.88290     5 a  
+    ##    markov 27.50989 30.10655 33.35099 31.60637 33.29212 44.24003     5  b 
+    ##   spatial 38.18711 38.61556 40.10199 41.08335 41.17905 41.44485     5   c
 
 ## Comparison against estdaR
 
@@ -88,8 +88,8 @@ bench
 
     ## Unit: milliseconds
     ##    expr      min       lq     mean   median       uq      max neval cld
-    ##  griddy 37.98437 38.04263 38.67189 39.00687 39.04090 39.28468     5  a 
-    ##  estdaR 27.86606 28.27081 29.79210 30.14464 30.19859 32.48040     5   b
+    ##  griddy 36.46819 38.21167 38.91454 38.74742 39.65889 41.48655     5  a 
+    ##  estdaR 29.13415 29.17978 31.94893 32.46097 33.72266 35.24708     5   b
 
 ``` r
 # griddy's median time as a multiple of estdaR's
@@ -97,7 +97,7 @@ medians <- summary(bench)$median
 round(medians[1] / medians[2], 1)
 ```
 
-    ## [1] 1.3
+    ## [1] 1.2
 
 `griddy` is somewhat slower, and the gap is bookkeeping.
 [`estdaR::sp.mkv()`](https://rdrr.io/pkg/estdaR/man/sp.mkv.html) works

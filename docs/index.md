@@ -64,7 +64,6 @@ data(usjoin)
 
 geom <- us_states |>
   filter(NAME %in% usjoin$name) |>
-  arrange(NAME) |>
   mutate(
     nb = st_contiguity(geometry),
     wt = st_weights(nb)
@@ -76,7 +75,10 @@ panel <- usjoin |>
 
 classes <- classify_dynamics(panel, name, year, income, k = 5)
 classic <- markov_dynamics(classes, name, year, class)
-spatial <- spatial_markov(panel, name, year, income, geometry = geom, k = 5)
+spatial <- spatial_markov(
+  panel, name, year, income,
+  geometry = geom, geometry_id = NAME, k = 5
+)
 
 classic$transitions |> select(id, from_time, to_time, transition) |> head()
 lag_intervals(spatial)
@@ -86,8 +88,10 @@ lag_intervals(spatial)
 takes a `geometry` argument: an `sf` tibble with one row per spatial
 unit and `nb` / `wt` list-columns produced by `sfdep`. This keeps the
 spatial frame, neighbor structure, and row-standardization choice in one
-tidy object. `listw` and `nb` arguments remain accepted for
-compatibility with existing workflows.
+tidy object. Rows of `geometry` are matched to panel units by id,
+through the column named in `geometry_id` or a column with the same name
+as `id`. `listw` and `nb` arguments remain accepted for compatibility
+with existing workflows.
 
 ## Documentation
 

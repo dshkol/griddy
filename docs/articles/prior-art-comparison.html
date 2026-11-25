@@ -109,7 +109,9 @@ shape expected by both prior R implementations. <code>estdaR</code> and
 <code>spdyn</code> consume <code>listw</code> objects from
 <code>spdep</code>; <code>griddy</code> accepts the same object for
 compatibility, so all three methods use identical row-standardized
-weights.</p>
+weights. <code>row.names = states$NAME</code> gives the weights region
+ids, which <code>griddy</code> uses to match them to the panel’s
+<code>NAME</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">us_states</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">us_states_df</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span></span>
@@ -128,7 +130,7 @@ weights.</p>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="st">"median_income_10"</span>, <span class="fl">2010L</span>, <span class="fl">2015L</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/poly2nb.html" class="external-link">poly2nb</a></span><span class="op">(</span><span class="va">states</span>, queen <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/poly2nb.html" class="external-link">poly2nb</a></span><span class="op">(</span><span class="va">states</span>, queen <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="va">states</span><span class="op">$</span><span class="va">NAME</span><span class="op">)</span></span>
 <span><span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/nb2listw.html" class="external-link">nb2listw</a></span><span class="op">(</span><span class="va">nb</span>, style <span class="op">=</span> <span class="st">"W"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">NAME</span>, <span class="va">year</span>, <span class="va">income</span>, listw <span class="op">=</span> <span class="va">listw</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>

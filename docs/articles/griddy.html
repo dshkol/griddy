@@ -205,7 +205,6 @@ what the unit’s own class would predict.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">geom</span> <span class="op">&lt;-</span> <span class="va">us_states</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">usjoin</span><span class="op">$</span><span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    nb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_contiguity.html" class="external-link">st_contiguity</a></span><span class="op">(</span><span class="va">geometry</span><span class="op">)</span>,</span>
 <span>    wt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/sfdep/man/st_weights.html" class="external-link">st_weights</a></span><span class="op">(</span><span class="va">nb</span><span class="op">)</span></span>
@@ -218,9 +217,18 @@ what the unit’s own class would predict.</p>
 an <code>sf</code> tibble with one row per unit and <code>nb</code> /
 <code>wt</code> list-columns produced by <code>sfdep</code>. Carrying
 weights as columns on the geography keeps the spatial frame, the
-weights, and their row-standardization choice in one tidy object.</p>
+weights, and their row-standardization choice in one tidy object.
+<code>geometry_id</code> names the column of <code>geometry</code> that
+matches the panel’s <code>id</code>; here the panel uses
+<code>name</code> and the geography uses <code>NAME</code>. Rows are
+matched by id, so their order does not matter. A <code>geometry</code>
+column with the same name as <code>id</code> is matched without
+<code>geometry_id</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span><span class="va">panel</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">income</span>, geometry <span class="op">=</span> <span class="va">geom</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span></span>
+<span>  <span class="va">panel</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">income</span>,</span>
+<span>  geometry <span class="op">=</span> <span class="va">geom</span>, geometry_id <span class="op">=</span> <span class="va">NAME</span>, k <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/lag_intervals.html">lag_intervals</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
@@ -343,7 +351,7 @@ lag class shares the pooled transition matrix.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rel_spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatial_markov.html">spatial_markov</a></span><span class="op">(</span></span>
 <span>  <span class="va">relative</span>, <span class="va">name</span>, <span class="va">year</span>, <span class="va">rel_income</span>,</span>
-<span>  geometry <span class="op">=</span> <span class="va">geom</span>, k <span class="op">=</span> <span class="fl">5</span></span>
+<span>  geometry <span class="op">=</span> <span class="va">geom</span>, geometry_id <span class="op">=</span> <span class="va">NAME</span>, k <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/homogeneity_test.html">homogeneity_test</a></span><span class="op">(</span><span class="va">rel_spatial</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>

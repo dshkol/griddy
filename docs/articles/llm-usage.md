@@ -28,12 +28,13 @@ names (tidy evaluation), not strings.
 
 For spatial Markov, pass `geometry`: an `sf` tibble with one row per
 unit, taken from a single period, carrying `nb` and `wt` list-columns
-from `sfdep`. `listw` and `nb` arguments are accepted for older code;
-prefer `geometry`.
+from `sfdep`. Its rows are matched to units by id: through a column with
+the same name as `id`, or through the column named in `geometry_id`.
+`listw` and `nb` arguments are accepted for older code; prefer
+`geometry`.
 
 ``` r
 geom <- geography |>
-  dplyr::arrange(unit_id) |>
   dplyr::mutate(
     nb = sfdep::st_contiguity(geometry),
     wt = sfdep::st_weights(nb)
@@ -52,7 +53,7 @@ classify_dynamics(data, id, time, value,
   k = 5, breaks = NULL, labels = NULL)
 markov_dynamics(classes, id, time, state = class)
 spatial_markov(data, id, time, value,
-  geometry = NULL, listw = NULL, nb = NULL,
+  geometry = NULL, geometry_id = NULL, listw = NULL, nb = NULL,
   k = 5, lag_k = k,
   class_method = c("pooled_quantile", "time_quantile", "fixed"),
   zero.policy = TRUE)
@@ -124,7 +125,6 @@ data(us_states, package = "spData")
 
 geom <- us_states |>
   filter(NAME %in% usjoin$name) |>
-  arrange(NAME) |>
   mutate(nb = st_contiguity(geometry), wt = st_weights(nb))
 
 relative <- usjoin |>
@@ -143,7 +143,10 @@ mobility_index(chain, "prais")
 #>     prais 
 #> 0.1695447
 
-spatial <- spatial_markov(relative, name, year, rel_income, geometry = geom, k = 5)
+spatial <- spatial_markov(
+  relative, name, year, rel_income,
+  geometry = geom, geometry_id = NAME, k = 5
+)
 homogeneity_test(spatial)
 #> # A tibble: 3 × 4
 #>   test             statistic    df  p_value
@@ -155,15 +158,22 @@ homogeneity_test(spatial)
 
 ## Pitfalls
 
-- **Sort `geometry` by `id`.**
+- **Give the weights ids.**
   [`spatial_markov()`](https://dshkol.github.io/griddy/reference/spatial_markov.md)
-  matches the rows of `geometry` (or `listw`) to units by position. It
-  assumes they are in ascending order of `id` and checks only that the
-  number of rows matches. If the rows are in a different order, every
-  unit gets the wrong neighbors, and no error is raised. Sort `geometry`
-  by the same key, in the same order, as the panel’s `id`.
+  matches the rows of `geometry` to units through a column with the same
+  name as `id`, or through the column named in `geometry_id`, so row
+  order does not matter. For `listw` or `nb`, it uses the region ids
+  when they are the values of `id`; set them with
+  `spdep::poly2nb(x, row.names = x$id)`. Without usable ids it matches
+  rows by position, in ascending order of `id`, and warns. Do not ignore
+  that warning: weights in any other row order give units the wrong
+  neighbors. Before 0.2.0, rows were always matched by position, with no
+  warning.
+- **Build `nb` and `wt` last.** They refer to rows of `geometry` by
+  position. Filtering or reordering `geometry` after building them gives
+  units the wrong neighbors, and matching by id cannot detect it.
 - **Balance the panel for spatial Markov.** Every unit must appear in
-  every period;
+  every period, and the weights must cover exactly the panel’s units;
   [`spatial_markov()`](https://dshkol.github.io/griddy/reference/spatial_markov.md)
   stops otherwise.
 - **Use relative values for chain summaries.** With pooled breaks on a
