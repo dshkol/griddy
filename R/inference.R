@@ -5,14 +5,14 @@
 #' spatial-lag class genuinely differ from the pooled matrix (Rey, Kang, and
 #' Wolf 2016). Three statistics are reported: a Pearson chi-squared Q test and
 #' a likelihood-ratio test with the degrees-of-freedom adjustment of
-#' Bickenbach and Bald (2003), and the Kullback information test (Kullback,
+#' Bickenbach and Bode (2003), and the Kullback information test (Kullback,
 #' Kupperman, and Ku 1962). The Pearson and likelihood-ratio statistics mirror
 #' the PySAL `giddy` `Spatial_Markov` homogeneity attributes.
 #'
 #' The Kullback statistic uses origin-state (row) margins, which makes it
 #' algebraically identical to the likelihood-ratio statistic. It is reported
 #' for comparability with `giddy.markov.kullback()` and uses the same
-#' Bickenbach--Bald degrees of freedom as the other two tests. giddy 2.3.9 and
+#' Bickenbach--Bode degrees of freedom as the other two tests. giddy 2.3.9 and
 #' earlier differ in two ways: the stratum-specific term uses terminal-state
 #' (column) margins (fixed upstream in
 #' <https://github.com/pysal/giddy/pull/260>), and the degrees of freedom are
@@ -30,6 +30,20 @@
 #'   `kullback`) and columns `test`, `statistic`, `df`, and `p_value`. The
 #'   null hypothesis is that all regimes share the pooled transition matrix;
 #'   small p-values indicate the conditional dynamics differ.
+#'
+#' @references
+#' Bickenbach, F., and Bode, E. (2003). Evaluating the Markov property in
+#' studies of economic convergence. *International Regional Science Review*,
+#' 26(3), 363--392. \doi{10.1177/0160017603253789}
+#'
+#' Kullback, S., Kupperman, M., and Ku, H. H. (1962). Tests for contingency
+#' tables and Markov chains. *Technometrics*, 4(4), 573--608.
+#' \doi{10.1080/00401706.1962.10490041}
+#'
+#' Rey, S. J., Kang, W., and Wolf, L. (2016). The properties of tests for
+#' spatial effects in discrete Markov chain models of regional income
+#' distribution dynamics. *Journal of Geographical Systems*, 18(4), 377--398.
+#' \doi{10.1007/s10109-016-0234-x}
 #'
 #' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' panel <- data.frame(
@@ -124,7 +138,7 @@ homogeneity_test.list <- function(x, ...) {
   )
 }
 
-# Bickenbach & Bald (2003) degrees of freedom: for each origin state,
+# Bickenbach & Bode (2003) degrees of freedom: for each origin state,
 # (regimes with transitions out of it - 1) * (destinations reached from it in
 # the pooled matrix - 1). An origin state with no transitions in any regime
 # contributes nothing to the statistics, so it contributes no degrees of
@@ -136,7 +150,7 @@ homogeneity_test.list <- function(x, ...) {
 }
 
 # Pearson Q and likelihood-ratio homogeneity statistics with the
-# Bickenbach & Bald (2003) degrees-of-freedom adjustment, mirroring
+# Bickenbach & Bode (2003) degrees-of-freedom adjustment, mirroring
 # giddy.markov.Homogeneity_Results.
 .grd_homogeneity <- function(mats) {
   total <- Reduce(`+`, mats)
@@ -175,7 +189,7 @@ homogeneity_test.list <- function(x, ...) {
 # 2 * sum(n_ijm * log(p_ijm / p_ij)), the likelihood-ratio statistic, i.e. a
 # sum over origin states of G-tests of regime x destination independence.
 # Each such G-test has (regimes observed - 1) * (destinations observed - 1)
-# degrees of freedom, so the Bickenbach & Bald count applies, not the
+# degrees of freedom, so the Bickenbach & Bode count applies, not the
 # unadjusted r * (s - 1) * (r - 1) used by giddy (pysal/giddy#265).
 .grd_kullback <- function(mats) {
   xlogx <- function(v) sum(v * log(ifelse(v == 0, 1, v)))

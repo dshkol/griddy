@@ -14,12 +14,12 @@
   regimes. For `grd_spatial_markov` objects, it tests whether the matrices
   conditioned on spatial-lag class differ from the pooled matrix (Rey, Kang,
   and Wolf 2016). It reports the Pearson chi-squared Q and likelihood-ratio
-  tests with the Bickenbach--Bald (2003) degrees-of-freedom adjustment and
+  tests with the Bickenbach--Bode (2003) degrees-of-freedom adjustment and
   the Kullback (1962) information test. Static fixtures validate the first two
   against PySAL `giddy`. The Kullback statistic uses the
   origin-state margins required by the conditional likelihood, which makes it
   identical to the likelihood-ratio statistic, and it shares the
-  Bickenbach--Bald degrees of freedom. It therefore differs from
+  Bickenbach--Bode degrees of freedom. It therefore differs from
   `giddy.markov.kullback()` through giddy 2.3.9, which uses terminal-state
   margins (fixed upstream in
   [giddy PR 260](https://github.com/pysal/giddy/pull/260)) and unadjusted

@@ -16,7 +16,7 @@ from scipy.stats import chi2
 def kullback_with_origin_margins(F: np.ndarray) -> tuple[float, int, float]:
     """Kullback conditional-homogeneity test using initial-state totals.
 
-    Degrees of freedom follow Bickenbach and Bald (2003): per origin state,
+    Degrees of freedom follow Bickenbach and Bode (2003): per origin state,
     (strata with transitions - 1) * (destinations reached in the pooled
     table - 1). giddy.markov.kullback() uses the unadjusted
     r * (s - 1) * (r - 1); see pysal/giddy#265.

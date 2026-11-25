@@ -24,7 +24,7 @@ spatial Markov object, whether the transition matrices conditioned on
 spatial-lag class genuinely differ from the pooled matrix (Rey, Kang, and
 Wolf 2016). Three statistics are reported: a Pearson chi-squared Q test and
 a likelihood-ratio test with the degrees-of-freedom adjustment of
-Bickenbach and Bald (2003), and the Kullback information test (Kullback,
+Bickenbach and Bode (2003), and the Kullback information test (Kullback,
 Kupperman, and Ku 1962). The Pearson and likelihood-ratio statistics mirror
 the PySAL \code{giddy} \code{Spatial_Markov} homogeneity attributes.
 }
@@ -32,7 +32,7 @@ the PySAL \code{giddy} \code{Spatial_Markov} homogeneity attributes.
 The Kullback statistic uses origin-state (row) margins, which makes it
 algebraically identical to the likelihood-ratio statistic. It is reported
 for comparability with \code{giddy.markov.kullback()} and uses the same
-Bickenbach--Bald degrees of freedom as the other two tests. giddy 2.3.9 and
+Bickenbach--Bode degrees of freedom as the other two tests. giddy 2.3.9 and
 earlier differ in two ways: the stratum-specific term uses terminal-state
 (column) margins (fixed upstream in
 \url{https://github.com/pysal/giddy/pull/260}), and the degrees of freedom are
@@ -66,4 +66,18 @@ grid <- sf::st_sf(
 spatial <- spatial_markov(panel, id, year, value, geometry = grid, k = 3)
 homogeneity_test(spatial)
 \dontshow{\}) # examplesIf}
+}
+\references{
+Bickenbach, F., and Bode, E. (2003). Evaluating the Markov property in
+studies of economic convergence. \emph{International Regional Science Review},
+26(3), 363--392. \doi{10.1177/0160017603253789}
+
+Kullback, S., Kupperman, M., and Ku, H. H. (1962). Tests for contingency
+tables and Markov chains. \emph{Technometrics}, 4(4), 573--608.
+\doi{10.1080/00401706.1962.10490041}
+
+Rey, S. J., Kang, W., and Wolf, L. (2016). The properties of tests for
+spatial effects in discrete Markov chain models of regional income
+distribution dynamics. \emph{Journal of Geographical Systems}, 18(4), 377--398.
+\doi{10.1007/s10109-016-0234-x}
 }

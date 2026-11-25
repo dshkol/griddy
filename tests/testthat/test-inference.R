@@ -51,7 +51,7 @@ test_that("kullback statistic reproduces the published Kullback (1962) example",
   expect_equal(kb$statistic, 160.961, tolerance = 1e-5)
   # The published table uses the unadjusted r(s - 1)(r - 1) = 30. Origin
   # state 4 never reaches destination 1 in either stratum, so the
-  # Bickenbach-Bald count drops one degree of freedom.
+  # Bickenbach-Bode count drops one degree of freedom.
   expect_equal(kb$df, 29L)
   expect_lt(kb$p_value, 1e-6)
 })
