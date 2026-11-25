@@ -35,6 +35,16 @@
 
 - The Get Started vignette covers the chain summaries and homogeneity tests.
 
+- New article, "Usage Guide for LLMs and Agents", gives language models and
+  coding agents the exact current API, the common pitfalls, and what `griddy`
+  does not cover.
+
+- The website now publishes `llms.txt`, an index for language models, and a
+  Markdown version of every page.
+
+- The GitHub repository includes an `AGENTS.md` with guidance for AI coding
+  agents contributing to `griddy`. It is not part of the installed package.
+
 # griddy 0.1.1
 
 This version was tagged on GitHub but not released to CRAN. Its changes reach
