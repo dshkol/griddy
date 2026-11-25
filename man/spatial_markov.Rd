@@ -10,6 +10,7 @@ spatial_markov(
   time,
   value,
   geometry = NULL,
+  geometry_id = NULL,
   listw = NULL,
   nb = NULL,
   k = 5,
@@ -25,13 +26,22 @@ spatial_markov(
 
 \item{geometry}{An \code{sf} tibble with one row per spatial unit (a single time
 slice's geography), carrying \code{nb} and \code{wt} list-columns produced by
-\code{sfdep::st_contiguity()} and \code{sfdep::st_weights()}. The preferred input.}
+\code{sfdep::st_contiguity()} and \code{sfdep::st_weights()}. The preferred input.
+Its rows are matched to units by the \code{geometry_id} column, or by a column
+with the same name as \code{id}, so their order does not matter.}
+
+\item{geometry_id}{The column of \code{geometry} that holds unit ids, when its
+name differs from \code{id}. Its values must match the values of \code{id} one to
+one.}
 
 \item{listw}{A row-standardized \code{spdep} \code{listw} object. Accepted for
-compatibility with prior workflows; use \code{geometry} for new code.}
+compatibility with prior workflows; use \code{geometry} for new code. Its rows
+are matched to units by id when its region ids are the values of \code{id},
+as with \code{spdep::poly2nb(x, row.names = x$id)}, and by position otherwise.}
 
 \item{nb}{A \code{spdep} neighbor list, used only when both \code{geometry} and
-\code{listw} are \code{NULL}. Converted with \code{spdep::nb2listw(style = "W")}.}
+\code{listw} are \code{NULL}. Converted with \code{spdep::nb2listw(style = "W")}. Its
+rows are matched to units as for \code{listw}.}
 
 \item{k}{Number of value classes.}
 
@@ -48,6 +58,25 @@ A \code{grd_spatial_markov} object.
 Estimates transition matrices conditioned on the class of each unit's spatial
 lag at the start of the transition period.
 }
+\section{Matching weights to units}{
+
+Each row of \code{geometry}, \code{listw}, or \code{nb} describes one unit. The neighbor
+lists refer to rows by position, so build them after the last filter or
+reorder of the geography. \code{spatial_markov()} matches rows to the units in
+\code{data} by id, and the row order of the weights does not matter. It stops
+when the weights' ids have missing or duplicated values or do not match the
+values of \code{id} one to one.
+
+When the weights carry no usable ids, rows are matched by position: the
+first row is taken to be the unit with the smallest \code{id}, the second row
+the next, and so on. This happens when \code{geometry} has neither a
+\code{geometry_id} column nor a column named like \code{id}, and when the region ids
+of \code{listw} or \code{nb} are not the values of \code{id}. \code{spatial_markov()} warns in
+that case, because weights in any other row order give units the wrong
+neighbors without an error. Before griddy 0.2.0, rows were always matched
+by position.
+}
+
 \examples{
 \dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 panel <- data.frame(

@@ -155,7 +155,6 @@ unit’s own class would predict.
 ``` r
 geom <- us_states |>
   filter(NAME %in% usjoin$name) |>
-  arrange(NAME) |>
   mutate(
     nb = st_contiguity(geometry),
     wt = st_weights(nb)
@@ -170,9 +169,16 @@ panel <- usjoin |>
 with one row per unit and `nb` / `wt` list-columns produced by `sfdep`.
 Carrying weights as columns on the geography keeps the spatial frame,
 the weights, and their row-standardization choice in one tidy object.
+`geometry_id` names the column of `geometry` that matches the panel’s
+`id`; here the panel uses `name` and the geography uses `NAME`. Rows are
+matched by id, so their order does not matter. A `geometry` column with
+the same name as `id` is matched without `geometry_id`.
 
 ``` r
-spatial <- spatial_markov(panel, name, year, income, geometry = geom, k = 5)
+spatial <- spatial_markov(
+  panel, name, year, income,
+  geometry = geom, geometry_id = NAME, k = 5
+)
 
 lag_intervals(spatial)
 #> # A tibble: 5 × 4
@@ -317,7 +323,7 @@ transition matrix.
 ``` r
 rel_spatial <- spatial_markov(
   relative, name, year, rel_income,
-  geometry = geom, k = 5
+  geometry = geom, geometry_id = NAME, k = 5
 )
 homogeneity_test(rel_spatial)
 #> # A tibble: 3 × 4

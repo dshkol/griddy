@@ -33,6 +33,22 @@
   265](https://github.com/pysal/giddy/issues/265)). A list method
   accepts arbitrary regime count matrices.
 
+### Bug fixes
+
+- [`spatial_markov()`](https://dshkol.github.io/griddy/reference/spatial_markov.md)
+  matched the rows of `geometry`, `listw`, or `nb` to units by position,
+  assuming they were in ascending order of `id`. Weights in any other
+  row order gave units the wrong neighbors, and no error was raised.
+  This dates from 0.1.0. Rows are now matched by id: through a
+  `geometry` column with the same name as `id`, through the column named
+  in the new `geometry_id` argument, or through the region ids of
+  `listw` and `nb`.
+  [`spatial_markov()`](https://dshkol.github.io/griddy/reference/spatial_markov.md)
+  stops when those ids are missing, duplicated, or do not match the
+  panel. When the weights carry no usable ids, it still matches by
+  position and now warns. Results for weights sorted by `id` are
+  unchanged.
+
 ### Documentation
 
 - New article, “Coverage of PySAL giddy”, maps every public entry of

@@ -22,6 +22,7 @@ make_grid_panel <- function() {
 test_that("spatial_markov conditional counts aggregate to classic counts", {
   fx <- make_grid_panel()
   nb <- spdep::cell2nb(2, 2, type = "queen")
+  attr(nb, "region.id") <- fx$geom$id
 
   classes <- classify_dynamics(fx$panel, id, year, value, k = 2)
   mk <- markov_dynamics(classes, id, year, class)
@@ -56,6 +57,7 @@ test_that("rank_mobility endpoint changes sum to zero for complete untied ranks"
 test_that("plot helpers return ggplot objects", {
   fx <- make_grid_panel()
   nb <- spdep::cell2nb(2, 2, type = "queen")
+  attr(nb, "region.id") <- fx$geom$id
   classes <- classify_dynamics(fx$panel, id, year, value, k = 2)
   mk <- markov_dynamics(classes, id, year, class)
   sm <- spatial_markov(fx$panel, id, year, value, nb = nb, k = 2)

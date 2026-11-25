@@ -57,6 +57,7 @@ lag at the start of the transition period.</p>
 <span>  <span class="va">time</span>,</span>
 <span>  <span class="va">value</span>,</span>
 <span>  geometry <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  geometry_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  listw <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nb <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">5</span>,</span>
@@ -81,17 +82,28 @@ lag at the start of the transition period.</p>
 <dt id="arg-geometry">geometry<a class="anchor" aria-label="anchor" href="#arg-geometry"></a></dt>
 <dd><p>An <code>sf</code> tibble with one row per spatial unit (a single time
 slice's geography), carrying <code>nb</code> and <code>wt</code> list-columns produced by
-<code><a href="https://rdrr.io/pkg/sfdep/man/st_contiguity.html" class="external-link">sfdep::st_contiguity()</a></code> and <code><a href="https://rdrr.io/pkg/sfdep/man/st_weights.html" class="external-link">sfdep::st_weights()</a></code>. The preferred input.</p></dd>
+<code><a href="https://rdrr.io/pkg/sfdep/man/st_contiguity.html" class="external-link">sfdep::st_contiguity()</a></code> and <code><a href="https://rdrr.io/pkg/sfdep/man/st_weights.html" class="external-link">sfdep::st_weights()</a></code>. The preferred input.
+Its rows are matched to units by the <code>geometry_id</code> column, or by a column
+with the same name as <code>id</code>, so their order does not matter.</p></dd>
+
+
+<dt id="arg-geometry-id">geometry_id<a class="anchor" aria-label="anchor" href="#arg-geometry-id"></a></dt>
+<dd><p>The column of <code>geometry</code> that holds unit ids, when its
+name differs from <code>id</code>. Its values must match the values of <code>id</code> one to
+one.</p></dd>
 
 
 <dt id="arg-listw">listw<a class="anchor" aria-label="anchor" href="#arg-listw"></a></dt>
 <dd><p>A row-standardized <code>spdep</code> <code>listw</code> object. Accepted for
-compatibility with prior workflows; use <code>geometry</code> for new code.</p></dd>
+compatibility with prior workflows; use <code>geometry</code> for new code. Its rows
+are matched to units by id when its region ids are the values of <code>id</code>,
+as with <code>spdep::poly2nb(x, row.names = x$id)</code>, and by position otherwise.</p></dd>
 
 
 <dt id="arg-nb">nb<a class="anchor" aria-label="anchor" href="#arg-nb"></a></dt>
 <dd><p>A <code>spdep</code> neighbor list, used only when both <code>geometry</code> and
-<code>listw</code> are <code>NULL</code>. Converted with <code>spdep::nb2listw(style = "W")</code>.</p></dd>
+<code>listw</code> are <code>NULL</code>. Converted with <code>spdep::nb2listw(style = "W")</code>. Its
+rows are matched to units as for <code>listw</code>.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -113,6 +125,25 @@ compatibility with prior workflows; use <code>geometry</code> for new code.</p><
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>grd_spatial_markov</code> object.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="matching-weights-to-units">Matching weights to units<a class="anchor" aria-label="anchor" href="#matching-weights-to-units"></a></h2>
+
+
+<p>Each row of <code>geometry</code>, <code>listw</code>, or <code>nb</code> describes one unit. The neighbor
+lists refer to rows by position, so build them after the last filter or
+reorder of the geography. <code>spatial_markov()</code> matches rows to the units in
+<code>data</code> by id, and the row order of the weights does not matter. It stops
+when the weights' ids have missing or duplicated values or do not match the
+values of <code>id</code> one to one.</p>
+<p>When the weights carry no usable ids, rows are matched by position: the
+first row is taken to be the unit with the smallest <code>id</code>, the second row
+the next, and so on. This happens when <code>geometry</code> has neither a
+<code>geometry_id</code> column nor a column named like <code>id</code>, and when the region ids
+of <code>listw</code> or <code>nb</code> are not the values of <code>id</code>. <code>spatial_markov()</code> warns in
+that case, because weights in any other row order give units the wrong
+neighbors without an error. Before griddy 0.2.0, rows were always matched
+by position.</p>
     </div>
 
     <div class="section level2">

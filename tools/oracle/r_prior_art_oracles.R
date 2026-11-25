@@ -37,7 +37,7 @@ panel <- states |>
   pivot_longer(starts_with("median_income_"), names_to = "year", values_to = "income") |>
   mutate(year = if_else(year == "median_income_10", 2010L, 2015L))
 
-nb <- poly2nb(states, queen = TRUE)
+nb <- poly2nb(states, queen = TRUE, row.names = states$NAME)
 listw <- nb2listw(nb, style = "W")
 
 grd_classes <- classify_dynamics(panel, NAME, year, income, k = 5)

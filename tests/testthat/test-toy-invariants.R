@@ -69,7 +69,9 @@ test_that("spatial Markov on a tiny known grid agrees with hand calculation", {
     )
   )
 
-  listw <- spdep::nb2listw(spdep::cell2nb(2, 2, type = "queen"), style = "W")
+  nb <- spdep::cell2nb(2, 2, type = "queen")
+  attr(nb, "region.id") <- as.character(1:4)
+  listw <- spdep::nb2listw(nb, style = "W")
   spatial <- spatial_markov(panel, id, year, value, listw = listw, k = 2)
 
   total_observed <- sum(spatial$matrix$n)
